@@ -93,11 +93,16 @@ All photos are **stored locally** in `assets/img/photos/` as WebP rather than
 hot-linked, so the page renders offline, deploys as one self-contained unit and
 does not depend on a third party staying up.
 
-They are Unsplash photographs downloaded at the exact width each slot needs.
-`assets/img/photos/_sources.json` maps every file back to its Unsplash page for
-attribution. Filenames describe their slot (`hero-cafe-2000.webp`,
-`ind-restaurants-800.webp`) — **to swap in the customer's real photography,
-overwrite the file at the same path**; no markup changes needed.
+They are Unsplash photographs downloaded at the exact width each slot needs —
+the five hero slides at **2400px** (all verified as true 2400px source, not
+upscaled), cards at 400–1400px. `assets/img/photos/_sources.json` maps every file
+back to its Unsplash page for attribution. Filenames describe their slot
+(`hero-bakery-2400.webp`, `ind-restaurants-800.webp`) — **to swap in the
+customer's real photography, overwrite the file at the same path**; no markup
+changes needed.
+
+Hero slides, in order: bright café · chef at the pass · bakery shop · supermarket
+aisle · cold store.
 
 `assets/img/kalt-logo.png` is the supplied logo, cropped to its bounding box with
 the black field made transparent so it composites on any background.
