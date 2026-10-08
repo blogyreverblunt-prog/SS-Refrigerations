@@ -1,0 +1,1288 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3016" height="7399" viewBox="-48 -48 3016 7399">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+<rect x="-48" y="-48" width="3016" height="7399" fill="#ffffff"/>
+<text x="0.0" y="31.3" font-size="34.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Phase 1 — Site Feature Architecture  ·  Free-Tier Build</tspan>
+</text>
+<text x="0.0" y="61.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">KALT / SS Commercial Refrigeration.   Feature set derived from docs/ia/SITE-SECTIONS-REPORT.md — the five-site audit of westernequipments.com, truemfg.com, beverage-air.com, traulsen.com and bluestarindia.com.   Product taxonomy anchored to the Hoshizaki refrigeration catalogue.</tspan>
+<tspan x="0.0" dy="21.0">Rev 2.0   2026-10-08   ·   Supersedes Rev 1.0, which described the same $0 topology without the feature map.   Data model (HLD.md §7) and ADR-0001 'why PostgreSQL' (§8) carry over unchanged.</tspan>
+</text>
+<rect x="0.0" y="114.1" width="2920.0" height="96.1" rx="12" fill="#fffbea" stroke="#b08900" stroke-width="2.0"/>
+<text x="14.0" y="145.6" font-size="19.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">THE ONE PRINCIPLE — every page funnels to a single action: AN ENQUIRY.  There is no checkout.</tspan>
+</text>
+<text x="14.0" y="171.3" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Not one of the five audited sites publishes a price. Every path through every one of them terminates in "request a quote", "find a dealer" or "contact us". That makes the enquiry the only conversion event on the site, and it is the only write path that carries revenue — so it gets the outbox, the retries and the synthetic probe (§6), while everything else is a static file served from a CDN edge.</tspan>
+<tspan x="14.0" dy="18.5">Read every box below as: what does this page need in order to produce an enquiry, and what does it cost to serve.</tspan>
+</text>
+<rect x="0.0" y="232.2" width="2920.0" height="89.8" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="14.0" y="260.0" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Hosting constraint, unchanged from Rev 1.0 — Vercel Hobby forbids commercial use.  Design on it, do not launch on it.</tspan>
+</text>
+<text x="14.0" y="284.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Vercel Fair Use Guidelines, verbatim: "Hobby teams are restricted to non-commercial personal use only." A client's B2B lead-generation site is commercial use. Launch on Vercel Pro ($20/mo, no code change) or Cloudflare Workers ($0, commercially permitted, add @opennextjs/cloudflare — one day, once). Everything below is host-agnostic Next.js with no Vercel-proprietary API on a critical path, specifically so that stays a</tspan>
+<tspan x="14.0" dy="17.8">one-day change.</tspan>
+</text>
+<text x="0.0" y="404.1" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">1 · The page map — nine must-have pages, plus pricing held back</tspan>
+</text>
+<text x="0.0" y="429.7" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Every card carries its convergence count from the audit (how many of the five sites have it), its render strategy, and what it reads or writes. 5/5 is table stakes; a section at 1/5 is one company's pet project.</tspan>
+</text>
+<rect x="0.0" y="456.4" width="715.0" height="168.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="14.0" y="484.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">1 · Home                                              5/5</tspan>
+</text>
+<text x="14.0" y="507.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">11 blocks: utility bar · 5-item nav + products mega-menu · ONE static</tspan>
+<tspan x="14.0" dy="16.3">hero (NOT a 5-slide carousel, slides 2+ are not seen) · shop-by-type</tspan>
+<tspan x="14.0" dy="16.3">6-card grid · shop-by-industry rail · why-us NUMBER tiles · CLIENT</tspan>
+<tspan x="14.0" dy="16.3">LOGO STRIP · featured models · service promise · enquiry band · footer</tspan>
+<tspan x="14.0" dy="16.3">RENDER  SSG at build</tspan>
+<tspan x="14.0" dy="16.3">READS   MDX + 6 category rows</tspan>
+</text>
+<rect x="735.0" y="456.4" width="715.0" height="168.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="749.0" y="484.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">2 · Products hub                                       5/5</tspan>
+</text>
+<text x="749.0" y="507.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">6 category cards mapped 1:1 to the Hoshizaki range (§2) · a second row</tspan>
+<tspan x="749.0" dy="16.3">for adjacent lines you carry · filter entry point · one big</tspan>
+<tspan x="749.0" dy="16.3">"Download full catalogue (PDF)" — what distributors actually want.</tspan>
+<tspan x="749.0" dy="16.3">A flat list of 300 model codes is unusable; all five use a grid.</tspan>
+<tspan x="749.0" dy="16.3">RENDER  SSG</tspan>
+<tspan x="749.0" dy="16.3">READS   categories + model counts</tspan>
+</text>
+<rect x="1470.0" y="456.4" width="715.0" height="168.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="1484.0" y="484.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">3 · Product category  × 6                              5/5</tspan>
+</text>
+<text x="1484.0" y="507.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">Hero copy (concrete, not corporate) · sub-type blocks · model grid ·</tspan>
+<tspan x="1484.0" dy="16.3">filter sidebar (§4) · COMPARISON TABLE — none of the five do this</tspan>
+<tspan x="1484.0" dy="16.3">well, so it is the easiest place to beat them · related industries ·</tspan>
+<tspan x="1484.0" dy="16.3">"not sure which model?" → enquiry with the category pre-filled</tspan>
+<tspan x="1484.0" dy="16.3">RENDER  ISR, on-demand revalidation only</tspan>
+<tspan x="1484.0" dy="16.3">READS   catalog</tspan>
+</text>
+<rect x="2205.0" y="456.4" width="715.0" height="168.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2219.0" y="484.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">4 · Product detail  × N        ← 60% OF THE EFFORT     5/5</tspan>
+</text>
+<text x="2219.0" y="507.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">THE page. Organic search lands here, not on the home page. Three</tspan>
+<tspan x="2219.0" dy="16.3">different people use it: the chef, the kitchen consultant and the</tspan>
+<tspan x="2219.0" dy="16.3">purchase manager — and each needs something different.</tspan>
+<tspan x="2219.0" dy="16.3">13 content blocks, specified in §3.</tspan>
+<tspan x="2219.0" dy="16.3">RENDER  ISR, on-demand revalidation</tspan>
+<tspan x="2219.0" dy="16.3">READS   catalog + specs + media + documents</tspan>
+</text>
+<rect x="0.0" y="642.4" width="715.0" height="168.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="14.0" y="670.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">5 · Industries                                         3/5</tspan>
+</text>
+<text x="14.0" y="693.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">ONE page, six ANCHORED sections — not six thin pages:</tspan>
+<tspan x="14.0" dy="16.3">Restaurants, QSR &amp; cloud kitchens · Bakery, patisserie &amp;</tspan>
+<tspan x="14.0" dy="16.3">confectionery · Supermarket &amp; retail · Hotels, banqueting &amp;</tspan>
+<tspan x="14.0" dy="16.3">institutional · Healthcare &amp; pharma · Ice cream, dairy &amp; beverage</tspan>
+<tspan x="14.0" dy="16.3">Buyers self-identify by business type, not by equipment category.</tspan>
+<tspan x="14.0" dy="16.3">RENDER  SSG      READS  MDX + product industry tags</tspan>
+</text>
+<rect x="735.0" y="642.4" width="715.0" height="168.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="749.0" y="670.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">6 · About Us                                           5/5</tspan>
+</text>
+<text x="749.0" y="693.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">ONE page, not the six the audited sites fragment it into:</tspan>
+<tspan x="749.0" dy="16.3">who we are · NUMBERS not adjectives · manufacturing &amp; plant photos ·</tspan>
+<tspan x="749.0" dy="16.3">CERTIFICATIONS, ISO/BIS/CE — frequently the deciding document in an</tspan>
+<tspan x="749.0" dy="16.3">Indian tender · R&amp;D · sustainability · Hoshizaki association</tspan>
+<tspan x="749.0" dy="16.3">RENDER  SSG</tspan>
+<tspan x="749.0" dy="16.3">READS   MDX</tspan>
+</text>
+<rect x="1470.0" y="642.4" width="715.0" height="168.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="1484.0" y="670.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">7 · Service &amp; Support                                  5/5</tspan>
+</text>
+<text x="1484.0" y="693.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">ONE page. Do NOT copy True's ~25-URL support tree — that exists</tspan>
+<tspan x="1484.0" dy="16.3">because they have decades of installed base, and you have none yet.</tspan>
+<tspan x="1484.0" dy="16.3">Helpline FIRST · installation · AMC · genuine spares · warranty</tspan>
+<tspan x="1484.0" dy="16.3">table · service CITY LIST · service request form · FAQ</tspan>
+<tspan x="1484.0" dy="16.3">RENDER  SSG + form POST</tspan>
+<tspan x="1484.0" dy="16.3">READS   MDX + faq rows</tspan>
+</text>
+<rect x="2205.0" y="642.4" width="715.0" height="168.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2219.0" y="670.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">8 · Contact &amp; Enquiry      ← THE CONVERSION EVENT      5/5</tspan>
+</text>
+<text x="2219.0" y="693.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">Every other page on the site is a funnel into this form.</tspan>
+<tspan x="2219.0" dy="16.3">9 fields MAX · enquiry-type dropdown · model pre-filled from the</tspan>
+<tspan x="2219.0" dy="16.3">product page · phone + WhatsApp beside the form, because a large</tspan>
+<tspan x="2219.0" dy="16.3">share of Indian B2B buyers will not fill a form · offices + GSTIN ·</tspan>
+<tspan x="2219.0" dy="16.3">separate dealership form</tspan>
+<tspan x="2219.0" dy="16.3">WRITES  lead + lead_item[] + outbox, in ONE txn.  See §6.</tspan>
+</text>
+<rect x="0.0" y="828.4" width="715.0" height="168.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="14.0" y="856.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">9 · Downloads                                          3/5</tspan>
+</text>
+<text x="14.0" y="879.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Catalogue PDF · spec sheets · manuals · brochures · certificates ·</tspan>
+<tspan x="14.0" dy="16.3">CAD/Revit. A filtered list over ONE table — the best effort-to-value</tspan>
+<tspan x="14.0" dy="16.3">ratio on the whole site. Western has none, and it is a visible</tspan>
+<tspan x="14.0" dy="16.3">weakness in the closest comparable site. Do NOT gate the spec sheets.</tspan>
+<tspan x="14.0" dy="16.3">RENDER  ISR</tspan>
+<tspan x="14.0" dy="16.3">READS   documents → R2 public or signed URLs</tspan>
+</text>
+<rect x="735.0" y="828.4" width="715.0" height="168.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="749.0" y="856.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">10 · PRICING          ← DEFERRED, PRE-CUT ONLY         0/5</tspan>
+</text>
+<text x="749.0" y="879.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">v1 ships no price, because 0 of 5 audited sites publish one.</tspan>
+<tspan x="749.0" dy="16.3">You asked to define this later — §4 cuts the seam now so that</tspan>
+<tspan x="749.0" dy="16.3">switching it on is a template change, not a migration.</tspan>
+<tspan x="749.0" dy="16.3">The decision to make first: indicative, list, or dealer-only.</tspan>
+<tspan x="749.0" dy="16.3">RENDER  n/a in v1</tspan>
+<tspan x="749.0" dy="16.3">READS   model.price_* columns, all NULL at launch</tspan>
+</text>
+<rect x="1470.0" y="828.4" width="715.0" height="168.0" rx="12" fill="#f8f9fa" stroke="#495057" stroke-width="2.0"/>
+<text x="1484.0" y="856.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">11 · Privacy · Terms                                   5/5</tspan>
+</text>
+<text x="1484.0" y="879.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">Thin, footer-linked. Must carry the "specifications subject to</tspan>
+<tspan x="1484.0" dy="16.3">change without notice" clause — all five audited sites have it —</tspan>
+<tspan x="1484.0" dy="16.3">plus a product-image disclaimer, an IP notice, and an India</tspan>
+<tspan x="1484.0" dy="16.3">e-waste handling note as Blue Star carries.</tspan>
+<tspan x="1484.0" dy="16.3">RENDER  SSG from MDX</tspan>
+<tspan x="1484.0" dy="16.3">READS   nothing</tspan>
+</text>
+<rect x="2205.0" y="828.4" width="715.0" height="168.0" rx="12" fill="#f8f9fa" stroke="#495057" stroke-width="2.0"/>
+<text x="2219.0" y="856.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">12 · sitemap · robots · schema.org                     —</tspan>
+</text>
+<text x="2219.0" y="879.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">Not a page anyone visits, and non-negotiable: this is HOW the</tspan>
+<tspan x="2219.0" dy="16.3">catalogue gets found at all. sitemap.xml regenerated by the 04:00</tspan>
+<tspan x="2219.0" dy="16.3">cron · robots.txt · schema.org Product + Organization +</tspan>
+<tspan x="2219.0" dy="16.3">BreadcrumbList emitted on every model page.</tspan>
+<tspan x="2219.0" dy="16.3">RENDER  generated at build, refreshed by cron</tspan>
+<tspan x="2219.0" dy="16.3">READS   catalog</tspan>
+</text>
+<rect x="0.0" y="1020.4" width="2920.0" height="108.8" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="1049.1" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Navigation — five primary items, everything within two clicks</tspan>
+</text>
+<text x="14.0" y="1073.4" font-size="12.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Home   |   Products  (mega-menu: the 6 Hoshizaki categories, + Ice Machines if carried)   |   Industries   |   Service &amp; Support   |   Downloads   |   About Us   |   Contact</tspan>
+<tspan x="14.0" dy="17.8">Footer: Privacy · Terms · Careers · Sitemap · Social          Persistent: [Get a Quote] · phone · WhatsApp</tspan>
+<tspan x="14.0" dy="17.8">The five audited sites run between five and nine primary items. The ones at nine are harder to use, not richer.</tspan>
+</text>
+<text x="0.0" y="1211.3" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">2 · Product taxonomy — mapped 1:1 to the Hoshizaki refrigeration catalogue</tspan>
+</text>
+<text x="0.0" y="1236.9" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Six categories, each tracing to a named Hoshizaki product family, so the catalogue stays honest about what can actually be supplied.</tspan>
+</text>
+<rect x="0.0" y="1263.6" width="471.7" height="132.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="14.0" y="1290.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">1 · Reach-In Refrigerators &amp; Freezers</tspan>
+</text>
+<text x="14.0" y="1313.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Hoshizaki: Reach-in Refrigerator</tspan>
+<tspan x="14.0" dy="16.3">Refrigerator · Freezer · Dual-temp ·</tspan>
+<tspan x="14.0" dy="16.3">Convertible. One/two/three section,</tspan>
+<tspan x="14.0" dy="16.3">full or half doors, stainless or glass.</tspan>
+</text>
+<rect x="489.7" y="1263.6" width="471.7" height="132.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="503.7" y="1290.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="503.7" dy="0.0">2 · Undercounter &amp; Worktop</tspan>
+</text>
+<text x="503.7" y="1313.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="503.7" dy="0.0">Hoshizaki: Undercounter Refrigerator</tspan>
+<tspan x="503.7" dy="16.3">Undercounter · Worktop · Drawer units ·</tspan>
+<tspan x="503.7" dy="16.3">Chef base. Refrigerator, freezer and</tspan>
+<tspan x="503.7" dy="16.3">dual-temp variants.</tspan>
+</text>
+<rect x="979.3" y="1263.6" width="471.7" height="132.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="993.3" y="1290.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="993.3" dy="0.0">3 · Glass Door &amp; Visi Coolers</tspan>
+</text>
+<text x="993.3" y="1313.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="993.3" dy="0.0">Hoshizaki: Glass Door Refrigerator</tspan>
+<tspan x="993.3" dy="16.3">Visi coolers · countertop units ·</tspan>
+<tspan x="993.3" dy="16.3">full-height merchandisers · compact.</tspan>
+<tspan x="993.3" dy="16.3">Cold storage + merchandising.</tspan>
+</text>
+<rect x="1469.0" y="1263.6" width="471.7" height="132.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="1483.0" y="1290.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1483.0" dy="0.0">4 · Display Cases &amp; Showcases</tspan>
+</text>
+<text x="1483.0" y="1313.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1483.0" dy="0.0">Hoshizaki: Sushi Display Case</tspan>
+<tspan x="1483.0" dy="16.3">Pastry &amp; confectionery cabinets ·</tspan>
+<tspan x="1483.0" dy="16.3">deli/sushi cases · curved glass ·</tspan>
+<tspan x="1483.0" dy="16.3">high-humidity constant-temp cases.</tspan>
+</text>
+<rect x="1958.7" y="1263.6" width="471.7" height="132.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="1972.7" y="1290.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1972.7" dy="0.0">5 · Deep Freezers</tspan>
+</text>
+<text x="1972.7" y="1313.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1972.7" dy="0.0">Hoshizaki: Deep Freezer</tspan>
+<tspan x="1972.7" dy="16.3">Hard-top · glass-top · ultra-low to</tspan>
+<tspan x="1972.7" dy="16.3">-60 degC. Region-limited: Japan, East</tspan>
+<tspan x="1972.7" dy="16.3">&amp; SE Asia, South Asia. Confirm first.</tspan>
+</text>
+<rect x="2448.3" y="1263.6" width="471.7" height="132.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="2462.3" y="1290.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2462.3" dy="0.0">6 · Walk-In Cold Rooms</tspan>
+</text>
+<text x="2462.3" y="1313.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2462.3" dy="0.0">Hoshizaki: Walk-in Refrigerator</tspan>
+<tspan x="2462.3" dy="16.3">Freezer · refrigerator · high-humidity.</tspan>
+<tspan x="2462.3" dy="16.3">MARKED JAPAN-ONLY by Hoshizaki —</tspan>
+<tspan x="2462.3" dy="16.3">verify availability before publishing.</tspan>
+</text>
+<rect x="0.0" y="1415.6" width="2920.0" height="91.0" rx="12" fill="#fffbea" stroke="#b08900" stroke-width="2.0"/>
+<text x="14.0" y="1444.3" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Scope note — the India range is wider than these six</tspan>
+</text>
+<text x="14.0" y="1468.6" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Western Refrigeration, the Hoshizaki India arm and the closest comparable in the audit, also sells: visi coolers · pastry and confectionery cabinets · preparation tables · back bars · ice machines · dishwashers · glass washers · medical refrigerators · water coolers · dispensers · supermarket freezers · vending machines.</tspan>
+<tspan x="14.0" dy="17.8">ICE MACHINES ARE HOSHIZAKI'S FLAGSHIP PRODUCT WORLDWIDE. If they can be carried, they belong in the nav as a seventh category, not buried under an existing one.</tspan>
+</text>
+<text x="0.0" y="1588.7" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">3 · The product detail page — 13 blocks, modelled on the best of the five</tspan>
+</text>
+<text x="0.0" y="1614.3" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Beverage-Air's model page (CT2HC-1S) is the benchmark: an 11-row spec table and nine downloadable files per model. Spend 60% of the build effort on this one template.</tspan>
+</text>
+<rect x="0.0" y="1641.0" width="1500.0" height="350.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="1670.6" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">The 13 blocks, in page order</tspan>
+</text>
+<text x="14.0" y="1694.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0"> 1  Image gallery         4-6 photos: closed · open and loaded · interior · controls · in-situ.</tspan>
+<tspan x="14.0" dy="16.3">                          Plus a LINE DRAWING carrying the dimensions.</tspan>
+<tspan x="14.0" dy="16.3"> 2  Model code + name     As the H1.   "HR-78MA-S  ·  Reach-In Refrigerator, Two Section, Solid Door"</tspan>
+<tspan x="14.0" dy="16.3"> 3  At-a-glance block     capacity (litres AND cu ft) · temperature range degC · exterior W x D x H in MM</tspan>
+<tspan x="14.0" dy="16.3">                          · doors/sections · refrigerant · power.  Above the fold.</tspan>
+<tspan x="14.0" dy="16.3"> 4  Primary CTAs          [ Request a Quote ]   [ Download Spec Sheet ]   both above the fold.  No price.</tspan>
+<tspan x="14.0" dy="16.3"> 5  Cabinet construction  exterior/interior material and GRADE · insulation type and thickness · door type</tspan>
+<tspan x="14.0" dy="16.3">                          and reversibility · lock · shelves (count + finish) · castors · handle</tspan>
+<tspan x="14.0" dy="16.3"> 6  Refrigeration system  refrigerant + compliance · compressor type · defrost method · evaporator coating</tspan>
+<tspan x="14.0" dy="16.3">                          · controller · temperature uniformity</tspan>
+<tspan x="14.0" dy="16.3"> 7  Specification table   11 rows minimum, + 5 more for India         -&gt; panel, right</tspan>
+<tspan x="14.0" dy="16.3"> 8  Downloads block       9 files per model                           -&gt; panel, far right</tspan>
+<tspan x="14.0" dy="16.3"> 9  Warranty              Stated ON the page, not buried. True leads with "7-year parts, labour and</tspan>
+<tspan x="14.0" dy="16.3">                          compressor" as a headline FEATURE, because it closes deals.</tspan>
+<tspan x="14.0" dy="16.3">10  Accessories           shelves · castors · drawer kits · door locks</tspan>
+<tspan x="14.0" dy="16.3">11  Suitable for          industry tags, linking back to the Industries page</tspan>
+<tspan x="14.0" dy="16.3">12  Related models        3 cards — including the next size UP and the next size DOWN</tspan>
+<tspan x="14.0" dy="16.3">13  Enquiry form          inline at the bottom, model pre-filled.  Writes to §6 step 2.</tspan>
+</text>
+<rect x="1540.0" y="1641.0" width="1380.0" height="318.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1554.0" y="1670.6" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1554.0" dy="0.0">7 · The specification table</tspan>
+</text>
+<text x="1554.0" y="1694.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1554.0" dy="0.0">THE 11 ROWS BEVERAGE-AIR SHIPS   (CT2HC-1S, verbatim)</tspan>
+<tspan x="1554.0" dy="16.3">  model number · exterior dimensions W x D x H · interior</tspan>
+<tspan x="1554.0" dy="16.3">  dimensions · exterior construction · interior construction</tspan>
+<tspan x="1554.0" dy="16.3">  · doors · shelves · net capacity · hinge location ·</tspan>
+<tspan x="1554.0" dy="16.3">  compressor location · door type</tspan>
+<tspan x="1554.0" dy="16.3"> </tspan>
+<tspan x="1554.0" dy="16.3">ADD FIVE FOR INDIA</tspan>
+<tspan x="1554.0" dy="16.3">  voltage / frequency / phase    230 V 1-ph or 415 V 3-ph, 50 Hz</tspan>
+<tspan x="1554.0" dy="16.3">  power consumption              W</tspan>
+<tspan x="1554.0" dy="16.3">  ambient / climate class        rated for Indian summer</tspan>
+<tspan x="1554.0" dy="16.3">  net and gross weight           kg</tspan>
+<tspan x="1554.0" dy="16.3">  energy rating                  star label where applicable</tspan>
+<tspan x="1554.0" dy="16.3"> </tspan>
+<tspan x="1554.0" dy="16.3">UNITS: METRIC FIRST. Litres and mm primary, cu ft and inches</tspan>
+<tspan x="1554.0" dy="16.3">secondary. This is the single most common localisation failure</tspan>
+<tspan x="1554.0" dy="16.3">when copying the structure of a US site.</tspan>
+</text>
+<rect x="1540.0" y="1979.0" width="1380.0" height="269.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1554.0" y="2008.7" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1554.0" dy="0.0">8 · The downloads block</tspan>
+</text>
+<text x="1554.0" y="2032.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1554.0" dy="0.0">NINE FILES PER MODEL   (what Beverage-Air actually ships)</tspan>
+<tspan x="1554.0" dy="16.3">  spec sheet PDF           manual PDF            brochure PDF</tspan>
+<tspan x="1554.0" dy="16.3">  warranty statement PDF   product video         Revit / BIM</tspan>
+<tspan x="1554.0" dy="16.3">  AutoCAD front .dwg       AutoCAD plan          AutoCAD side</tspan>
+<tspan x="1554.0" dy="16.3"> </tspan>
+<tspan x="1554.0" dy="16.3">Four of the nine is already strong. Omitting the spec sheet is</tspan>
+<tspan x="1554.0" dy="16.3">the single most common reason a B2B refrigeration enquiry never</tspan>
+<tspan x="1554.0" dy="16.3">happens — the purchase manager cannot put a web page in a tender.</tspan>
+<tspan x="1554.0" dy="16.3"> </tspan>
+<tspan x="1554.0" dy="16.3">All nine live in Cloudflare R2 and the page links them directly.</tspan>
+<tspan x="1554.0" dy="16.3">R2 egress is free at any volume, so the heavy bytes never touch</tspan>
+<tspan x="1554.0" dy="16.3">the host's bandwidth quota.  Store per RANGE, not per SKU:</tspan>
+<tspan x="1554.0" dy="16.3">~80 PDFs, not 700.</tspan>
+</text>
+<text x="0.0" y="2330.1" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">4 · Pricing — deferred by decision, pre-cut by design</tspan>
+</text>
+<text x="0.0" y="2355.7" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">You asked for a price section. The honest position: 0 of the 5 audited sites publish a price, so v1 ships none. What follows is the seam, cut now, so that turning pricing on later costs a template change rather than a migration.</tspan>
+</text>
+<rect x="0.0" y="2382.5" width="715.0" height="316.2" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="14.0" y="2410.7" font-size="15.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Why v1 ships no price</tspan>
+</text>
+<text x="14.0" y="2433.9" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Western · True · Beverage-Air · Traulsen ·</tspan>
+<tspan x="14.0" dy="16.3">Blue Star</tspan>
+<tspan x="14.0" dy="16.3">   prices published:   0 of 5</tspan>
+<tspan x="14.0" dy="16.3"> </tspan>
+<tspan x="14.0" dy="16.3">Every path on all five ends in "request a</tspan>
+<tspan x="14.0" dy="16.3">quote" or "find a dealer".</tspan>
+<tspan x="14.0" dy="16.3"> </tspan>
+<tspan x="14.0" dy="16.3">A commercial cabinet price is a function of</tspan>
+<tspan x="14.0" dy="16.3">configuration, quantity, dealer margin, GST,</tspan>
+<tspan x="14.0" dy="16.3">freight and installation. Publishing one</tspan>
+<tspan x="14.0" dy="16.3">number invites a dispute you then defend on</tspan>
+<tspan x="14.0" dy="16.3">every single enquiry.</tspan>
+</text>
+<rect x="735.0" y="2382.5" width="715.0" height="316.2" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="749.0" y="2410.7" font-size="15.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">The three shapes it can take — decide BEFORE building</tspan>
+</text>
+<text x="749.0" y="2433.9" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">A  INDICATIVE    "from Rs 1,25,000 + GST" per model</tspan>
+<tspan x="749.0" dy="16.3">                 family. Cheapest to run, filters out</tspan>
+<tspan x="749.0" dy="16.3">                 tyre-kickers, costs negotiating room.</tspan>
+<tspan x="749.0" dy="16.3">B  LIST / MRP    full price + "GST extra, freight extra,</tspan>
+<tspan x="749.0" dy="16.3">                 installation quoted separately". Needs a</tspan>
+<tspan x="749.0" dy="16.3">                 real price-revision process behind it.</tspan>
+<tspan x="749.0" dy="16.3">C  DEALER-ONLY   visible after login, by dealer tier. Most</tspan>
+<tspan x="749.0" dy="16.3">                 flexible, most to build — needs the user</tspan>
+<tspan x="749.0" dy="16.3">                 accounts v1 deliberately does not have.</tspan>
+<tspan x="749.0" dy="16.3"> </tspan>
+<tspan x="749.0" dy="16.3">These are not the same schema. A is a string on a family,</tspan>
+<tspan x="749.0" dy="16.3">C is a join table and an auth boundary.</tspan>
+</text>
+<rect x="1470.0" y="2382.5" width="715.0" height="316.2" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1484.0" y="2410.7" font-size="15.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">The seam — cut it now, costs nothing</tspan>
+</text>
+<text x="1484.0" y="2433.9" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">ON model:</tspan>
+<tspan x="1484.0" dy="16.3">  price_minor        bigint  NULL    paise, never float</tspan>
+<tspan x="1484.0" dy="16.3">  currency           char(3) DEFAULT 'INR'</tspan>
+<tspan x="1484.0" dy="16.3">  price_visibility   enum('hidden','indicative','list',</tspan>
+<tspan x="1484.0" dy="16.3">                          'dealer')  DEFAULT 'hidden'</tspan>
+<tspan x="1484.0" dy="16.3">  price_valid_from   date    NULL</tspan>
+<tspan x="1484.0" dy="16.3">  tax_note           text    NULL    "GST extra"</tspan>
+<tspan x="1484.0" dy="16.3"> </tspan>
+<tspan x="1484.0" dy="16.3">ON the template:</tspan>
+<tspan x="1484.0" dy="16.3">  one &lt;PriceSlot/&gt; that renders NOTHING while visibility</tspan>
+<tspan x="1484.0" dy="16.3">  = 'hidden'. Ships in v1, renders in v2, no redeploy of</tspan>
+<tspan x="1484.0" dy="16.3">  the data model.</tspan>
+<tspan x="1484.0" dy="16.3"> </tspan>
+<tspan x="1484.0" dy="16.3">ON the enquiry:</tspan>
+<tspan x="1484.0" dy="16.3">  lead_item already carries model + quantity (§6 step 2).</tspan>
+<tspan x="1484.0" dy="16.3">  That IS the quote request. Nothing to add.</tspan>
+</text>
+<rect x="2205.0" y="2382.5" width="715.0" height="316.2" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="2219.0" y="2410.7" font-size="15.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">What NOT to build</tspan>
+</text>
+<text x="2219.0" y="2433.9" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">No cart. No checkout. No payment gateway.</tspan>
+<tspan x="2219.0" dy="16.3">No "build &amp; price" configurator — the current</tspan>
+<tspan x="2219.0" dy="16.3">index.html has that CTA and the report says cut</tspan>
+<tspan x="2219.0" dy="16.3">it, because 0 of 5 publish a price to configure</tspan>
+<tspan x="2219.0" dy="16.3">against.</tspan>
+<tspan x="2219.0" dy="16.3">No per-dealer discount engine in v1.</tspan>
+<tspan x="2219.0" dy="16.3"> </tspan>
+<tspan x="2219.0" dy="16.3">A price that is WRONG is worse than no price: it</tspan>
+<tspan x="2219.0" dy="16.3">is the one piece of content on a refrigeration</tspan>
+<tspan x="2219.0" dy="16.3">site that a customer will quote back at you, six</tspan>
+<tspan x="2219.0" dy="16.3">months later, in a negotiation.</tspan>
+</text>
+<text x="0.0" y="2780.7" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">5 · Faceted filter specification — one facet set, metric first</tspan>
+</text>
+<rect x="0.0" y="2813.4" width="1500.0" height="295.3" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="2843.1" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">The eleven facets</tspan>
+</text>
+<text x="14.0" y="2867.2" font-size="12.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">FACET                   VALUES</tspan>
+<tspan x="14.0" dy="17.0">------------------------------------------------------------------------------------</tspan>
+<tspan x="14.0" dy="17.0">Product type            Refrigerator · Freezer · Dual-temp · Convertible</tspan>
+<tspan x="14.0" dy="17.0">Configuration           Upright/reach-in · Undercounter · Worktop · Drawer ·</tspan>
+<tspan x="14.0" dy="17.0">                        Glass door · Display case · Chest · Walk-in</tspan>
+<tspan x="14.0" dy="17.0">Sections / doors        1 · 2 · 3 · 4+</tspan>
+<tspan x="14.0" dy="17.0">Door type               Solid stainless · Half door · Full glass · Sliding · Drawer</tspan>
+<tspan x="14.0" dy="17.0">Capacity                LITRES (range slider); cu ft shown secondary</tspan>
+<tspan x="14.0" dy="17.0">Temperature range       +2 to +8 degC · -18 to -22 degC · -40 degC · -60 degC · dual</tspan>
+<tspan x="14.0" dy="17.0">Exterior width          MM (range slider)</tspan>
+<tspan x="14.0" dy="17.0">Refrigerant             R290 · R600a · R134a · R404A</tspan>
+<tspan x="14.0" dy="17.0">Finish                  SS 304 · SS 430 · Powder-coated</tspan>
+<tspan x="14.0" dy="17.0">Power                   230 V single phase · 415 V three phase</tspan>
+<tspan x="14.0" dy="17.0">Industry                the six sections from the Industries page</tspan>
+</text>
+<rect x="1540.0" y="2813.4" width="1380.0" height="346.4" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1554.0" y="2843.1" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1554.0" dy="0.0">Why it is worth building, and how it stays free</tspan>
+</text>
+<text x="1554.0" y="2867.2" font-size="12.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1554.0" dy="0.0">True is the ONLY one of the five with real faceted search</tspan>
+<tspan x="1554.0" dy="17.0">(/advanced-search). At 300+ model codes this stops being a</tspan>
+<tspan x="1554.0" dy="17.0">nice-to-have: a flat list is unusable, and a category grid alone</tspan>
+<tspan x="1554.0" dy="17.0">cannot answer "two-door undercounter freezer under 900 mm wide".</tspan>
+<tspan x="1554.0" dy="17.0"> </tspan>
+<tspan x="1554.0" dy="17.0">FREE-TIER IMPLEMENTATION</tspan>
+<tspan x="1554.0" dy="17.0">  Facets are COLUMNS plus a GIN index, not a search service.</tspan>
+<tspan x="1554.0" dy="17.0">  tsvector + pg_trgm behind the text box.</tspan>
+<tspan x="1554.0" dy="17.0">  Filter state lives in the URL, so a filtered view is linkable,</tspan>
+<tspan x="1554.0" dy="17.0">  crawlable and CDN-cacheable.</tspan>
+<tspan x="1554.0" dy="17.0">  ISR-render only the ~40 most common facet combinations; the</tspan>
+<tspan x="1554.0" dy="17.0">  long tail resolves client-side against a ~60 KB static index.</tspan>
+<tspan x="1554.0" dy="17.0">  A visitor filtering the catalogue never wakes Postgres.</tspan>
+<tspan x="1554.0" dy="17.0"> </tspan>
+<tspan x="1554.0" dy="17.0">SWAP POINT   lib/search.ts -&gt; Typesense when facet COUNTS and</tspan>
+<tspan x="1554.0" dy="17.0">  typo tolerance are wanted. Same search(q, facets) signature,</tspan>
+<tspan x="1554.0" dy="17.0">  so no call site changes.  (Seam 10, §8.)</tspan>
+</text>
+<text x="0.0" y="3241.9" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">6 · The enquiry path — the only revenue-carrying write on the site</tspan>
+</text>
+<text x="0.0" y="3267.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Nine steps. The durability boundary is the database commit at step 2; everything after it is best-effort delivery on top of a row that is already safe.</tspan>
+</text>
+<rect x="0.0" y="3294.3" width="571.2" height="151.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="3321.6" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">1  Enquiry arrives</tspan>
+</text>
+<text x="14.0" y="3344.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">From a model page (model</tspan>
+<tspan x="14.0" dy="16.3">pre-filled), a category page,</tspan>
+<tspan x="14.0" dy="16.3">or the wa.me deep link.</tspan>
+<tspan x="14.0" dy="16.3">Turnstile + honeypot +</tspan>
+<tspan x="14.0" dy="16.3">per-IP Redis bucket.</tspan>
+<tspan x="14.0" dy="16.3">Idempotency-Key header.</tspan>
+</text>
+<rect x="587.2" y="3294.3" width="571.2" height="151.7" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="601.2" y="3321.6" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="601.2" dy="0.0">2  ONE Postgres txn</tspan>
+</text>
+<text x="601.2" y="3344.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="601.2" dy="0.0">INSERT lead</tspan>
+<tspan x="601.2" dy="16.3">+ INSERT lead_item[]</tspan>
+<tspan x="601.2" dy="16.3">  (model + quantity -- this</tspan>
+<tspan x="601.2" dy="16.3">  IS the quote request)</tspan>
+<tspan x="601.2" dy="16.3">+ INSERT outbox</tspan>
+<tspan x="601.2" dy="16.3">Commit. Now it is safe.</tspan>
+</text>
+<rect x="1174.4" y="3294.3" width="571.2" height="151.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1188.4" y="3321.6" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1188.4" dy="0.0">3  202 to browser</tspan>
+</text>
+<text x="1188.4" y="3344.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1188.4" dy="0.0">lead_ref returned in</tspan>
+<tspan x="1188.4" dy="16.3">&lt; 300 ms. No third party</tspan>
+<tspan x="1188.4" dy="16.3">was on this path.</tspan>
+</text>
+<rect x="1761.6" y="3294.3" width="571.2" height="151.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1775.6" y="3321.6" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1775.6" dy="0.0">4  Opportunistic push</tspan>
+</text>
+<text x="1775.6" y="3344.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1775.6" dy="0.0">fetch -&gt; QStash.</tspan>
+<tspan x="1775.6" dy="16.3">.catch(() =&gt; {}) --</tspan>
+<tspan x="1775.6" dy="16.3">failure is survivable.</tspan>
+</text>
+<rect x="2348.8" y="3294.3" width="571.2" height="151.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2362.8" y="3321.6" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2362.8" dy="0.0">5  QStash delivers</tspan>
+</text>
+<text x="2362.8" y="3344.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2362.8" dy="0.0">POST /api/jobs/lead-notify</tspan>
+<tspan x="2362.8" dy="16.3">Signature verified.</tspan>
+<tspan x="2362.8" dy="16.3">3 retries, then DLQ.</tspan>
+</text>
+<rect x="0.0" y="3461.9" width="571.2" height="185.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="3489.3" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">6  Fan-out, channel picked</tspan>
+<tspan x="14.0" dy="17.7">    by how they arrived</tspan>
+</text>
+<text x="14.0" y="3529.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Telegram to the sales desk,</tspan>
+<tspan x="14.0" dy="16.3">instant.</tspan>
+<tspan x="14.0" dy="16.3">Customer ack:</tspan>
+<tspan x="14.0" dy="16.3"> WhatsApp window open -&gt;</tspan>
+<tspan x="14.0" dy="16.3">   free Service message</tspan>
+<tspan x="14.0" dy="16.3"> form only -&gt; email after</tspan>
+<tspan x="14.0" dy="16.3">   10 min (the fallback)</tspan>
+</text>
+<rect x="587.2" y="3461.9" width="571.2" height="185.7" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="601.2" y="3489.3" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="601.2" dy="0.0">7  Backstop</tspan>
+</text>
+<text x="601.2" y="3512.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="601.2" dy="0.0">15-min sweeper. Checks a</tspan>
+<tspan x="601.2" dy="16.3">Redis flag first, so it only</tspan>
+<tspan x="601.2" dy="16.3">wakes Postgres if there</tspan>
+<tspan x="601.2" dy="16.3">is real work to do.</tspan>
+</text>
+<rect x="1174.4" y="3461.9" width="571.2" height="185.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1188.4" y="3489.3" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1188.4" dy="0.0">8  Probe</tspan>
+</text>
+<text x="1188.4" y="3512.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1188.4" dy="0.0">GitHub Actions posts a</tspan>
+<tspan x="1188.4" dy="16.3">synthetic lead every 15 min</tspan>
+<tspan x="1188.4" dy="16.3">and asserts it lands.</tspan>
+</text>
+<rect x="1761.6" y="3461.9" width="571.2" height="185.7" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1775.6" y="3489.3" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1775.6" dy="0.0">9  Alarm</tspan>
+</text>
+<text x="1775.6" y="3512.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1775.6" dy="0.0">Zero leads in a business</tspan>
+<tspan x="1775.6" dy="16.3">hour, or DLQ depth &gt; 0,</tspan>
+<tspan x="1775.6" dy="16.3">-&gt; Telegram page.</tspan>
+</text>
+<rect x="0.0" y="3667.6" width="2920.0" height="92.4" rx="12" fill="#fffbea" stroke="#b08900" stroke-width="2.0"/>
+<text x="14.0" y="3696.3" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Why the free tier costs you latency, not safety</tspan>
+</text>
+<text x="14.0" y="3721.1" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">The commit at step 2 is the durability boundary, exactly as in HLD.md. Steps 4-6 are best-effort delivery on top of a row that is already committed. QStash can be down, over quota or slow: the lead is not lost, it is late, and step 7 collects it. What the free tier costs is the worst-case notification latency — seconds becomes at most 15 minutes. What it does not cost is a dropped enquiry, and one lost</tspan>
+<tspan x="14.0" dy="18.5">RFQ is worth more than a year of hosting.</tspan>
+</text>
+<text x="0.0" y="3842.2" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">7 · What it costs to serve all of that — the $0 topology</tspan>
+</text>
+<text x="0.0" y="3867.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">The feature set above maps onto four render modes and three stores. Quotas on every box, verified from each provider's own pricing page on 2026-10-07. Ledger down the right.</tspan>
+</text>
+<rect x="0.0" y="3894.5" width="2400.0" height="162.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="3928.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#f08c00" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(1) EDGE</tspan>
+<tspan x="18.0" dy="18.8">two CDNs, both</tspan>
+<tspan x="18.0" dy="18.8">free, each doing</tspan>
+<tspan x="18.0" dy="18.8">what it is best at</tspan>
+</text>
+<rect x="210.0" y="3916.5" width="1085.0" height="118.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="752.5" y="3951.6" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="752.5" dy="0.0">kalt.example  -&gt;  Vercel edge CDN</tspan>
+</text>
+<text x="752.5" y="3974.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="752.5" dy="0.0">HTML only, ~15-40 KB/page. At 300k pageviews that is ~12 GB/mo,</tspan>
+<tspan x="752.5" dy="16.3">a fraction of the Hobby allotment. Static + ISR output served</tspan>
+<tspan x="752.5" dy="16.3">from the PoP with no origin hop.</tspan>
+</text>
+<rect x="1315.0" y="3916.5" width="1085.0" height="118.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1857.5" y="3951.6" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1857.5" dy="0.0">cdn.kalt.example  -&gt;  Cloudflare R2 + CDN</tspan>
+</text>
+<text x="1857.5" y="3974.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1857.5" dy="0.0">ALL product photos, spec sheets, manuals, CAD files, CVs.</tspan>
+<tspan x="1857.5" dy="16.3">R2 free: 10 GB-month, and -- the reason this works -- EGRESS IS</tspan>
+<tspan x="1857.5" dy="16.3">FREE at any volume. The nine files per model never touch Vercel.</tspan>
+</text>
+<rect x="0.0" y="4112.5" width="2400.0" height="212.6" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="4146.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#099268" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(2) RENDER</tspan>
+<tspan x="18.0" dy="18.8">which page is</tspan>
+<tspan x="18.0" dy="18.8">served how</tspan>
+</text>
+<rect x="210.0" y="4134.5" width="532.5" height="168.6" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="476.2" y="4178.6" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">SSG at build</tspan>
+</text>
+<text x="476.2" y="4201.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">Home · Industries · About ·</tspan>
+<tspan x="476.2" dy="16.3">Service &amp; Support · Privacy ·</tspan>
+<tspan x="476.2" dy="16.3">Terms.  Six of the nine</tspan>
+<tspan x="476.2" dy="16.3">pages are pure static.</tspan>
+<tspan x="476.2" dy="16.3">$0, 0 ms origin.</tspan>
+</text>
+<rect x="762.5" y="4134.5" width="532.5" height="168.6" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1028.8" y="4162.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">ISR -- on-demand ONLY</tspan>
+</text>
+<text x="1028.8" y="4185.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">Products hub · 6 category</tspan>
+<tspan x="1028.8" dy="16.3">pages · N model pages ·</tspan>
+<tspan x="1028.8" dy="16.3">Downloads.</tspan>
+<tspan x="1028.8" dy="16.3">revalidate = false; freshness</tspan>
+<tspan x="1028.8" dy="16.3">via revalidateTag() from the</tspan>
+<tspan x="1028.8" dy="16.3">publish event. Time-based ISR</tspan>
+<tspan x="1028.8" dy="16.3">is a hidden DB poll.</tspan>
+</text>
+<rect x="1315.0" y="4134.5" width="532.5" height="168.6" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="1581.2" y="4186.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">SSR  /admin</tspan>
+</text>
+<text x="1581.2" y="4209.8" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">Auth.js magic link, server</tspan>
+<tspan x="1581.2" dy="16.3">actions, 3 staff users.</tspan>
+<tspan x="1581.2" dy="16.3">The only routinely dynamic</tspan>
+<tspan x="1581.2" dy="16.3">surface on the whole site.</tspan>
+</text>
+<rect x="1867.5" y="4134.5" width="532.5" height="168.6" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="2133.8" y="4178.6" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">Route handlers</tspan>
+</text>
+<text x="2133.8" y="4201.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">/api/leads        the hot write</tspan>
+<tspan x="2133.8" dy="16.3">/api/jobs/[task]  QStash target</tspan>
+<tspan x="2133.8" dy="16.3">/api/cron/[job]   cron target</tspan>
+<tspan x="2133.8" dy="16.3">/api/revalidate   publish hook</tspan>
+<tspan x="2133.8" dy="16.3">All &lt;= 60 s (Hobby cap).</tspan>
+</text>
+<rect x="0.0" y="4381.1" width="2400.0" height="255.3" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="4414.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#c2255c" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(3) MODULES</tspan>
+<tspan x="18.0" dy="18.8"> </tspan>
+<tspan x="18.0" dy="18.8">one folder = one</tspan>
+<tspan x="18.0" dy="18.8">future service.</tspan>
+<tspan x="18.0" dy="18.8">One ESLint rule</tspan>
+<tspan x="18.0" dy="18.8">holds the boundary.</tspan>
+</text>
+<rect x="210.0" y="4403.1" width="532.5" height="103.3" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="476.2" y="4439.0" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">catalog</tspan>
+</text>
+<text x="476.2" y="4462.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">categories, models, specs,</tspan>
+<tspan x="476.2" dy="16.3">facet columns, price_* (NULL)</tspan>
+</text>
+<rect x="762.5" y="4403.1" width="532.5" height="103.3" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1028.8" y="4439.0" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">content</tspan>
+</text>
+<text x="1028.8" y="4462.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">pages, industries, news.</tspan>
+<tspan x="1028.8" dy="16.3">Marketing copy in MDX.</tspan>
+</text>
+<rect x="1315.0" y="4403.1" width="532.5" height="103.3" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1581.2" y="4430.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">leads</tspan>
+</text>
+<text x="1581.2" y="4454.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">form, outbox, dedupe,</tspan>
+<tspan x="1581.2" dy="16.3">Telegram + ack. The one</tspan>
+<tspan x="1581.2" dy="16.3">revenue write path.</tspan>
+</text>
+<rect x="1867.5" y="4403.1" width="532.5" height="103.3" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="2133.8" y="4439.0" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">documents</tspan>
+</text>
+<text x="2133.8" y="4462.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">spec sheets, manuals, CAD.</tspan>
+<tspan x="2133.8" dy="16.3">Per RANGE, not per SKU.</tspan>
+</text>
+<rect x="210.0" y="4526.4" width="532.5" height="88.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="476.2" y="4554.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">media</tspan>
+</text>
+<text x="476.2" y="4577.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">upload, AVIF derive,</tspan>
+<tspan x="476.2" dy="16.3">budget enforcement</tspan>
+</text>
+<rect x="762.5" y="4526.4" width="532.5" height="88.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1028.8" y="4554.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">search</tspan>
+</text>
+<text x="1028.8" y="4577.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">tsvector + pg_trgm + facet</tspan>
+<tspan x="1028.8" dy="16.3">columns. Swap -&gt; Typesense</tspan>
+</text>
+<rect x="1315.0" y="4526.4" width="532.5" height="88.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1581.2" y="4554.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">notify</tspan>
+</text>
+<text x="1581.2" y="4577.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">WhatsApp + Telegram,</tspan>
+<tspan x="1581.2" dy="16.3">Resend as fallback.</tspan>
+</text>
+<rect x="1867.5" y="4526.4" width="532.5" height="88.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="2133.8" y="4554.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">outbox</tspan>
+</text>
+<text x="2133.8" y="4577.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">publish() + sweeper().</tspan>
+<tspan x="2133.8" dy="16.3">The durability boundary.</tspan>
+</text>
+<rect x="0.0" y="4692.4" width="2400.0" height="294.3" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="4726.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#2f9e44" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(4) DATA</tspan>
+</text>
+<rect x="210.0" y="4714.4" width="716.7" height="250.3" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="568.3" y="4766.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="568.3" dy="0.0">Neon PostgreSQL  (free)</tspan>
+</text>
+<text x="568.3" y="4789.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="568.3" dy="0.0">1 GB storage  ·  100 CU-HOURS/month  ·  scale-to-zero after 5 min,</tspan>
+<tspan x="568.3" dy="16.3">CANNOT be disabled  ·  10 branches  ·  6 h history  ·  NO backups</tspan>
+<tspan x="568.3" dy="16.3"> </tspan>
+<tspan x="568.3" dy="16.3">THE BINDING LIMIT IS COMPUTE, NOT STORAGE:</tspan>
+<tspan x="568.3" dy="16.3">100 CU-h / 0.25 CU = 400 h active per month out of 720.</tspan>
+<tspan x="568.3" dy="16.3">Any poll tighter than ~15 min keeps it awake 24/7 = 1.8x over.</tspan>
+<tspan x="568.3" dy="16.3">=&gt; on-demand ISR only, a Redis-gated sweeper, and a filter UI</tspan>
+<tspan x="568.3" dy="16.3">   that resolves client-side. The DB sleeps between writes.</tspan>
+<tspan x="568.3" dy="16.3">Projected: 61 of 100 CU-hours.</tspan>
+</text>
+<rect x="946.7" y="4714.4" width="716.7" height="250.3" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1305.0" y="4742.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1305.0" dy="0.0">Cloudflare R2  (free)</tspan>
+</text>
+<text x="1305.0" y="4765.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1305.0" dy="0.0">10 GB-month, egress free.</tspan>
+<tspan x="1305.0" dy="16.3"> </tspan>
+<tspan x="1305.0" dy="16.3">products/  1.7 GB  (5 AVIF widths,</tspan>
+<tspan x="1305.0" dy="16.3">   2400px master IS the original)</tspan>
+<tspan x="1305.0" dy="16.3">docs/      2.5 GB  (spec sheets,</tspan>
+<tspan x="1305.0" dy="16.3">   manuals, CAD -- per RANGE,</tspan>
+<tspan x="1305.0" dy="16.3">   ~80 PDFs not 700)</tspan>
+<tspan x="1305.0" dy="16.3">cv/        1.2 GB  (12-mo lifecycle</tspan>
+<tspan x="1305.0" dy="16.3">   delete = DPDP retention)</tspan>
+<tspan x="1305.0" dy="16.3">backups/   1.0 GB  (30 nightly dumps)</tspan>
+<tspan x="1305.0" dy="16.3">archive/   0.2 GB</tspan>
+<tspan x="1305.0" dy="16.3">headroom   3.4 GB</tspan>
+</text>
+<rect x="1683.3" y="4714.4" width="716.7" height="250.3" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2041.7" y="4742.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2041.7" dy="0.0">Upstash Redis  (free)</tspan>
+</text>
+<text x="2041.7" y="4765.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2041.7" dy="0.0">500K commands/month, 256 MB.</tspan>
+<tspan x="2041.7" dy="16.3"> </tspan>
+<tspan x="2041.7" dy="16.3">THE RULE: a page view never touches</tspan>
+<tspan x="2041.7" dy="16.3">Redis and never touches Postgres.</tspan>
+<tspan x="2041.7" dy="16.3"> </tspan>
+<tspan x="2041.7" dy="16.3">Writes only:</tspan>
+<tspan x="2041.7" dy="16.3"> · rate-limit buckets      36k/mo</tspan>
+<tspan x="2041.7" dy="16.3"> · idempotency keys         5k/mo</tspan>
+<tspan x="2041.7" dy="16.3"> · outbox work-pending flag 3k/mo</tspan>
+<tspan x="2041.7" dy="16.3"> · WhatsApp + Resend quota</tspan>
+<tspan x="2041.7" dy="16.3">   counters                 5k/mo</tspan>
+<tspan x="2041.7" dy="16.3">   = 49k of 500k  (10%)</tspan>
+</text>
+<rect x="0.0" y="5042.6" width="2400.0" height="343.2" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="5076.4" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#e03131" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(5) ASYNC &amp;</tspan>
+<tspan x="18.0" dy="18.8">     EXTERNAL</tspan>
+</text>
+<rect x="210.0" y="5064.6" width="532.5" height="147.4" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="476.2" y="5107.6" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">QStash  (free)</tspan>
+</text>
+<text x="476.2" y="5130.1" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">1,000 messages/DAY.</tspan>
+<tspan x="476.2" dy="15.6">Retries + DLQ built in.</tspan>
+<tspan x="476.2" dy="15.6">Every attempt counts.</tspan>
+<tspan x="476.2" dy="15.6">Projected 301/day (30%).</tspan>
+</text>
+<rect x="762.5" y="5064.6" width="532.5" height="147.4" rx="12" fill="#fff5f5" stroke="#e03131" stroke-width="2.0"/>
+<text x="1028.8" y="5099.8" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">Schedulers x3</tspan>
+</text>
+<text x="1028.8" y="5122.2" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">QStash    15 min sweeper</tspan>
+<tspan x="1028.8" dy="15.6">GH Actions 15 min probe</tspan>
+<tspan x="1028.8" dy="15.6">Vercel     03:00 backup</tspan>
+<tspan x="1028.8" dy="15.6">           04:00 sitemap</tspan>
+<tspan x="1028.8" dy="15.6">(Hobby cron = DAILY only)</tspan>
+</text>
+<rect x="1315.0" y="5064.6" width="532.5" height="147.4" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1581.2" y="5092.0" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">WhatsApp Cloud API</tspan>
+</text>
+<text x="1581.2" y="5114.4" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">1,000 SERVICE msgs/month</tspan>
+<tspan x="1581.2" dy="15.6">FREE per business number.</tspan>
+<tspan x="1581.2" dy="15.6">Free-form only inside a</tspan>
+<tspan x="1581.2" dy="15.6">24-h window THE CUSTOMER</tspan>
+<tspan x="1581.2" dy="15.6">opened -- so wa.me becomes</tspan>
+<tspan x="1581.2" dy="15.6">a PRIMARY enquiry path.</tspan>
+</text>
+<rect x="1867.5" y="5064.6" width="532.5" height="147.4" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2133.8" y="5115.4" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">Telegram hook</tspan>
+</text>
+<text x="2133.8" y="5137.9" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">Instant sales alert.</tspan>
+<tspan x="2133.8" dy="15.6">Free, unlimited. Replaces</tspan>
+<tspan x="2133.8" dy="15.6">80 notification emails/day.</tspan>
+</text>
+<rect x="210.0" y="5232.0" width="532.5" height="131.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="476.2" y="5259.4" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">Resend  (fallback)</tspan>
+</text>
+<text x="476.2" y="5281.8" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="476.2" dy="0.0">3,000/mo but 100/DAY.</tspan>
+<tspan x="476.2" dy="15.6">~22/day once acks move to</tspan>
+<tspan x="476.2" dy="15.6">WhatsApp: form-only</tspan>
+<tspan x="476.2" dy="15.6">fallback, digest, magic</tspan>
+<tspan x="476.2" dy="15.6">links.</tspan>
+</text>
+<rect x="762.5" y="5232.0" width="532.5" height="131.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1028.8" y="5282.8" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">Turnstile</tspan>
+</text>
+<text x="1028.8" y="5305.3" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1028.8" dy="0.0">Bot defence on both forms.</tspan>
+<tspan x="1028.8" dy="15.6">Free, unlimited.</tspan>
+</text>
+<rect x="1315.0" y="5232.0" width="532.5" height="131.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1581.2" y="5290.6" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">CF Analytics + GA4</tspan>
+</text>
+<text x="1581.2" y="5313.1" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1581.2" dy="0.0">Cookieless, unlimited.</tspan>
+</text>
+<rect x="1867.5" y="5232.0" width="532.5" height="131.8" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="2133.8" y="5275.0" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">Sentry</tspan>
+</text>
+<text x="2133.8" y="5297.5" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2133.8" dy="0.0">5,000 errors/month.</tspan>
+<tspan x="2133.8" dy="15.6">Vercel keeps logs 1 h --</tspan>
+<tspan x="2133.8" dy="15.6">this is the real log store.</tspan>
+</text>
+<rect x="2460.0" y="3894.5" width="460.0" height="1491.4" rx="14" fill="#f8f9fa" stroke="#495057" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="2480.0" y="3928.1" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2480.0" dy="0.0">FREE-TIER LEDGER</tspan>
+</text>
+<text x="2480.0" y="3947.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="2480.0" dy="0.0">Verified from each provider's own pricing page, 2026-10-07.</tspan>
+<tspan x="2480.0" dy="15.0">Re-verify before launch; these move. Adding the full nine-file</tspan>
+<tspan x="2480.0" dy="15.0">download set per model is the only feature above that moves a gauge</tspan>
+<tspan x="2480.0" dy="15.0">— it lands in R2, which is why R2 is the tightest number here.</tspan>
+</text>
+<rect x="2480.0" y="4010.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4036.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Cloudflare R2  storage</tspan>
+</text>
+<text x="2494.0" y="4060.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">6.6 / 10 GB</tspan>
+</text>
+<rect x="2494.0" y="4072.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4072.9" width="258.7" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4103.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">66%  ·  spec sheets + CAD + 5 AVIF widths per model</tspan>
+</text>
+<rect x="2480.0" y="4134.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4160.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Neon  CU-hours/month</tspan>
+</text>
+<text x="2494.0" y="4184.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">61 / 100 </tspan>
+</text>
+<rect x="2494.0" y="4196.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4196.9" width="239.1" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4227.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">61%  ·  the binding constraint; can spike</tspan>
+</text>
+<rect x="2480.0" y="4258.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4284.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">WhatsApp  service msgs/mo</tspan>
+</text>
+<text x="2494.0" y="4308.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">480 / 1000 </tspan>
+</text>
+<rect x="2494.0" y="4320.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4320.9" width="188.2" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4351.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">48%  ·  overflow is metered, not a cliff</tspan>
+</text>
+<rect x="2480.0" y="4382.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4408.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">QStash  messages/day</tspan>
+</text>
+<text x="2494.0" y="4432.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">301 / 1000 </tspan>
+</text>
+<rect x="2494.0" y="4444.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4444.9" width="117.6" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4475.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">30%  ·  retries count as messages</tspan>
+</text>
+<rect x="2480.0" y="4506.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4532.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Neon  storage</tspan>
+</text>
+<text x="2494.0" y="4556.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">291 / 1024 MB</tspan>
+</text>
+<rect x="2494.0" y="4568.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4568.9" width="109.8" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4599.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">28%  ·  at 12 months, with pruning</tspan>
+</text>
+<rect x="2480.0" y="4630.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4656.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Resend  emails/day</tspan>
+</text>
+<text x="2494.0" y="4680.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">22 / 100 </tspan>
+</text>
+<rect x="2494.0" y="4692.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4692.9" width="86.2" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4723.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">22%  ·  was 86 -- acks moved to WhatsApp</tspan>
+</text>
+<rect x="2480.0" y="4754.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4780.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Upstash  commands/month</tspan>
+</text>
+<text x="2494.0" y="4804.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">49k / 500k </tspan>
+</text>
+<rect x="2494.0" y="4816.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4816.9" width="39.2" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4847.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">10%  ·  writes only, never a page view</tspan>
+</text>
+<rect x="2480.0" y="4878.9" width="420.0" height="112.0" rx="10" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2494.0" y="4904.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Vercel  bandwidth/month</tspan>
+</text>
+<text x="2494.0" y="4928.6" font-size="16.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">~12 / 100 GB</tspan>
+</text>
+<rect x="2494.0" y="4940.9" width="392.0" height="12.0" rx="6" fill="#ffffff" stroke="#adb5bd" stroke-width="1.5"/>
+<rect x="2494.0" y="4940.9" width="47.0" height="12.0" rx="6" fill="#2b8a3e" stroke="#2b8a3e" stroke-width="1.5"/>
+<text x="2494.0" y="4971.5" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">12%  ·  HTML only; all media is on R2</tspan>
+</text>
+<text x="0.0" y="5467.9" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">8 · Scaling seams — what is free now, and the exact thing that changes later</tspan>
+</text>
+<text x="0.0" y="5493.5" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Every card is an environment variable or a single adapter file. Not one requires touching app/ or modules/. Seam 16 is the pricing seam from §4.</tspan>
+</text>
+<rect x="0.0" y="5520.2" width="715.0" height="152.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="14.0" y="5549.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">1 · Host</tspan>
+</text>
+<text x="14.0" y="5572.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">NOW    Vercel Hobby</tspan>
+<tspan x="14.0" dy="16.3">BREAKS commercial-use policy, day one</tspan>
+<tspan x="14.0" dy="16.3">THEN   Vercel Pro $20/mo  OR  CF Workers $0</tspan>
+<tspan x="14.0" dy="16.3">CHANGE nothing  /  add @opennextjs/cloudflare</tspan>
+</text>
+<rect x="735.0" y="5520.2" width="715.0" height="152.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="749.0" y="5549.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">2 · Media &amp; document storage</tspan>
+</text>
+<text x="749.0" y="5572.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">NOW    R2 free, 10 GB, egress free</tspan>
+<tspan x="749.0" dy="16.3">BREAKS &gt; 8.5 GB -- the nine-file download set</tspan>
+<tspan x="749.0" dy="16.3">       per model is what fills this</tspan>
+<tspan x="749.0" dy="16.3">THEN   R2 paid, $0.015/GB-month</tspan>
+<tspan x="749.0" dy="16.3">CHANGE nothing. Same bucket, a card on file.</tspan>
+</text>
+<rect x="1470.0" y="5520.2" width="715.0" height="152.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1484.0" y="5549.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">3 · Image transforms</tspan>
+</text>
+<text x="1484.0" y="5572.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">NOW    pre-generated AVIF variants in R2</tspan>
+<tspan x="1484.0" dy="16.3">BREAKS need per-request crops / art direction</tspan>
+<tspan x="1484.0" dy="16.3">THEN   Cloudflare Images or Vercel Optimizer</tspan>
+<tspan x="1484.0" dy="16.3">CHANGE lib/image-loader.ts -- 4 lines</tspan>
+</text>
+<rect x="2205.0" y="5520.2" width="715.0" height="152.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2219.0" y="5549.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">4 · Database</tspan>
+</text>
+<text x="2219.0" y="5572.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">NOW    Neon Free, 1 GB / 100 CU-hours</tspan>
+<tspan x="2219.0" dy="16.3">BREAKS &gt; 80 CU-hours, or &gt; 800 MB</tspan>
+<tspan x="2219.0" dy="16.3">THEN   Neon Launch/Scale, or RDS</tspan>
+<tspan x="2219.0" dy="16.3">CHANGE DATABASE_URL</tspan>
+</text>
+<rect x="0.0" y="5690.2" width="715.0" height="152.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="14.0" y="5719.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">5 · Read scaling</tspan>
+</text>
+<text x="14.0" y="5742.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">NOW    none -- the CDN is the read replica</tspan>
+<tspan x="14.0" dy="16.3">BREAKS p95 DB CPU &gt; 60%</tspan>
+<tspan x="14.0" dy="16.3">THEN   Neon read replica</tspan>
+<tspan x="14.0" dy="16.3">CHANGE DATABASE_URL_RO + lib/db.ts</tspan>
+</text>
+<rect x="735.0" y="5690.2" width="715.0" height="152.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="749.0" y="5719.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">6 · Queue</tspan>
+</text>
+<text x="749.0" y="5742.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">NOW    QStash free, 1,000 msgs/day</tspan>
+<tspan x="749.0" dy="16.3">BREAKS &gt; 700/day sustained</tspan>
+<tspan x="749.0" dy="16.3">THEN   QStash PAYG $1/100k, Inngest, SQS</tspan>
+<tspan x="749.0" dy="16.3">CHANGE lib/queue.ts -- one publish()</tspan>
+</text>
+<rect x="1470.0" y="5690.2" width="715.0" height="152.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1484.0" y="5719.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">7 · Scheduler</tspan>
+</text>
+<text x="1484.0" y="5742.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">NOW    QStash schedules + GitHub Actions</tspan>
+<tspan x="1484.0" dy="16.3">       + daily Vercel Cron</tspan>
+<tspan x="1484.0" dy="16.3">BREAKS need sub-minute precision</tspan>
+<tspan x="1484.0" dy="16.3">THEN   Vercel Pro cron (per-minute)</tspan>
+<tspan x="1484.0" dy="16.3">CHANGE vercel.json cron expressions</tspan>
+</text>
+<rect x="2205.0" y="5690.2" width="715.0" height="152.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="2219.0" y="5719.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">8 · Workers</tspan>
+</text>
+<text x="2219.0" y="5742.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">NOW    route handlers, &lt;= 60 s</tspan>
+<tspan x="2219.0" dy="16.3">BREAKS a job &gt; 60 s -- bulk SKU import or a</tspan>
+<tspan x="2219.0" dy="16.3">       large catalogue PDF render</tspan>
+<tspan x="2219.0" dy="16.3">THEN   CF Queues consumer, Railway worker</tspan>
+<tspan x="2219.0" dy="16.3">CHANGE the job body moves; modules/ untouched</tspan>
+</text>
+<rect x="0.0" y="5860.2" width="715.0" height="169.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="14.0" y="5889.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">9 · Cache</tspan>
+</text>
+<text x="14.0" y="5912.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">NOW    ISR + Data Cache; Redis for writes only</tspan>
+<tspan x="14.0" dy="16.3">BREAKS &gt; 350k Redis commands/month</tspan>
+<tspan x="14.0" dy="16.3">THEN   Upstash PAYG, $0.20/100k</tspan>
+<tspan x="14.0" dy="16.3">CHANGE nothing -- billing only</tspan>
+</text>
+<rect x="735.0" y="5860.2" width="715.0" height="169.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="749.0" y="5889.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">10 · Search &amp; facets</tspan>
+</text>
+<text x="749.0" y="5912.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">NOW    tsvector + pg_trgm + facet columns</tspan>
+<tspan x="749.0" dy="16.3">BREAKS need facet COUNTS, typo tolerance, or</tspan>
+<tspan x="749.0" dy="16.3">       full-text search inside the spec PDFs</tspan>
+<tspan x="749.0" dy="16.3">THEN   Typesense Cloud / OpenSearch</tspan>
+<tspan x="749.0" dy="16.3">CHANGE lib/search.ts -- same search(q, facets)</tspan>
+</text>
+<rect x="1470.0" y="5860.2" width="715.0" height="169.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1484.0" y="5889.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">11 · Notifications</tspan>
+</text>
+<text x="1484.0" y="5912.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">NOW    WhatsApp 1,000 free service msgs/mo</tspan>
+<tspan x="1484.0" dy="16.3">       + Telegram + Resend fallback</tspan>
+<tspan x="1484.0" dy="16.3">BREAKS &gt; 1,000 WhatsApp service msgs/month</tspan>
+<tspan x="1484.0" dy="16.3">THEN   Meta per-message India rate -- metered,</tspan>
+<tspan x="1484.0" dy="16.3">       not a cliff</tspan>
+<tspan x="1484.0" dy="16.3">CHANGE nothing. lib/notify.ts already picks</tspan>
+<tspan x="1484.0" dy="16.3">       the channel per lead.</tspan>
+</text>
+<rect x="2205.0" y="5860.2" width="715.0" height="169.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2219.0" y="5889.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">12 · Analytics</tspan>
+</text>
+<text x="2219.0" y="5912.3" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">NOW    Cloudflare Web Analytics + GA4</tspan>
+<tspan x="2219.0" dy="16.3">BREAKS need funnel attribution on enquiries</tspan>
+<tspan x="2219.0" dy="16.3">THEN   PostHog or ClickHouse</tspan>
+<tspan x="2219.0" dy="16.3">CHANGE lib/analytics.ts</tspan>
+</text>
+<rect x="0.0" y="6048.1" width="715.0" height="169.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="14.0" y="6076.8" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">13 · Error tracking</tspan>
+</text>
+<text x="14.0" y="6100.2" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">NOW    Sentry free, 5k errors/month</tspan>
+<tspan x="14.0" dy="16.3">BREAKS &gt; 5k errors/month</tspan>
+<tspan x="14.0" dy="16.3">THEN   Sentry Team</tspan>
+<tspan x="14.0" dy="16.3">CHANGE billing only</tspan>
+</text>
+<rect x="735.0" y="6048.1" width="715.0" height="169.8" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="749.0" y="6076.8" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">14 · Logs</tspan>
+</text>
+<text x="749.0" y="6100.2" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="749.0" dy="0.0">NOW    Vercel Hobby keeps logs ONE HOUR</tspan>
+<tspan x="749.0" dy="16.3">BREAKS any incident older than an hour --</tspan>
+<tspan x="749.0" dy="16.3">       the sharpest everyday pain</tspan>
+<tspan x="749.0" dy="16.3">THEN   Vercel Pro (1 day) or Axiom free (500 MB)</tspan>
+<tspan x="749.0" dy="16.3">CHANGE lib/logger.ts transport</tspan>
+</text>
+<rect x="1470.0" y="6048.1" width="715.0" height="169.8" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1484.0" y="6076.8" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">15 · Backups</tspan>
+</text>
+<text x="1484.0" y="6100.2" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">NOW    nightly pg_dump -&gt; R2 (Neon Free has NO</tspan>
+<tspan x="1484.0" dy="16.3">       scheduled backups, 6 h history)</tspan>
+<tspan x="1484.0" dy="16.3">BREAKS RPO of 24 h unacceptable</tspan>
+<tspan x="1484.0" dy="16.3">THEN   Neon paid: PITR to the second</tspan>
+<tspan x="1484.0" dy="16.3">CHANGE delete the cron job</tspan>
+</text>
+<rect x="2205.0" y="6048.1" width="715.0" height="169.8" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="2219.0" y="6076.8" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">16 · PRICING          &lt;- the new seam</tspan>
+</text>
+<text x="2219.0" y="6100.2" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2219.0" dy="0.0">NOW    price_* columns exist and are NULL;</tspan>
+<tspan x="2219.0" dy="16.3">       &lt;PriceSlot/&gt; renders nothing</tspan>
+<tspan x="2219.0" dy="16.3">BREAKS the day the business decides to publish</tspan>
+<tspan x="2219.0" dy="16.3">THEN   indicative / list / dealer-only (§4)</tspan>
+<tspan x="2219.0" dy="16.3">CHANGE set price_visibility + fill the columns.</tspan>
+<tspan x="2219.0" dy="16.3">       Dealer-only ALSO needs accounts + an auth</tspan>
+<tspan x="2219.0" dy="16.3">       boundary -- that one is not a one-liner.</tspan>
+</text>
+<text x="0.0" y="6300.0" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">9 · Phase 2, and what is deliberately not built</tspan>
+</text>
+<rect x="0.0" y="6332.7" width="1430.0" height="518.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="6363.3" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Phase 2 — five more pages</tspan>
+</text>
+<text x="14.0" y="6387.7" font-size="12.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">ADD WHEN THE CONTENT EXISTS, NOT BEFORE</tspan>
+<tspan x="14.0" dy="17.0">---------------------------------------------------------------------</tspan>
+<tspan x="14.0" dy="17.0">10  Dealer / network locator          4/5 of the sites have one, and</tspan>
+<tspan x="14.0" dy="17.0">    in India the dealer IS the buying channel. Blocked only on having</tspan>
+<tspan x="14.0" dy="17.0">    dealers to list. Promote it to v1 the day the list exists -- an</tspan>
+<tspan x="14.0" dy="17.0">    empty map is worse than no map.</tspan>
+<tspan x="14.0" dy="17.0"> </tspan>
+<tspan x="14.0" dy="17.0">11  Why Us / Technology               Traulsen runs five such pages</tspan>
+<tspan x="14.0" dy="17.0">    (temperature-airflow, smart-control, stayclear-condenser-coil,</tspan>
+<tspan x="14.0" dy="17.0">    ez-clean-gasket, ezclean-trayracks). Only worth building when the</tspan>
+<tspan x="14.0" dy="17.0">    claims are real and the test data exists. Invented</tspan>
+<tspan x="14.0" dy="17.0">    differentiators are worse than none.</tspan>
+<tspan x="14.0" dy="17.0"> </tspan>
+<tspan x="14.0" dy="17.0">12  Installations / case studies      HIGH VALUE, 1/5 convergence --</tspan>
+<tspan x="14.0" dy="17.0">    only Blue Star has it, which is the opportunity rather than a</tspan>
+<tspan x="14.0" dy="17.0">    reason to skip. A bakery owner seeing three bakeries you have</tspan>
+<tspan x="14.0" dy="17.0">    fitted out beats any amount of copy.</tspan>
+<tspan x="14.0" dy="17.0">    START PHOTOGRAPHING INSTALLATIONS NOW, before the page exists.</tspan>
+<tspan x="14.0" dy="17.0"> </tspan>
+<tspan x="14.0" dy="17.0">13  News &amp; Insights                   Conditional on publishing</tspan>
+<tspan x="14.0" dy="17.0">    monthly for a year. Western's blog is the model: every post is a</tspan>
+<tspan x="14.0" dy="17.0">    product page in disguise, tagged to the product it sells. A blog</tspan>
+<tspan x="14.0" dy="17.0">    whose newest post is 14 months old actively damages trust.</tspan>
+<tspan x="14.0" dy="17.0"> </tspan>
+<tspan x="14.0" dy="17.0">14  Careers                           Expected (5/5) but serves</tspan>
+<tspan x="14.0" dy="17.0">    recruitment, not customers. "Write to careers@" is an acceptable</tspan>
+<tspan x="14.0" dy="17.0">    v1. Do not let it compete with the product template for effort.</tspan>
+</text>
+<rect x="1470.0" y="6332.7" width="1450.0" height="586.2" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1484.0" y="6363.3" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">Deliberately not built</tspan>
+</text>
+<text x="1484.0" y="6387.7" font-size="12.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1484.0" dy="0.0">LEAVE OUT                      FOUND ON       WHY NOT</tspan>
+<tspan x="1484.0" dy="17.0">---------------------------------------------------------------------------</tspan>
+<tspan x="1484.0" dy="17.0">Serial number lookup           True           needs an installed base</tspan>
+<tspan x="1484.0" dy="17.0">4 separate warranty forms      True           one service form covers it</tspan>
+<tspan x="1484.0" dy="17.0">Parts e-commerce + tracking    True, Bev-Air  a whole storefront</tspan>
+<tspan x="1484.0" dy="17.0">Account login / cart           Bev-Air        no prices means no cart</tspan>
+<tspan x="1484.0" dy="17.0">"Build &amp; price" configurator    none           0 of 5 publish a price</tspan>
+<tspan x="1484.0" dy="17.0">Investor relations             Blue Star      not your obligation</tspan>
+<tspan x="1484.0" dy="17.0">Governance / group companies   Blue Star      conglomerate noise</tspan>
+<tspan x="1484.0" dy="17.0">Separate Sustainability page   3 of 5         a section inside About</tspan>
+<tspan x="1484.0" dy="17.0">Separate R&amp;D / Factories       2 of 5         sections inside About</tspan>
+<tspan x="1484.0" dy="17.0">Separate press-release feed    2 of 5         one News feed</tspan>
+<tspan x="1484.0" dy="17.0">White paper library            Traulsen       needs real research</tspan>
+<tspan x="1484.0" dy="17.0">Video library page             Bev-Air, Trau. embed on the product page</tspan>
+<tspan x="1484.0" dy="17.0">6 separate industry pages      True (14!)     one page, six anchors</tspan>
+<tspan x="1484.0" dy="17.0">Multi-slide hero carousel      2 of 5         slides 2+ are not seen</tspan>
+<tspan x="1484.0" dy="17.0">Horizontal-scroll showcase     index.html §6  no sales function</tspan>
+<tspan x="1484.0" dy="17.0"> </tspan>
+<tspan x="1484.0" dy="17.0">THE RULE: every page ships with content on day one. Nine complete pages</tspan>
+<tspan x="1484.0" dy="17.0">beat twenty-five pages where eighteen say "coming soon" -- which is how</tspan>
+<tspan x="1484.0" dy="17.0">copying True's support tree would leave you.</tspan>
+<tspan x="1484.0" dy="17.0"> </tspan>
+<tspan x="1484.0" dy="17.0">ALSO CUT FROM THE CURRENT index.html (report §11):</tspan>
+<tspan x="1484.0" dy="17.0">  §5  "build &amp; price" CTA        implies pricing -&gt; [Request a Quote]</tspan>
+<tspan x="1484.0" dy="17.0">  §6  horizontal-scroll section  420vh of scroll-jacking, no sales job</tspan>
+<tspan x="1484.0" dy="17.0">  §7  "Try it for free!" CTA     a SaaS pattern inherited from unox.com.</tspan>
+<tspan x="1484.0" dy="17.0">                                 You cannot try a refrigerator for free.</tspan>
+<tspan x="1484.0" dy="17.0">  §9  merge into §4              "choose by type" duplicates the rail</tspan>
+<tspan x="1484.0" dy="17.0">  ADD a client logo strip        missing, and the cheapest credibility</tspan>
+<tspan x="1484.0" dy="17.0">                                 available on the page.</tspan>
+<tspan x="1484.0" dy="17.0">  Net: thirteen sections -&gt; ten. The page gets shorter and converts better.</tspan>
+</text>
+<text x="0.0" y="7001.0" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">10 · Build order</tspan>
+</text>
+<text x="0.0" y="7026.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">The instinct is to build the home page first. Resist it: a beautiful home page over an empty catalogue converts nothing, while a plain catalogue with complete spec sheets converts immediately.</tspan>
+</text>
+<rect x="0.0" y="7053.3" width="568.0" height="191.8" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="14.0" y="7082.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">PHASE 1</tspan>
+</text>
+<text x="14.0" y="7105.9" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Product Detail template</tspan>
+<tspan x="14.0" dy="17.0">+ 6 category pages</tspan>
+<tspan x="14.0" dy="17.0">+ Products hub</tspan>
+<tspan x="14.0" dy="17.0"> </tspan>
+<tspan x="14.0" dy="17.0">THIS IS THE SITE. Organic</tspan>
+<tspan x="14.0" dy="17.0">search lands here and the</tspan>
+<tspan x="14.0" dy="17.0">enquiry is made here.</tspan>
+</text>
+<rect x="588.0" y="7053.3" width="568.0" height="191.8" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="602.0" y="7082.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="602.0" dy="0.0">PHASE 2</tspan>
+</text>
+<text x="602.0" y="7105.9" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="602.0" dy="0.0">Contact &amp; Enquiry</tspan>
+<tspan x="602.0" dy="17.0">Service &amp; Support</tspan>
+<tspan x="602.0" dy="17.0">Downloads</tspan>
+<tspan x="602.0" dy="17.0"> </tspan>
+<tspan x="602.0" dy="17.0">Closes the loop on every</tspan>
+<tspan x="602.0" dy="17.0">CTA the product pages fire.</tspan>
+</text>
+<rect x="1176.0" y="7053.3" width="568.0" height="191.8" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="1190.0" y="7082.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1190.0" dy="0.0">PHASE 3</tspan>
+</text>
+<text x="1190.0" y="7105.9" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1190.0" dy="0.0">Home</tspan>
+<tspan x="1190.0" dy="17.0">Industries</tspan>
+<tspan x="1190.0" dy="17.0">About Us</tspan>
+<tspan x="1190.0" dy="17.0"> </tspan>
+<tspan x="1190.0" dy="17.0">The framing. Worth less</tspan>
+<tspan x="1190.0" dy="17.0">than people assume --</tspan>
+<tspan x="1190.0" dy="17.0">build it after the</tspan>
+<tspan x="1190.0" dy="17.0">catalogue works.</tspan>
+</text>
+<rect x="1764.0" y="7053.3" width="568.0" height="191.8" rx="12" fill="#f8f9fa" stroke="#495057" stroke-width="2.0"/>
+<text x="1778.0" y="7082.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1778.0" dy="0.0">PHASE 4</tspan>
+</text>
+<text x="1778.0" y="7105.9" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1778.0" dy="0.0">Privacy · Terms</tspan>
+<tspan x="1778.0" dy="17.0">sitemap · robots · schema</tspan>
+<tspan x="1778.0" dy="17.0"> </tspan>
+<tspan x="1778.0" dy="17.0">Required, thin, and the</tspan>
+<tspan x="1778.0" dy="17.0">schema.org markup is how</tspan>
+<tspan x="1778.0" dy="17.0">the catalogue gets found.</tspan>
+</text>
+<rect x="2352.0" y="7053.3" width="568.0" height="191.8" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="2366.0" y="7082.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2366.0" dy="0.0">PHASE 5</tspan>
+</text>
+<text x="2366.0" y="7105.9" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2366.0" dy="0.0">Dealer locator</tspan>
+<tspan x="2366.0" dy="17.0">Installations</tspan>
+<tspan x="2366.0" dy="17.0">Why Us · News · Careers</tspan>
+<tspan x="2366.0" dy="17.0">THE PRICING DECISION (§4)</tspan>
+<tspan x="2366.0" dy="17.0"> </tspan>
+<tspan x="2366.0" dy="17.0">Each on the day its</tspan>
+<tspan x="2366.0" dy="17.0">content actually exists.</tspan>
+</text>
+<text x="0.0" y="7297.1" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Legend: green = free and comfortable, or a must-have that is settled · amber = free but close to a limit, a deferred decision, or a known degradation · red = blocked, non-compliant, or deliberately not built · blue/teal = render and web tier · pink = module boundary. Convergence counts and page contents trace to docs/ia/SITE-SECTIONS-REPORT.md. All provider quotas verified 2026-10-07 and subject to change.</tspan>
+</text>
+</svg>

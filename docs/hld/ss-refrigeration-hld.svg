@@ -1,0 +1,1286 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3016" height="6085" viewBox="-48 -48 3016 6085">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+<rect x="-48" y="-48" width="3016" height="6085" fill="#ffffff"/>
+<text x="0.0" y="31.3" font-size="34.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">KALT / SS Commercial Refrigeration — High-Level Design</tspan>
+</text>
+<text x="0.0" y="61.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Public brand site + product catalogue + technical resource centre + lead engine, modelled on williamsrefrigeration.co.in.   Owner: platform eng   Rev 1.0   2026-10-07</tspan>
+<tspan x="0.0" dy="21.0">Design stance: this is a read-heavy, low-write, SEO-critical B2B site. The scaling risk is NOT queries per second — it is content velocity, crawlability and never dropping an enquiry. So: cheap and boring today, with the seams pre-cut where the next 10x actually lands.</tspan>
+</text>
+<text x="0.0" y="138.2" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">1 · Runtime architecture — request path, top to bottom</tspan>
+</text>
+<rect x="0.0" y="170.9" width="2400.0" height="165.6" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="204.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1971c2" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(1) CLIENTS</tspan>
+<tspan x="18.0" dy="18.8">&amp; CHANNELS</tspan>
+</text>
+<rect x="200.0" y="192.9" width="424.0" height="121.6" rx="12" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.0"/>
+<text x="412.0" y="220.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="412.0" dy="0.0">Visitor browser</tspan>
+<tspan x="412.0" dy="18.3">~70% mobile</tspan>
+</text>
+<text x="412.0" y="262.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="412.0" dy="0.0">Chrome / Safari on 4G India.</tspan>
+<tspan x="412.0" dy="16.3">Core Web Vitals is a ranking</tspan>
+<tspan x="412.0" dy="16.3">factor, so it is a hard budget.</tspan>
+</text>
+<rect x="644.0" y="192.9" width="424.0" height="121.6" rx="12" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.0"/>
+<text x="856.0" y="229.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="856.0" dy="0.0">Search &amp; AI crawlers</tspan>
+</text>
+<text x="856.0" y="253.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="856.0" dy="0.0">Googlebot, Bingbot, GPTBot.</tspan>
+<tspan x="856.0" dy="16.3">Need server-rendered HTML +</tspan>
+<tspan x="856.0" dy="16.3">schema.org, not client JSON.</tspan>
+</text>
+<rect x="1088.0" y="192.9" width="424.0" height="121.6" rx="12" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.0"/>
+<text x="1300.0" y="229.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1300.0" dy="0.0">Editor console</tspan>
+</text>
+<text x="1300.0" y="253.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1300.0" dy="0.0">Marketing + product team</tspan>
+<tspan x="1300.0" dy="16.3">publish SKUs, specs, PDFs,</tspan>
+<tspan x="1300.0" dy="16.3">news, events, jobs.</tspan>
+</text>
+<rect x="1532.0" y="192.9" width="424.0" height="121.6" rx="12" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.0"/>
+<text x="1744.0" y="229.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1744.0" dy="0.0">Sales / service desk</tspan>
+</text>
+<text x="1744.0" y="253.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1744.0" dy="0.0">Works the enquiry + RFQ</tspan>
+<tspan x="1744.0" dy="16.3">queue, assigns owner,</tspan>
+<tspan x="1744.0" dy="16.3">exports to CRM.</tspan>
+</text>
+<rect x="1976.0" y="192.9" width="424.0" height="121.6" rx="12" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.0"/>
+<text x="2188.0" y="220.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2188.0" dy="0.0">Phase 3: dealer portal</tspan>
+<tspan x="2188.0" dy="18.3">+ field app</tspan>
+</text>
+<text x="2188.0" y="262.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2188.0" dy="0.0">Dealer pricing, stock,</tspan>
+<tspan x="2188.0" dy="16.3">warranty registration,</tspan>
+<tspan x="2188.0" dy="16.3">service tickets.</tspan>
+</text>
+<rect x="0.0" y="394.5" width="2400.0" height="172.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="428.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#f08c00" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(2) EDGE</tspan>
+<tspan x="18.0" dy="18.8">GLOBAL POP</tspan>
+</text>
+<rect x="200.0" y="416.5" width="424.0" height="128.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="412.0" y="464.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="412.0" dy="0.0">DNS + Anycast + TLS 1.3</tspan>
+</text>
+<text x="412.0" y="487.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="412.0" dy="0.0">Route 53 / Cloudflare.</tspan>
+<tspan x="412.0" dy="16.3">HSTS, HTTP/3, OCSP staple.</tspan>
+</text>
+<rect x="644.0" y="416.5" width="424.0" height="128.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="856.0" y="456.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="856.0" dy="0.0">CDN — HTML *and* asset cache</tspan>
+</text>
+<text x="856.0" y="479.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="856.0" dy="0.0">s-maxage + stale-while-revalidate.</tspan>
+<tspan x="856.0" dy="16.3">Surrogate-key purge per entity.</tspan>
+<tspan x="856.0" dy="16.3">~95% of requests never reach origin.</tspan>
+</text>
+<rect x="1088.0" y="416.5" width="424.0" height="128.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="1300.0" y="456.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1300.0" dy="0.0">WAF · bot mgmt · DDoS</tspan>
+</text>
+<text x="1300.0" y="479.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1300.0" dy="0.0">OWASP core rules, per-IP token</tspan>
+<tspan x="1300.0" dy="16.3">bucket, Turnstile on every form,</tspan>
+<tspan x="1300.0" dy="16.3">L3/L7 absorb at the edge.</tspan>
+</text>
+<rect x="1532.0" y="416.5" width="424.0" height="128.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="1744.0" y="456.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1744.0" dy="0.0">Image CDN</tspan>
+</text>
+<text x="1744.0" y="479.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1744.0" dy="0.0">On-the-fly resize, AVIF/WebP,</tspan>
+<tspan x="1744.0" dy="16.3">DPR-aware srcset. Egress is the</tspan>
+<tspan x="1744.0" dy="16.3">real bill on a photo-heavy site.</tspan>
+</text>
+<rect x="1976.0" y="416.5" width="424.0" height="128.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="2188.0" y="456.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2188.0" dy="0.0">Edge middleware (KV)</tspan>
+</text>
+<text x="2188.0" y="479.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2188.0" dy="0.0">Locale + geo routing, the 301</tspan>
+<tspan x="2188.0" dy="16.3">redirect map, A/B bucketing.</tspan>
+<tspan x="2188.0" dy="16.3">Runs in &lt;5 ms, no origin hop.</tspan>
+</text>
+<rect x="0.0" y="624.5" width="2400.0" height="172.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="658.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#099268" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(3) WEB TIER</tspan>
+<tspan x="18.0" dy="18.8">Next.js App</tspan>
+<tspan x="18.0" dy="18.8">Router</tspan>
+</text>
+<rect x="200.0" y="646.5" width="535.0" height="128.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="467.5" y="686.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">SSG — marketing surface</tspan>
+</text>
+<text x="467.5" y="709.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">Home, about, industries, quality,</tspan>
+<tspan x="467.5" dy="16.3">sustainability, awards. Built at</tspan>
+<tspan x="467.5" dy="16.3">deploy, pure static at the edge.</tspan>
+</text>
+<rect x="755.0" y="646.5" width="535.0" height="128.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="1022.5" y="686.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">ISR — catalogue, news, installs</tspan>
+</text>
+<text x="1022.5" y="709.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">Time-based revalidate PLUS</tspan>
+<tspan x="1022.5" dy="16.3">on-demand revalidateTag() fired</tspan>
+<tspan x="1022.5" dy="16.3">by the publish event. Fresh + fast.</tspan>
+</text>
+<rect x="1310.0" y="646.5" width="535.0" height="128.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="1577.5" y="686.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">SSR / streaming RSC</tspan>
+</text>
+<text x="1577.5" y="709.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">Faceted product listing, search</tspan>
+<tspan x="1577.5" dy="16.3">results, dealer locator, forms.</tspan>
+<tspan x="1577.5" dy="16.3">Streamed so LCP paints early.</tspan>
+</text>
+<rect x="1865.0" y="646.5" width="535.0" height="128.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="2132.5" y="686.7" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">Route handlers = BFF</tspan>
+</text>
+<text x="2132.5" y="709.7" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">One aggregate call per page.</tspan>
+<tspan x="2132.5" dy="16.3">Domain services are never</tspan>
+<tspan x="2132.5" dy="16.3">exposed to the browser.</tspan>
+</text>
+<rect x="0.0" y="854.5" width="2400.0" height="148.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="888.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#7048e8" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(4) API EDGE</tspan>
+</text>
+<rect x="200.0" y="876.5" width="535.0" height="104.0" rx="12" fill="#f3f0ff" stroke="#7048e8" stroke-width="2.0"/>
+<text x="467.5" y="912.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">API gateway / ingress</tspan>
+</text>
+<text x="467.5" y="935.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">OpenAPI contract, /v1 versioning,</tspan>
+<tspan x="467.5" dy="16.3">mTLS inside the mesh.</tspan>
+</text>
+<rect x="755.0" y="876.5" width="535.0" height="104.0" rx="12" fill="#f3f0ff" stroke="#7048e8" stroke-width="2.0"/>
+<text x="1022.5" y="912.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">AuthN + RBAC</tspan>
+</text>
+<text x="1022.5" y="935.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">OIDC for staff, short-lived JWT,</tspan>
+<tspan x="1022.5" dy="16.3">per-service scopes.</tspan>
+</text>
+<rect x="1310.0" y="876.5" width="535.0" height="104.0" rx="12" fill="#f3f0ff" stroke="#7048e8" stroke-width="2.0"/>
+<text x="1577.5" y="912.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">Validation + idempotency</tspan>
+</text>
+<text x="1577.5" y="935.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">zod/JSON-Schema on every body;</tspan>
+<tspan x="1577.5" dy="16.3">Idempotency-Key on POST /leads.</tspan>
+</text>
+<rect x="1865.0" y="876.5" width="535.0" height="104.0" rx="12" fill="#f3f0ff" stroke="#7048e8" stroke-width="2.0"/>
+<text x="2132.5" y="912.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">Quotas + circuit breaker</tspan>
+</text>
+<text x="2132.5" y="935.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">Redis token bucket, bulkhead and</tspan>
+<tspan x="2132.5" dy="16.3">timeout per upstream SaaS.</tspan>
+</text>
+<rect x="0.0" y="1060.5" width="2400.0" height="272.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1094.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#c2255c" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(5) DOMAIN</tspan>
+<tspan x="18.0" dy="18.8">SERVICES</tspan>
+<tspan x="18.0" dy="18.8"> </tspan>
+<tspan x="18.0" dy="18.8">modular monolith</tspan>
+<tspan x="18.0" dy="18.8">now, split on the</tspan>
+<tspan x="18.0" dy="18.8">marked seams later</tspan>
+</text>
+<rect x="200.0" y="1082.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="467.5" y="1110.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">Catalog</tspan>
+</text>
+<text x="467.5" y="1133.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">Categories, products, variants,</tspan>
+<tspan x="467.5" dy="16.3">spec sheets, feature blocks,</tspan>
+<tspan x="467.5" dy="16.3">industry mapping.</tspan>
+</text>
+<rect x="755.0" y="1082.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1022.5" y="1110.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">Content / CMS</tspan>
+</text>
+<text x="1022.5" y="1133.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">Pages, typed blocks, news,</tspan>
+<tspan x="1022.5" dy="16.3">installations, awards, certs,</tspan>
+<tspan x="1022.5" dy="16.3">revisions + preview.</tspan>
+</text>
+<rect x="1310.0" y="1082.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1577.5" y="1110.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">Lead &amp; RFQ</tspan>
+</text>
+<text x="1577.5" y="1133.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">Contact, quote cart, callback,</tspan>
+<tspan x="1577.5" dy="16.3">newsletter. Dedupe, scoring,</tspan>
+<tspan x="1577.5" dy="16.3">territory routing.</tspan>
+</text>
+<rect x="1865.0" y="1082.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="2132.5" y="1118.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">Careers / ATS</tspan>
+</text>
+<text x="2132.5" y="1141.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">Jobs, applications, CV intake,</tspan>
+<tspan x="2132.5" dy="16.3">stages, speculative CVs.</tspan>
+</text>
+<rect x="200.0" y="1206.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="467.5" y="1234.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">Search  [seam]</tspan>
+</text>
+<text x="467.5" y="1257.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="467.5" dy="0.0">Query parse, facet build,</tspan>
+<tspan x="467.5" dy="16.3">synonyms, relevance tuning,</tspan>
+<tspan x="467.5" dy="16.3">spec-range filters.</tspan>
+</text>
+<rect x="755.0" y="1206.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1022.5" y="1234.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">Media &amp; Docs  [seam]</tspan>
+</text>
+<text x="1022.5" y="1257.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1022.5" dy="0.0">Signed upload, AV scan, image</tspan>
+<tspan x="1022.5" dy="16.3">variants, PDF text extract,</tspan>
+<tspan x="1022.5" dy="16.3">signed download URLs.</tspan>
+</text>
+<rect x="1310.0" y="1206.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="1577.5" y="1234.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">Notification  [seam]</tspan>
+</text>
+<text x="1577.5" y="1257.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1577.5" dy="0.0">Templated email / WhatsApp /</tspan>
+<tspan x="1577.5" dy="16.3">SMS. Retry, DLQ, bounce</tspan>
+<tspan x="1577.5" dy="16.3">handling, suppression list.</tspan>
+</text>
+<rect x="1865.0" y="1206.5" width="535.0" height="104.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="2132.5" y="1242.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">Identity &amp; Audit</tspan>
+</text>
+<text x="2132.5" y="1265.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2132.5" dy="0.0">Staff users, roles, scopes,</tspan>
+<tspan x="2132.5" dy="16.3">immutable audit trail.</tspan>
+</text>
+<rect x="0.0" y="1390.5" width="2400.0" height="204.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1424.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#2f9e44" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(6) DATA PLANE</tspan>
+</text>
+<rect x="200.0" y="1412.5" width="350.0" height="160.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="375.0" y="1443.3" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="375.0" dy="0.0">PostgreSQL 16</tspan>
+<tspan x="375.0" dy="17.7">SYSTEM OF RECORD</tspan>
+</text>
+<text x="375.0" y="1484.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="375.0" dy="0.0">Primary writer + 2 streaming read</tspan>
+<tspan x="375.0" dy="16.3">replicas, PgBouncer pooling,</tspan>
+<tspan x="375.0" dy="16.3">multi-AZ failover, PITR 7 days,</tspan>
+<tspan x="375.0" dy="16.3">logical decoding for CDC.</tspan>
+<tspan x="375.0" dy="16.3">Everything else is derived.</tspan>
+</text>
+<rect x="570.0" y="1412.5" width="350.0" height="160.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="745.0" y="1460.3" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="745.0" dy="0.0">Redis</tspan>
+</text>
+<text x="745.0" y="1483.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="745.0" dy="0.0">Fragment + API cache, rate-limit</tspan>
+<tspan x="745.0" dy="16.3">buckets, idempotency keys,</tspan>
+<tspan x="745.0" dy="16.3">distributed locks, staff session.</tspan>
+<tspan x="745.0" dy="16.3">Disposable by design.</tspan>
+</text>
+<rect x="940.0" y="1412.5" width="350.0" height="160.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="1115.0" y="1451.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1115.0" dy="0.0">OpenSearch / Typesense</tspan>
+<tspan x="1115.0" dy="17.7">(phase 2)</tspan>
+</text>
+<text x="1115.0" y="1492.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1115.0" dy="0.0">Derived index: products, variants,</tspan>
+<tspan x="1115.0" dy="16.3">PDF text. Facets, typo tolerance,</tspan>
+<tspan x="1115.0" dy="16.3">synonyms. Fully rebuildable</tspan>
+<tspan x="1115.0" dy="16.3">from Postgres in minutes.</tspan>
+</text>
+<rect x="1310.0" y="1412.5" width="350.0" height="160.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="1485.0" y="1460.3" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1485.0" dy="0.0">Object storage (S3 / GCS)</tspan>
+</text>
+<text x="1485.0" y="1483.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1485.0" dy="0.0">Images, catalogues, datasheets,</tspan>
+<tspan x="1485.0" dy="16.3">CVs. Versioned, private, served</tspan>
+<tspan x="1485.0" dy="16.3">only via signed URL + CDN.</tspan>
+<tspan x="1485.0" dy="16.3">Bytes never live in the DB.</tspan>
+</text>
+<rect x="1680.0" y="1412.5" width="350.0" height="160.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="1855.0" y="1468.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1855.0" dy="0.0">ClickHouse / BigQuery</tspan>
+</text>
+<text x="1855.0" y="1491.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1855.0" dy="0.0">Clickstream, funnel, lead</tspan>
+<tspan x="1855.0" dy="16.3">attribution, download analytics.</tspan>
+<tspan x="1855.0" dy="16.3">Never on the serving path.</tspan>
+</text>
+<rect x="2050.0" y="1412.5" width="350.0" height="160.0" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="2225.0" y="1451.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2225.0" dy="0.0">Postgres extensions</tspan>
+<tspan x="2225.0" dy="17.7">= future datastores avoided</tspan>
+</text>
+<text x="2225.0" y="1492.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2225.0" dy="0.0">PostGIS -&gt; dealer + install map</tspan>
+<tspan x="2225.0" dy="16.3">pgvector -&gt; similar-product / AI</tspan>
+<tspan x="2225.0" dy="16.3">Timescale -&gt; cabinet telemetry</tspan>
+<tspan x="2225.0" dy="16.3">pg_trgm + tsvector -&gt; phase-1 search</tspan>
+</text>
+<rect x="0.0" y="1652.5" width="2400.0" height="176.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1686.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#e03131" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(7) ASYNC</tspan>
+<tspan x="18.0" dy="18.8">BACKBONE</tspan>
+</text>
+<rect x="200.0" y="1674.5" width="424.0" height="132.0" rx="12" fill="#fff5f5" stroke="#e03131" stroke-width="2.0"/>
+<text x="412.0" y="1716.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="412.0" dy="0.0">Transactional outbox</tspan>
+</text>
+<text x="412.0" y="1739.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="412.0" dy="0.0">Event row written in the SAME</tspan>
+<tspan x="412.0" dy="16.3">transaction as the business row.</tspan>
+<tspan x="412.0" dy="16.3">No dual-write bug, no 2PC.</tspan>
+</text>
+<rect x="644.0" y="1674.5" width="424.0" height="132.0" rx="12" fill="#fff5f5" stroke="#e03131" stroke-width="2.0"/>
+<text x="856.0" y="1716.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="856.0" dy="0.0">Debezium CDC -&gt; SQS / Kafka</tspan>
+</text>
+<text x="856.0" y="1739.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="856.0" dy="0.0">Topics: catalog.changed,</tspan>
+<tspan x="856.0" dy="16.3">lead.created, media.uploaded,</tspan>
+<tspan x="856.0" dy="16.3">content.published.</tspan>
+</text>
+<rect x="1088.0" y="1674.5" width="424.0" height="132.0" rx="12" fill="#fff5f5" stroke="#e03131" stroke-width="2.0"/>
+<text x="1300.0" y="1716.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1300.0" dy="0.0">Workers (autoscaled)</tspan>
+</text>
+<text x="1300.0" y="1739.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1300.0" dy="0.0">Email send, image variants,</tspan>
+<tspan x="1300.0" dy="16.3">PDF thumb + text extract,</tspan>
+<tspan x="1300.0" dy="16.3">CV virus scan, CRM upsert.</tspan>
+</text>
+<rect x="1532.0" y="1674.5" width="424.0" height="132.0" rx="12" fill="#fff5f5" stroke="#e03131" stroke-width="2.0"/>
+<text x="1744.0" y="1716.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1744.0" dy="0.0">Search indexer</tspan>
+</text>
+<text x="1744.0" y="1739.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1744.0" dy="0.0">Consumes catalog.changed -&gt;</tspan>
+<tspan x="1744.0" dy="16.3">bulk upsert, 1s debounce.</tspan>
+<tspan x="1744.0" dy="16.3">Nightly full reconcile.</tspan>
+</text>
+<rect x="1976.0" y="1674.5" width="424.0" height="132.0" rx="12" fill="#fff5f5" stroke="#e03131" stroke-width="2.0"/>
+<text x="2188.0" y="1716.5" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2188.0" dy="0.0">Cache &amp; SEO fan-out</tspan>
+</text>
+<text x="2188.0" y="1739.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2188.0" dy="0.0">Surrogate-key purge, ISR</tspan>
+<tspan x="2188.0" dy="16.3">revalidateTag, sitemap diff,</tspan>
+<tspan x="2188.0" dy="16.3">IndexNow ping to Google/Bing.</tspan>
+</text>
+<rect x="0.0" y="1886.5" width="2400.0" height="171.2" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1920.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#868e96" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">(8) EXTERNAL</tspan>
+<tspan x="18.0" dy="18.8">SaaS</tspan>
+<tspan x="18.0" dy="18.8"> </tspan>
+<tspan x="18.0" dy="18.8">all behind a</tspan>
+<tspan x="18.0" dy="18.8">circuit breaker,</tspan>
+<tspan x="18.0" dy="18.8">none on the</tspan>
+<tspan x="18.0" dy="18.8">user's path</tspan>
+</text>
+<rect x="200.0" y="1908.5" width="350.0" height="100.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="375.0" y="1943.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="375.0" dy="0.0">Email — SES / Resend</tspan>
+</text>
+<text x="375.0" y="1965.5" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="375.0" dy="0.0">DKIM + SPF + DMARC,</tspan>
+<tspan x="375.0" dy="15.6">bounce + complaint webhook.</tspan>
+</text>
+<rect x="570.0" y="1908.5" width="350.0" height="100.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="745.0" y="1943.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="745.0" dy="0.0">CRM — Zoho / Salesforce</tspan>
+</text>
+<text x="745.0" y="1965.5" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="745.0" dy="0.0">Idempotent upsert keyed on</tspan>
+<tspan x="745.0" dy="15.6">lead.id. Nightly reconcile.</tspan>
+</text>
+<rect x="940.0" y="1908.5" width="350.0" height="100.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="1115.0" y="1943.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1115.0" dy="0.0">Turnstile / reCAPTCHA v3</tspan>
+</text>
+<text x="1115.0" y="1965.5" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1115.0" dy="0.0">Score-gated submit +</tspan>
+<tspan x="1115.0" dy="15.6">honeypot + time-to-fill check.</tspan>
+</text>
+<rect x="1310.0" y="1908.5" width="350.0" height="100.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="1485.0" y="1943.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1485.0" dy="0.0">WhatsApp / SMS</tspan>
+</text>
+<text x="1485.0" y="1965.5" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1485.0" dy="0.0">Gupshup / Twilio. RFQ ack to</tspan>
+<tspan x="1485.0" dy="15.6">customer, ping to sales rep.</tspan>
+</text>
+<rect x="1680.0" y="1908.5" width="350.0" height="100.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="1855.0" y="1943.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1855.0" dy="0.0">Maps — Google / Mapbox</tspan>
+</text>
+<text x="1855.0" y="1965.5" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1855.0" dy="0.0">Dealer locator and the</tspan>
+<tspan x="1855.0" dy="15.6">installations map.</tspan>
+</text>
+<rect x="2050.0" y="1908.5" width="350.0" height="100.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="2225.0" y="1943.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="2225.0" dy="0.0">GA4 · Sentry · RUM</tspan>
+</text>
+<text x="2225.0" y="1965.5" font-size="11.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="2225.0" dy="0.0">Consent-gated, cookieless</tspan>
+<tspan x="2225.0" dy="15.6">fallback for EU traffic.</tspan>
+</text>
+<rect x="2460.0" y="116.1" width="460.0" height="1941.6" rx="14" fill="#f8f9fa" stroke="#495057" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="2480.0" y="151.8" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2480.0" dy="0.0">(9) PLATFORM &amp; GOVERNANCE</tspan>
+</text>
+<rect x="2480.0" y="170.5" width="420.0" height="120.0" rx="12" fill="#ffffff" stroke="#495057" stroke-width="2.0"/>
+<text x="2494.0" y="198.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Observability</tspan>
+</text>
+<text x="2494.0" y="221.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">OpenTelemetry traces end to end.</tspan>
+<tspan x="2494.0" dy="16.3">Prometheus + Grafana, Sentry,</tspan>
+<tspan x="2494.0" dy="16.3">CWV field data via RUM, structured</tspan>
+<tspan x="2494.0" dy="16.3">JSON logs keyed by request_id.</tspan>
+</text>
+<rect x="2480.0" y="304.5" width="420.0" height="120.0" rx="12" fill="#ffffff" stroke="#495057" stroke-width="2.0"/>
+<text x="2494.0" y="332.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">SLOs + error budget</tspan>
+</text>
+<text x="2494.0" y="355.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Site 99.9% · POST /v1/leads 99.95%</tspan>
+<tspan x="2494.0" dy="16.3">TTFB p75 &lt;400ms · API p99 &lt;300ms</tspan>
+<tspan x="2494.0" dy="16.3">Multi-window burn-rate alerts.</tspan>
+<tspan x="2494.0" dy="16.3">Budget spent -&gt; feature freeze.</tspan>
+</text>
+<rect x="2480.0" y="438.5" width="420.0" height="120.0" rx="12" fill="#ffffff" stroke="#495057" stroke-width="2.0"/>
+<text x="2494.0" y="466.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">CI / CD</tspan>
+</text>
+<text x="2494.0" y="489.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">lint -&gt; typecheck -&gt; unit -&gt;</tspan>
+<tspan x="2494.0" dy="16.3">Playwright e2e -&gt; Lighthouse budget</tspan>
+<tspan x="2494.0" dy="16.3">-&gt; terraform plan -&gt; preview env -&gt;</tspan>
+<tspan x="2494.0" dy="16.3">blue/green with auto-rollback.</tspan>
+</text>
+<rect x="2480.0" y="572.5" width="420.0" height="120.0" rx="12" fill="#ffffff" stroke="#495057" stroke-width="2.0"/>
+<text x="2494.0" y="600.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">IaC &amp; environments</tspan>
+</text>
+<text x="2494.0" y="623.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Terraform modules, dev/stage/prod</tspan>
+<tspan x="2494.0" dy="16.3">parity, drift detection, zero</tspan>
+<tspan x="2494.0" dy="16.3">changes made in a cloud console.</tspan>
+</text>
+<rect x="2480.0" y="706.5" width="420.0" height="120.0" rx="12" fill="#ffffff" stroke="#495057" stroke-width="2.0"/>
+<text x="2494.0" y="734.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Secrets &amp; keys</tspan>
+</text>
+<text x="2494.0" y="757.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">KMS envelope encryption, Vault /</tspan>
+<tspan x="2494.0" dy="16.3">Secrets Manager, 90-day rotation,</tspan>
+<tspan x="2494.0" dy="16.3">nothing secret in the repo.</tspan>
+</text>
+<rect x="2480.0" y="840.5" width="420.0" height="120.0" rx="12" fill="#ffffff" stroke="#495057" stroke-width="2.0"/>
+<text x="2494.0" y="868.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Security</tspan>
+</text>
+<text x="2494.0" y="891.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Strict CSP + SRI, signed upload</tspan>
+<tspan x="2494.0" dy="16.3">URLs, AV scan, PII columns</tspan>
+<tspan x="2494.0" dy="16.3">encrypted, least-privilege IAM,</tspan>
+<tspan x="2494.0" dy="16.3">quarterly pen test + dep scanning.</tspan>
+</text>
+<rect x="2480.0" y="974.5" width="420.0" height="120.0" rx="12" fill="#ffffff" stroke="#495057" stroke-width="2.0"/>
+<text x="2494.0" y="1002.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">Compliance &amp; a11y</tspan>
+</text>
+<text x="2494.0" y="1025.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2494.0" dy="0.0">India DPDP Act: consent record +</tspan>
+<tspan x="2494.0" dy="16.3">retention + erasure. GDPR for EU.</tspan>
+<tspan x="2494.0" dy="16.3">WCAG 2.2 AA with axe in CI.</tspan>
+<tspan x="2494.0" dy="16.3">schema.org Product/Org/Breadcrumb.</tspan>
+</text>
+<line x1="1180.0" y1="342.5" x2="1180.0" y2="388.5" stroke="#212529" stroke-width="3.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1206.0" y="368.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1206.0" dy="0.0">HTTPS / HTTP3  ·  one TLS hop</tspan>
+</text>
+<line x1="1180.0" y1="572.5" x2="1180.0" y2="618.5" stroke="#212529" stroke-width="3.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1206.0" y="598.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1206.0" dy="0.0">cache MISS only  (~5% of traffic)</tspan>
+</text>
+<line x1="1180.0" y1="802.5" x2="1180.0" y2="848.5" stroke="#212529" stroke-width="3.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1206.0" y="828.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1206.0" dy="0.0">server-side fetch, private network</tspan>
+</text>
+<line x1="1180.0" y1="1008.5" x2="1180.0" y2="1054.5" stroke="#212529" stroke-width="3.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1206.0" y="1034.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1206.0" dy="0.0">gRPC / REST</tspan>
+</text>
+<line x1="1180.0" y1="1338.5" x2="1180.0" y2="1384.5" stroke="#212529" stroke-width="3.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1206.0" y="1364.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1206.0" dy="0.0">SQL via PgBouncer  ·  Redis  ·  S3</tspan>
+</text>
+<line x1="1180.0" y1="1600.5" x2="1180.0" y2="1646.5" stroke="#212529" stroke-width="3.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1206.0" y="1626.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1206.0" dy="0.0">WAL -&gt; logical decoding   +   transactional outbox</tspan>
+</text>
+<line x1="1180.0" y1="1834.5" x2="1180.0" y2="1880.5" stroke="#212529" stroke-width="3.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1206.0" y="1860.0" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1206.0" dy="0.0">at-least-once + DLQ + retry with jitter</tspan>
+</text>
+<text x="0.0" y="2149.8" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">2 · The two paths that must not break</tspan>
+</text>
+<text x="0.0" y="2175.4" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Everything else on this page can degrade. These two define the business.</tspan>
+</text>
+<rect x="0.0" y="2202.2" width="1440.0" height="300.0" rx="12" fill="#fffbea" stroke="#b08900" stroke-width="2.0"/>
+<text x="14.0" y="2231.8" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">A · Lead capture — zero tolerance for a dropped enquiry</tspan>
+</text>
+<text x="14.0" y="2256.4" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">1   POST /v1/leads   with Idempotency-Key (collapses double-clicks + client retries)</tspan>
+<tspan x="14.0" dy="17.8">2   Edge: Turnstile score + honeypot + time-to-fill + per-IP Redis bucket</tspan>
+<tspan x="14.0" dy="17.8">3   Validate, normalise phone/email, hash the IP (abuse only, never stored raw)</tspan>
+<tspan x="14.0" dy="17.8">4   ONE Postgres transaction:   INSERT lead  +  INSERT lead_item[]  +  INSERT outbox('lead.created')</tspan>
+<tspan x="14.0" dy="17.8">5   Respond 202 with lead_ref — the user sees success in under 300 ms</tspan>
+<tspan x="14.0" dy="17.8">6   Worker drains outbox -&gt; email to sales + ack to customer + CRM upsert + WhatsApp ping</tspan>
+<tspan x="14.0" dy="17.8">7   CRM or mail provider down? The row stays in outbox. Exponential retry, then DLQ + page.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">WHY: the database commit is the durability boundary, and no third party sits on the</tspan>
+<tspan x="14.0" dy="17.8">user's request path. A SaaS outage delays notification; it never loses the lead.</tspan>
+<tspan x="14.0" dy="17.8">Verification: a synthetic lead is submitted every 5 minutes end to end, and an alert</tspan>
+<tspan x="14.0" dy="17.8">fires on zero real leads during a business hour — silent form failure is the expensive bug.</tspan>
+</text>
+<rect x="1480.0" y="2202.2" width="1440.0" height="300.0" rx="12" fill="#fffbea" stroke="#b08900" stroke-width="2.0"/>
+<text x="1494.0" y="2231.8" font-size="17.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1494.0" dy="0.0">B · Publish — editor click to live page, p95 under 30 s</tspan>
+</text>
+<text x="1494.0" y="2256.4" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1494.0" dy="0.0">1   Editor saves -&gt; content_revision row (draft, full JSONB snapshot); media via signed PUT to S3</tspan>
+<tspan x="1494.0" dy="17.8">2   Publish -&gt; txn:  UPDATE product SET status='live', version=version+1  +  outbox('catalog.changed')</tspan>
+<tspan x="1494.0" dy="17.8">3   Indexer bulk-upserts the changed documents into OpenSearch (1 s debounce)</tspan>
+<tspan x="1494.0" dy="17.8">4   Purge worker: CDN surrogate-key purge  +  Next.js revalidateTag('product:&lt;id&gt;')</tspan>
+<tspan x="1494.0" dy="17.8">5   Sitemap diff regenerated per locale, IndexNow ping to Google and Bing</tspan>
+<tspan x="1494.0" dy="17.8">6   Rollback = publish the previous revision. No deploy, no DBA, no downtime.</tspan>
+<tspan x="1494.0" dy="17.8"> </tspan>
+<tspan x="1494.0" dy="17.8">WHY tag-based purge and not a wildcard: a spec correction on one SKU must not cold-start</tspan>
+<tspan x="1494.0" dy="17.8">the whole catalogue and hand every visitor an origin round-trip. Each rendered page</tspan>
+<tspan x="1494.0" dy="17.8">declares the entity tags it read, so invalidation is exactly as wide as the change.</tspan>
+<tspan x="1494.0" dy="17.8">WHY a revision snapshot and not a diff: at ~20 publishes a week the storage is free and</tspan>
+<tspan x="1494.0" dy="17.8">'restore exactly what was live on the day of the trade show' becomes a one-row operation.</tspan>
+</text>
+<text x="0.0" y="2594.2" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">3 · Data model — one PostgreSQL instance, five bounded contexts</tspan>
+</text>
+<text x="0.0" y="2619.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">FK = foreign key.  jsonb columns carry the parts of the domain that genuinely vary by product family.  Index type is called out where the query shape demands a specific one.</tspan>
+</text>
+<rect x="0.0" y="2646.6" width="1180.0" height="750.4" rx="14" fill="#fdfdfe" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="22.0" y="2681.1" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="22.0" dy="0.0">CATALOG</tspan>
+</text>
+<text x="22.0" y="2701.2" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="22.0" dy="0.0">The commercial core: 3 top-level ranges, ~25 collections, ~350 sellable model codes.</tspan>
+</text>
+<rect x="22.0" y="2720.4" width="366.7" height="209.3" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="36.0" y="2747.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">category</tspan>
+</text>
+<text x="36.0" y="2769.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">id            uuid pk</tspan>
+<tspan x="36.0" dy="15.6">slug          text unique</tspan>
+<tspan x="36.0" dy="15.6">parent_id     FK -&gt; category</tspan>
+<tspan x="36.0" dy="15.6">path          ltree  (GiST)</tspan>
+<tspan x="36.0" dy="15.6">name, kind, sort_order</tspan>
+<tspan x="36.0" dy="15.6">seo           jsonb</tspan>
+<tspan x="36.0" dy="15.6"> </tspan>
+<tspan x="36.0" dy="15.6">-- ltree returns a whole</tspan>
+<tspan x="36.0" dy="15.6">-- breadcrumb or subtree</tspan>
+<tspan x="36.0" dy="15.6">-- in one indexed query</tspan>
+</text>
+<rect x="406.7" y="2720.4" width="366.7" height="209.3" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="420.7" y="2747.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">product</tspan>
+</text>
+<text x="420.7" y="2769.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">id            uuid pk</tspan>
+<tspan x="420.7" dy="15.6">slug          text unique</tspan>
+<tspan x="420.7" dy="15.6">category_id   FK -&gt; category</tspan>
+<tspan x="420.7" dy="15.6">name, series, status enum</tspan>
+<tspan x="420.7" dy="15.6">summary       text</tspan>
+<tspan x="420.7" dy="15.6">specs         jsonb  (GIN)</tspan>
+<tspan x="420.7" dy="15.6">search_tsv    tsvector (GIN)</tspan>
+<tspan x="420.7" dy="15.6">version       int</tspan>
+<tspan x="420.7" dy="15.6">published_at  timestamptz</tspan>
+</text>
+<rect x="791.3" y="2720.4" width="366.7" height="209.3" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="805.3" y="2747.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">product_variant</tspan>
+</text>
+<text x="805.3" y="2769.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">id            uuid pk</tspan>
+<tspan x="805.3" dy="15.6">product_id    FK -&gt; product</tspan>
+<tspan x="805.3" dy="15.6">model_code    text unique  &lt;- SKU</tspan>
+<tspan x="805.3" dy="15.6">capacity_l, gn_config</tspan>
+<tspan x="805.3" dy="15.6">temp_min_c, temp_max_c</tspan>
+<tspan x="805.3" dy="15.6">refrigerant, ambient_max_c</tspan>
+<tspan x="805.3" dy="15.6">power_w, energy_class</tspan>
+<tspan x="805.3" dy="15.6">dims_mm jsonb, weight_kg</tspan>
+<tspan x="805.3" dy="15.6">mrp_inr       numeric null</tspan>
+</text>
+<rect x="22.0" y="2947.6" width="366.7" height="209.3" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="36.0" y="2974.5" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">feature_block</tspan>
+</text>
+<text x="36.0" y="2996.8" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">id, product_id FK</tspan>
+<tspan x="36.0" dy="15.6">kind enum(standard|optional</tspan>
+<tspan x="36.0" dy="15.6">     |key|common|hygiene</tspan>
+<tspan x="36.0" dy="15.6">     |energy|value|quality)</tspan>
+<tspan x="36.0" dy="15.6">heading, body_md</tspan>
+<tspan x="36.0" dy="15.6">icon, sort_order</tspan>
+<tspan x="36.0" dy="15.6"> </tspan>
+<tspan x="36.0" dy="15.6">-- mirrors the 7 feature</tspan>
+<tspan x="36.0" dy="15.6">-- sections on a Williams</tspan>
+<tspan x="36.0" dy="15.6">-- product page exactly</tspan>
+</text>
+<rect x="406.7" y="2947.6" width="366.7" height="209.3" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="420.7" y="2974.5" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">industry</tspan>
+</text>
+<text x="420.7" y="2996.8" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">id, slug unique, name</tspan>
+<tspan x="420.7" dy="15.6">icon, blurb</tspan>
+<tspan x="420.7" dy="15.6">sort_order</tspan>
+<tspan x="420.7" dy="15.6"> </tspan>
+<tspan x="420.7" dy="15.6">-- gelato, patisserie,</tspan>
+<tspan x="420.7" dy="15.6">-- bakery, QSR, bar,</tspan>
+<tspan x="420.7" dy="15.6">-- supermarket, cold room,</tspan>
+<tspan x="420.7" dy="15.6">-- Indian sweets</tspan>
+</text>
+<rect x="791.3" y="2947.6" width="366.7" height="209.3" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="805.3" y="2974.5" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">product_industry</tspan>
+</text>
+<text x="805.3" y="2996.8" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">product_id   FK -&gt; product</tspan>
+<tspan x="805.3" dy="15.6">industry_id  FK -&gt; industry</tspan>
+<tspan x="805.3" dy="15.6">PRIMARY KEY (both)</tspan>
+<tspan x="805.3" dy="15.6"> </tspan>
+<tspan x="805.3" dy="15.6">-- pure m:n join table;</tspan>
+<tspan x="805.3" dy="15.6">-- powers every 'solutions</tspan>
+<tspan x="805.3" dy="15.6">-- by industry' landing</tspan>
+<tspan x="805.3" dy="15.6">-- page and its facet</tspan>
+</text>
+<rect x="22.0" y="3174.9" width="366.7" height="200.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="36.0" y="3201.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">asset</tspan>
+</text>
+<text x="36.0" y="3224.1" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">id            uuid pk</tspan>
+<tspan x="36.0" dy="15.6">kind enum(image|pdf|video)</tspan>
+<tspan x="36.0" dy="15.6">storage_key   text</tspan>
+<tspan x="36.0" dy="15.6">mime, bytes</tspan>
+<tspan x="36.0" dy="15.6">width, height, blurhash</tspan>
+<tspan x="36.0" dy="15.6">checksum_sha256 unique</tspan>
+<tspan x="36.0" dy="15.6">alt_text, credit</tspan>
+<tspan x="36.0" dy="15.6">variants      jsonb</tspan>
+<tspan x="36.0" dy="15.6">-- metadata only; S3 has bytes</tspan>
+</text>
+<rect x="406.7" y="3174.9" width="366.7" height="200.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="420.7" y="3201.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">product_asset</tspan>
+</text>
+<text x="420.7" y="3224.1" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">product_id   FK -&gt; product</tspan>
+<tspan x="420.7" dy="15.6">asset_id     FK -&gt; asset</tspan>
+<tspan x="420.7" dy="15.6">role enum(hero|gallery</tspan>
+<tspan x="420.7" dy="15.6">     |cutout|dimension</tspan>
+<tspan x="420.7" dy="15.6">     |badge|lifestyle)</tspan>
+<tspan x="420.7" dy="15.6">sort_order</tspan>
+<tspan x="420.7" dy="15.6">PK (product_id, asset_id,</tspan>
+<tspan x="420.7" dy="15.6">    role)</tspan>
+</text>
+<rect x="791.3" y="3174.9" width="366.7" height="200.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="805.3" y="3201.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">document</tspan>
+</text>
+<text x="805.3" y="3224.1" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">id, title</tspan>
+<tspan x="805.3" dy="15.6">type enum(catalogue|datasheet</tspan>
+<tspan x="805.3" dy="15.6">     |manual|certificate|cad)</tspan>
+<tspan x="805.3" dy="15.6">product_id   FK null</tspan>
+<tspan x="805.3" dy="15.6">category_id  FK null</tspan>
+<tspan x="805.3" dy="15.6">asset_id     FK -&gt; asset</tspan>
+<tspan x="805.3" dy="15.6">locale, revision</tspan>
+<tspan x="805.3" dy="15.6">gated bool, download_count</tspan>
+<tspan x="805.3" dy="15.6">-- the /downloads centre</tspan>
+</text>
+<rect x="1220.0" y="2646.6" width="820.0" height="635.8" rx="14" fill="#fdfdfe" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="1242.0" y="2681.1" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1242.0" dy="0.0">CONTENT</tspan>
+</text>
+<text x="1242.0" y="2701.2" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="1242.0" dy="0.0">Editorial surface. Typed blocks mean a new section design needs no migration.</tspan>
+</text>
+<rect x="1242.0" y="2720.4" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1256.0" y="2747.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1256.0" dy="0.0">page</tspan>
+</text>
+<text x="1256.0" y="2769.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1256.0" dy="0.0">id, slug unique, title</tspan>
+<tspan x="1256.0" dy="15.6">template enum</tspan>
+<tspan x="1256.0" dy="15.6">status, locale</tspan>
+<tspan x="1256.0" dy="15.6">seo jsonb</tspan>
+<tspan x="1256.0" dy="15.6">-- about, quality,</tspan>
+<tspan x="1256.0" dy="15.6">-- sustainability, contact</tspan>
+</text>
+<rect x="1639.0" y="2720.4" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1653.0" y="2747.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1653.0" dy="0.0">content_block</tspan>
+</text>
+<text x="1653.0" y="2769.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1653.0" dy="0.0">id, page_id FK -&gt; page</tspan>
+<tspan x="1653.0" dy="15.6">type enum(hero|stat|rail</tspan>
+<tspan x="1653.0" dy="15.6">     |timeline|bento|gallery</tspan>
+<tspan x="1653.0" dy="15.6">     |cta|richtext|slider)</tspan>
+<tspan x="1653.0" dy="15.6">sort_order, data jsonb</tspan>
+<tspan x="1653.0" dy="15.6">-- new section = no DDL</tspan>
+</text>
+<rect x="1242.0" y="2906.4" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1256.0" y="2933.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1256.0" dy="0.0">news_post</tspan>
+</text>
+<text x="1256.0" y="2955.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1256.0" dy="0.0">id, slug unique, title</tspan>
+<tspan x="1256.0" dy="15.6">excerpt, body_md</tspan>
+<tspan x="1256.0" dy="15.6">hero_asset_id FK -&gt; asset</tspan>
+<tspan x="1256.0" dy="15.6">tags text[]  (GIN)</tspan>
+<tspan x="1256.0" dy="15.6">published_at (BRIN)</tspan>
+<tspan x="1256.0" dy="15.6">author_id FK -&gt; app_user</tspan>
+</text>
+<rect x="1639.0" y="2906.4" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1653.0" y="2933.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1653.0" dy="0.0">installation</tspan>
+</text>
+<text x="1653.0" y="2955.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1653.0" dy="0.0">id, slug unique, title</tspan>
+<tspan x="1653.0" dy="15.6">client_name, city, state</tspan>
+<tspan x="1653.0" dy="15.6">industry_id FK -&gt; industry</tspan>
+<tspan x="1653.0" dy="15.6">geo geography(Point)</tspan>
+<tspan x="1653.0" dy="15.6">     &lt;- PostGIS, GiST</tspan>
+<tspan x="1653.0" dy="15.6">year, body_md</tspan>
+</text>
+<rect x="1242.0" y="3092.4" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1256.0" y="3119.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1256.0" dy="0.0">award_cert</tspan>
+</text>
+<text x="1256.0" y="3141.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1256.0" dy="0.0">id, title, body</tspan>
+<tspan x="1256.0" dy="15.6">issuer, issued_on</tspan>
+<tspan x="1256.0" dy="15.6">expires_on</tspan>
+<tspan x="1256.0" dy="15.6">asset_id FK -&gt; asset</tspan>
+<tspan x="1256.0" dy="15.6">kind enum(award|iso|ce</tspan>
+<tspan x="1256.0" dy="15.6">     |test_report)</tspan>
+</text>
+<rect x="1639.0" y="3092.4" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1653.0" y="3119.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1653.0" dy="0.0">content_revision</tspan>
+</text>
+<text x="1653.0" y="3141.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1653.0" dy="0.0">id, entity_type, entity_id</tspan>
+<tspan x="1653.0" dy="15.6">version int</tspan>
+<tspan x="1653.0" dy="15.6">payload jsonb &lt;- snapshot</tspan>
+<tspan x="1653.0" dy="15.6">author_id, created_at</tspan>
+<tspan x="1653.0" dy="15.6">UNIQUE(entity_type,</tspan>
+<tspan x="1653.0" dy="15.6">   entity_id, version)</tspan>
+</text>
+<rect x="2100.0" y="2646.6" width="820.0" height="661.5" rx="14" fill="#fdfdfe" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="2122.0" y="2681.1" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2122.0" dy="0.0">DEMAND  &amp;  CAREERS</tspan>
+</text>
+<text x="2122.0" y="2701.2" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="2122.0" dy="0.0">The revenue and hiring funnels. Append-only in spirit; edits go to audit_log.</tspan>
+</text>
+<rect x="2122.0" y="2720.4" width="379.0" height="193.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2136.0" y="2747.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2136.0" dy="0.0">lead</tspan>
+</text>
+<text x="2136.0" y="2769.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2136.0" dy="0.0">id uuid pk, ref text unique</tspan>
+<tspan x="2136.0" dy="15.6">type enum(contact|rfq</tspan>
+<tspan x="2136.0" dy="15.6">     |support|callback|demo)</tspan>
+<tspan x="2136.0" dy="15.6">name, email, phone, company</tspan>
+<tspan x="2136.0" dy="15.6">city, message</tspan>
+<tspan x="2136.0" dy="15.6">source jsonb (utm, referrer)</tspan>
+<tspan x="2136.0" dy="15.6">status enum, owner_id FK</tspan>
+<tspan x="2136.0" dy="15.6">crm_ref, consent_at</tspan>
+<tspan x="2136.0" dy="15.6">ip_hash, created_at (BRIN)</tspan>
+</text>
+<rect x="2519.0" y="2720.4" width="379.0" height="193.7" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2533.0" y="2747.2" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2533.0" dy="0.0">lead_item</tspan>
+</text>
+<text x="2533.0" y="2769.6" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2533.0" dy="0.0">lead_id    FK -&gt; lead</tspan>
+<tspan x="2533.0" dy="15.6">product_id FK null</tspan>
+<tspan x="2533.0" dy="15.6">variant_id FK null</tspan>
+<tspan x="2533.0" dy="15.6">qty, note</tspan>
+<tspan x="2533.0" dy="15.6">-- the 'quote cart':</tspan>
+<tspan x="2533.0" dy="15.6">-- an RFQ is one lead</tspan>
+<tspan x="2533.0" dy="15.6">-- plus N line items</tspan>
+</text>
+<rect x="2122.0" y="2932.0" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2136.0" y="2958.9" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2136.0" dy="0.0">newsletter_subscriber</tspan>
+</text>
+<text x="2136.0" y="2981.2" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2136.0" dy="0.0">id, email citext unique</tspan>
+<tspan x="2136.0" dy="15.6">status enum(pending</tspan>
+<tspan x="2136.0" dy="15.6">     |confirmed|unsubscribed)</tspan>
+<tspan x="2136.0" dy="15.6">confirm_token, confirmed_at</tspan>
+<tspan x="2136.0" dy="15.6">unsub_at, source</tspan>
+<tspan x="2136.0" dy="15.6">-- double opt-in is the</tspan>
+<tspan x="2136.0" dy="15.6">-- DPDP consent proof</tspan>
+</text>
+<rect x="2519.0" y="2932.0" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2533.0" y="2958.9" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2533.0" dy="0.0">job</tspan>
+</text>
+<text x="2533.0" y="2981.2" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2533.0" dy="0.0">id, slug unique, title</tspan>
+<tspan x="2533.0" dy="15.6">department, location</tspan>
+<tspan x="2533.0" dy="15.6">employment_type</tspan>
+<tspan x="2533.0" dy="15.6">description_md</tspan>
+<tspan x="2533.0" dy="15.6">status enum, openings</tspan>
+<tspan x="2533.0" dy="15.6">posted_at, closes_at</tspan>
+</text>
+<rect x="2122.0" y="3118.0" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2136.0" y="3144.9" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2136.0" dy="0.0">application</tspan>
+</text>
+<text x="2136.0" y="3167.2" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2136.0" dy="0.0">id, job_id FK null</tspan>
+<tspan x="2136.0" dy="15.6">   (null = speculative CV)</tspan>
+<tspan x="2136.0" dy="15.6">name, email, phone</tspan>
+<tspan x="2136.0" dy="15.6">cv_asset_id FK -&gt; asset</tspan>
+<tspan x="2136.0" dy="15.6">answers jsonb</tspan>
+<tspan x="2136.0" dy="15.6">stage enum, rating</tspan>
+<tspan x="2136.0" dy="15.6">UNIQUE(job_id, email)</tspan>
+</text>
+<rect x="2519.0" y="3118.0" width="379.0" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2533.0" y="3144.9" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2533.0" dy="0.0">outbox</tspan>
+</text>
+<text x="2533.0" y="3167.2" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2533.0" dy="0.0">id bigserial pk</tspan>
+<tspan x="2533.0" dy="15.6">aggregate_type, aggregate_id</tspan>
+<tspan x="2533.0" dy="15.6">event_type, payload jsonb</tspan>
+<tspan x="2533.0" dy="15.6">created_at, published_at null</tspan>
+<tspan x="2533.0" dy="15.6">attempts int, last_error</tspan>
+<tspan x="2533.0" dy="15.6">PARTIAL INDEX WHERE</tspan>
+<tspan x="2533.0" dy="15.6">  published_at IS NULL</tspan>
+</text>
+<rect x="0.0" y="3426.9" width="1180.0" height="449.8" rx="14" fill="#fdfdfe" stroke="#adb5bd" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="22.0" y="3461.5" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="22.0" dy="0.0">PLATFORM  &amp;  SEO</tspan>
+</text>
+<text x="22.0" y="3481.6" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="22.0" dy="0.0">Small tables that prevent large outages.</tspan>
+</text>
+<rect x="22.0" y="3500.7" width="366.7" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="36.0" y="3527.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">app_user</tspan>
+</text>
+<text x="36.0" y="3549.9" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">id, email unique</tspan>
+<tspan x="36.0" dy="15.6">name, idp_sub</tspan>
+<tspan x="36.0" dy="15.6">status, last_login_at</tspan>
+<tspan x="36.0" dy="15.6">-- staff only. Visitors are</tspan>
+<tspan x="36.0" dy="15.6">-- never accounts until the</tspan>
+<tspan x="36.0" dy="15.6">-- phase-3 dealer portal.</tspan>
+</text>
+<rect x="406.7" y="3500.7" width="366.7" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="420.7" y="3527.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">role_binding</tspan>
+</text>
+<text x="420.7" y="3549.9" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">user_id FK -&gt; app_user</tspan>
+<tspan x="420.7" dy="15.6">role enum(admin|editor</tspan>
+<tspan x="420.7" dy="15.6">     |sales|hr|viewer)</tspan>
+<tspan x="420.7" dy="15.6">scope text (e.g. catalog:*)</tspan>
+<tspan x="420.7" dy="15.6">PK(user_id, role, scope)</tspan>
+</text>
+<rect x="791.3" y="3500.7" width="366.7" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="805.3" y="3527.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">audit_log</tspan>
+</text>
+<text x="805.3" y="3549.9" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">id bigserial, actor_id</tspan>
+<tspan x="805.3" dy="15.6">action, entity_type, entity_id</tspan>
+<tspan x="805.3" dy="15.6">diff jsonb, ip, ua, at</tspan>
+<tspan x="805.3" dy="15.6">APPEND-ONLY: no UPDATE or</tspan>
+<tspan x="805.3" dy="15.6">DELETE grant to the app role</tspan>
+<tspan x="805.3" dy="15.6">monthly partitions -&gt; cold</tspan>
+</text>
+<rect x="22.0" y="3686.7" width="366.7" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="36.0" y="3713.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">redirect</tspan>
+</text>
+<text x="36.0" y="3735.9" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="36.0" dy="0.0">from_path text pk</tspan>
+<tspan x="36.0" dy="15.6">to_path, status 301|302</tspan>
+<tspan x="36.0" dy="15.6">hits, created_by, created_at</tspan>
+<tspan x="36.0" dy="15.6">-- survives every IA change;</tspan>
+<tspan x="36.0" dy="15.6">-- loaded into edge KV so a</tspan>
+<tspan x="36.0" dy="15.6">-- redirect costs no origin hop</tspan>
+</text>
+<rect x="406.7" y="3686.7" width="366.7" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="420.7" y="3713.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">locale + translation</tspan>
+</text>
+<text x="420.7" y="3735.9" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="420.7" dy="0.0">locale: code pk, name, rtl</tspan>
+<tspan x="420.7" dy="15.6">translation:</tspan>
+<tspan x="420.7" dy="15.6"> (entity_type, entity_id,</tspan>
+<tspan x="420.7" dy="15.6">  field, locale) -&gt; value</tspan>
+<tspan x="420.7" dy="15.6">PK on all four columns</tspan>
+<tspan x="420.7" dy="15.6">-- en-IN now; ar/fr later</tspan>
+<tspan x="420.7" dy="15.6">-- with zero schema change</tspan>
+</text>
+<rect x="791.3" y="3686.7" width="366.7" height="168.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="805.3" y="3713.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">feature_flag</tspan>
+</text>
+<text x="805.3" y="3735.9" font-size="11.0" font-family="ui-monospace, SFMono-Regular, Consolas, Liberation Mono, monospace" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="805.3" dy="0.0">key text pk</tspan>
+<tspan x="805.3" dy="15.6">enabled bool, rollout_pct</tspan>
+<tspan x="805.3" dy="15.6">rules jsonb</tspan>
+<tspan x="805.3" dy="15.6">-- dark-launch the build-and-</tspan>
+<tspan x="805.3" dy="15.6">-- price configurator, the</tspan>
+<tspan x="805.3" dy="15.6">-- dealer portal, a new PDP</tspan>
+</text>
+<rect x="1220.0" y="3426.9" width="1700.0" height="555.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1234.0" y="3457.5" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">Key modelling decisions (the ones that get argued about in review)</tspan>
+</text>
+<text x="1234.0" y="3482.4" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">1  Hybrid relational + JSONB, deliberately — not one or the other.</tspan>
+<tspan x="1234.0" dy="17.8">   The skeleton (category -&gt; product -&gt; variant -&gt; asset -&gt; document, plus the product&lt;-&gt;industry m:n)</tspan>
+<tspan x="1234.0" dy="17.8">   is a fixed graph with real integrity rules, so it is relational with enforced foreign keys. The spec</tspan>
+<tspan x="1234.0" dy="17.8">   sheet is not fixed: a blast freezer has pull-down time, a wine chiller has bottle count, a serve-over</tspan>
+<tspan x="1234.0" dy="17.8">   has pane geometry. Those live in product.specs / variant.dims_mm as JSONB behind a GIN index, with a</tspan>
+<tspan x="1234.0" dy="17.8">   per-category JSON Schema validating them on write. A new product family therefore ships with zero</tspan>
+<tspan x="1234.0" dy="17.8">   migration, while foreign keys still make orphaned variants and assets impossible.</tspan>
+<tspan x="1234.0" dy="17.8"> </tspan>
+<tspan x="1234.0" dy="17.8">2  The VARIANT, not the product, is the unit of truth for specs.</tspan>
+<tspan x="1234.0" dy="17.8">   Williams shows one 'Blast Freezer' page but sells many model codes. Dimensions, capacity, energy class</tspan>
+<tspan x="1234.0" dy="17.8">   and price belong to the SKU; marketing copy belongs to the product. Collapsing the two is the single</tspan>
+<tspan x="1234.0" dy="17.8">   mistake that forces a schema rewrite in year two, the moment someone asks for a price list.</tspan>
+<tspan x="1234.0" dy="17.8"> </tspan>
+<tspan x="1234.0" dy="17.8">3  Bytes never go in the database. asset holds metadata plus a storage_key; S3 holds the file; the CDN</tspan>
+<tspan x="1234.0" dy="17.8">   serves it. This keeps the Postgres working set in RAM and keeps restores measured in minutes.</tspan>
+<tspan x="1234.0" dy="17.8"> </tspan>
+<tspan x="1234.0" dy="17.8">4  Content is versioned; demand is immutable. content_revision keeps a full JSONB snapshot per publish.</tspan>
+<tspan x="1234.0" dy="17.8">   lead and application rows are never edited in place — status transitions append to audit_log, which is</tspan>
+<tspan x="1234.0" dy="17.8">   how you answer 'who touched this enquiry, and when' during a commission dispute.</tspan>
+<tspan x="1234.0" dy="17.8"> </tspan>
+<tspan x="1234.0" dy="17.8">5  Derived stores are disposable. OpenSearch, Redis and ClickHouse can all be dropped and rebuilt from</tspan>
+<tspan x="1234.0" dy="17.8">   Postgres. Nothing is stored only in them. That rule is what keeps one backup and one restore drill.</tspan>
+<tspan x="1234.0" dy="17.8"> </tspan>
+<tspan x="1234.0" dy="17.8">6  Indexes come from the actual query shapes, not from habit:</tspan>
+<tspan x="1234.0" dy="17.8">   GiST on category.path (subtree reads) and on installation.geo (radius search)</tspan>
+<tspan x="1234.0" dy="17.8">   GIN on product.specs (containment), search_tsv (full text), news_post.tags (array overlap)</tspan>
+<tspan x="1234.0" dy="17.8">   BRIN on created_at / published_at — append-only time columns, ~1000x smaller than a B-tree</tspan>
+<tspan x="1234.0" dy="17.8">   PARTIAL on outbox WHERE published_at IS NULL — the only genuinely hot scan in the system</tspan>
+</text>
+<text x="0.0" y="4074.0" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">4 · Why PostgreSQL — and explicitly why not the alternatives</tspan>
+</text>
+<text x="0.0" y="4099.6" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">A database choice is only defensible next to the options it beat. Decision record: ADR-0001, revisit trigger = p95 primary CPU &gt; 60% for 7 days.</tspan>
+</text>
+<rect x="0.0" y="4126.3" width="1180.0" height="646.1" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="14.0" y="4158.7" font-size="20.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">PostgreSQL — chosen</tspan>
+</text>
+<text x="14.0" y="4184.2" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">The shape of the domain fits it.</tspan>
+<tspan x="14.0" dy="17.8">   Roughly 90% of this system is relational with hard integrity rules; the remaining 10% (spec sheets,</tspan>
+<tspan x="14.0" dy="17.8">   page blocks, UTM payloads, ATS answers) is document-shaped. Postgres is the only mainstream engine</tspan>
+<tspan x="14.0" dy="17.8">   that is genuinely first class at both. JSONB + GIN gives you MongoDB's flexibility without giving up</tspan>
+<tspan x="14.0" dy="17.8">   joins, foreign keys or transactions — so the flexibility argument for Mongo simply disappears.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">The one thing that must not break is transactional.</tspan>
+<tspan x="14.0" dy="17.8">   A dropped enquiry is lost revenue. lead + lead_item + outbox must commit or fail as a unit. ACID gives</tspan>
+<tspan x="14.0" dy="17.8">   that in a single statement, with no distributed-transaction machinery and no dual-write race.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">It absorbs the next three roadmap features without introducing a new datastore:</tspan>
+<tspan x="14.0" dy="17.8">   full-text search      -&gt; tsvector + pg_trgm, good to ~10^5 docs, so OpenSearch is deferred not required</tspan>
+<tspan x="14.0" dy="17.8">   dealer / install map  -&gt; PostGIS radius and nearest-neighbour queries</tspan>
+<tspan x="14.0" dy="17.8">   'similar products', AI -&gt; pgvector embeddings alongside the row they describe</tspan>
+<tspan x="14.0" dy="17.8">   cabinet IoT telemetry -&gt; TimescaleDB hypertables in the same instance</tspan>
+<tspan x="14.0" dy="17.8">   One engine to operate, back up, monitor, tune and hire for. That is the real cost saving.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">Read scaling here is boring and proven.</tspan>
+<tspan x="14.0" dy="17.8">   Streaming read replicas + PgBouncer absorb a 100x read spike, and 95% of reads never reach the</tspan>
+<tspan x="14.0" dy="17.8">   database because the CDN already answered. Writes are in the hundreds per day — a single primary is</tspan>
+<tspan x="14.0" dy="17.8">   the correct answer for years, and saying so is part of the design, not an omission.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">Change data capture is native.</tspan>
+<tspan x="14.0" dy="17.8">   Logical decoding + Debezium turns every commit into an event for search, cache purge and the</tspan>
+<tspan x="14.0" dy="17.8">   warehouse. Combined with the outbox table this removes the dual-write bug class entirely.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">It is cheap, portable, and hard to get locked into.</tspan>
+<tspan x="14.0" dy="17.8">   RDS, Aurora, Cloud SQL, Neon, Supabase or a plain VM — same SQL, same dump. The exit cost is a</tspan>
+<tspan x="14.0" dy="17.8">   pg_dump, which is exactly the property you want in a vendor decision you cannot yet justify revisiting.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">Limits we accept, with the mitigation written down:</tspan>
+<tspan x="14.0" dy="17.8">   single writer (fine at this write volume) · vacuum and bloat need monitoring · connection cost needs</tspan>
+<tspan x="14.0" dy="17.8">   PgBouncer · major-version upgrades need a rehearsed blue/green drill. All standard, all in the runbook.</tspan>
+</text>
+<rect x="1220.0" y="4126.3" width="840.0" height="200.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1234.0" y="4155.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">MongoDB — rejected</tspan>
+</text>
+<text x="1234.0" y="4179.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">The catalogue is a graph with integrity rules, not a pile of documents. Orphaned variants and dangling asset references</tspan>
+<tspan x="1234.0" dy="17.8">are the number-one CMS bug class and Mongo cannot express the constraint that prevents them. $lookup is weak and slow</tspan>
+<tspan x="1234.0" dy="17.8">for the faceted admin queries this team runs daily, and multi-document transactions remain a bolt-on. Its one genuine</tspan>
+<tspan x="1234.0" dy="17.8">advantage — schemaless specs — is already covered by JSONB + GIN with joins left intact. Choosing it here means</tspan>
+<tspan x="1234.0" dy="17.8">hand-rolling referential integrity in application code forever.</tspan>
+</text>
+<rect x="2080.0" y="4126.3" width="840.0" height="200.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="2094.0" y="4155.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2094.0" dy="0.0">DynamoDB — rejected</tspan>
+</text>
+<text x="2094.0" y="4179.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2094.0" dy="0.0">Excellent when every access pattern is known up front and write scale is unbounded. We have neither. 'Products where</tspan>
+<tspan x="2094.0" dy="17.8">capacity &gt; 600 L and refrigerant = R290, faceted by industry' is ad-hoc by nature, and the BI team needs joins. You</tspan>
+<tspan x="2094.0" dy="17.8">would pay in GSI sprawl, denormalisation and write-amplification for a workload of tens of writes per day. Right tool,</tspan>
+<tspan x="2094.0" dy="17.8">wrong problem — and no SQL for analytics.</tspan>
+</text>
+<rect x="1220.0" y="4346.3" width="840.0" height="200.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1234.0" y="4375.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">MySQL / Aurora MySQL — viable, not chosen</tspan>
+</text>
+<text x="1234.0" y="4399.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">This would genuinely work; it is not a bad answer. What it costs: GIN-indexed JSON containment, tsvector ranking,</tspan>
+<tspan x="1234.0" dy="17.8">ltree, PostGIS, pgvector, exclusion constraints, and Debezium-grade logical decoding. Every one of those is already on</tspan>
+<tspan x="1234.0" dy="17.8">the roadmap (specs, search, breadcrumbs, dealer map, semantic search, CDC). Pick MySQL only if the team's existing ops</tspan>
+<tspan x="1234.0" dy="17.8">muscle is MySQL — that reason beats this list.</tspan>
+</text>
+<rect x="2080.0" y="4346.3" width="840.0" height="200.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="2094.0" y="4375.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2094.0" dy="0.0">Firestore / Airtable / Sheets as the backend — rejected</tspan>
+</text>
+<text x="2094.0" y="4399.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2094.0" dy="0.0">Firestore: weak ad-hoc querying, per-read billing that punishes a crawler walking the catalogue, no SQL for BI, heavy</tspan>
+<tspan x="2094.0" dy="17.8">lock-in. Airtable or Sheets is genuinely tempting at 350 SKUs and will work for a quarter, then deliver no</tspan>
+<tspan x="2094.0" dy="17.8">transactions, no referential integrity, hard API rate limits and no migration path. Supabase is fine — but it *is*</tspan>
+<tspan x="2094.0" dy="17.8">Postgres, so that is a hosting decision, not a database decision.</tspan>
+</text>
+<rect x="1220.0" y="4566.3" width="840.0" height="200.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1234.0" y="4595.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">Elasticsearch / OpenSearch as the primary store — rejected</tspan>
+</text>
+<text x="1234.0" y="4619.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1234.0" dy="0.0">No transactions, no foreign keys, painful and lossy on mapping changes, and a reindex bug becomes permanent data loss</tspan>
+<tspan x="1234.0" dy="17.8">rather than a cache miss. Its correct role is a derived, disposable index fed by CDC — which is exactly how it appears</tspan>
+<tspan x="1234.0" dy="17.8">in layer 6. The same reasoning excludes Redis-as-database.</tspan>
+</text>
+<rect x="2080.0" y="4566.3" width="840.0" height="200.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="2094.0" y="4595.0" font-size="16.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2094.0" dy="0.0">Headless SaaS CMS alone (Contentful / Sanity) — partially adopted</tspan>
+</text>
+<text x="2094.0" y="4619.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2094.0" dy="0.0">Superb editor experience for pages and news, and worth paying for. But product specs, RFQ leads and CV applications</tspan>
+<tspan x="2094.0" dy="17.8">need our own transactional store, real joins and our own retention and erasure controls — and per-record SaaS pricing</tspan>
+<tspan x="2094.0" dy="17.8">across 350 SKUs x N locales is poor value. Chosen middle path: Payload or Strapi running on OUR Postgres. One schema,</tspan>
+<tspan x="2094.0" dy="17.8">one backup, one restore drill, and the editors still get a good CMS.</tspan>
+</text>
+<text x="0.0" y="4864.5" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">5 · Scaling path — buy the next 10x, not the next 1000x</tspan>
+</text>
+<text x="0.0" y="4890.1" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Each phase is triggered by a metric, never by a calendar date. Premature distribution is the most expensive mistake available here.</tspan>
+</text>
+<rect x="0.0" y="4916.8" width="711.2" height="360.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="4947.4" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Phase 0 — today</tspan>
+</text>
+<text x="14.0" y="4972.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Hand-written HTML + CSS on a CDN.</tspan>
+<tspan x="14.0" dy="17.8">Zero servers, effectively zero cost.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">HOLDS: a handful of pages, content</tspan>
+<tspan x="14.0" dy="17.8">changed by a developer in git.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">BREAKS WHEN: a non-developer has to</tspan>
+<tspan x="14.0" dy="17.8">publish, or SKUs pass roughly 30, or</tspan>
+<tspan x="14.0" dy="17.8">the same spec appears on 4 pages and</tspan>
+<tspan x="14.0" dy="17.8">they start to disagree with each other.</tspan>
+</text>
+<rect x="736.2" y="4916.8" width="711.2" height="360.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="750.2" y="4947.4" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="750.2" dy="0.0">Phase 1 — 0 to 50k MAU  (Q1)</tspan>
+</text>
+<text x="750.2" y="4972.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="750.2" dy="0.0">Next.js on Vercel or Cloud Run.</tspan>
+<tspan x="750.2" dy="17.8">Managed Postgres, 2 vCPU / 8 GB.</tspan>
+<tspan x="750.2" dy="17.8">S3 + CDN. Resend for mail.</tspan>
+<tspan x="750.2" dy="17.8">Payload CMS on the SAME Postgres.</tspan>
+<tspan x="750.2" dy="17.8">Modular monolith, one deploy unit.</tspan>
+<tspan x="750.2" dy="17.8"> </tspan>
+<tspan x="750.2" dy="17.8">Search = Postgres tsvector.</tspan>
+<tspan x="750.2" dy="17.8">Queue = outbox + a cron worker.</tspan>
+<tspan x="750.2" dy="17.8">No Redis, no Kafka, no mesh.</tspan>
+<tspan x="750.2" dy="17.8"> </tspan>
+<tspan x="750.2" dy="17.8">Roughly INR 15-25k/month. Two</tspan>
+<tspan x="750.2" dy="17.8">engineers can run it comfortably.</tspan>
+</text>
+<rect x="1472.5" y="4916.8" width="711.2" height="360.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1486.5" y="4947.4" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1486.5" dy="0.0">Phase 2 — 50k to 500k MAU, multi-locale</tspan>
+</text>
+<text x="1486.5" y="4972.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1486.5" dy="0.0">ADD: 2 read replicas + PgBouncer ·</tspan>
+<tspan x="1486.5" dy="17.8">Redis · OpenSearch + CDC indexer ·</tspan>
+<tspan x="1486.5" dy="17.8">SQS + autoscaled workers · image CDN ·</tspan>
+<tspan x="1486.5" dy="17.8">i18n + hreflang · CRM sync ·</tspan>
+<tspan x="1486.5" dy="17.8">ClickHouse for lead attribution.</tspan>
+<tspan x="1486.5" dy="17.8"> </tspan>
+<tspan x="1486.5" dy="17.8">Still ONE codebase; the services in</tspan>
+<tspan x="1486.5" dy="17.8">layer 5 stay modules behind interfaces.</tspan>
+<tspan x="1486.5" dy="17.8"> </tspan>
+<tspan x="1486.5" dy="17.8">Capacity check: a 40 rps expo spike</tspan>
+<tspan x="1486.5" dy="17.8">is one replica and a warm cache. The</tspan>
+<tspan x="1486.5" dy="17.8">work here is correctness and freshness,</tspan>
+<tspan x="1486.5" dy="17.8">not throughput.</tspan>
+</text>
+<rect x="2208.8" y="4916.8" width="711.2" height="360.0" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="2222.8" y="4947.4" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2222.8" dy="0.0">Phase 3 — &gt;1M MAU / dealer portal / IoT</tspan>
+</text>
+<text x="2222.8" y="4972.3" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2222.8" dy="0.0">Extract only the seams that hurt, in</tspan>
+<tspan x="2222.8" dy="17.8">order: Search, Media, Notification —</tspan>
+<tspan x="2222.8" dy="17.8">bursty, independently scaled, clean</tspan>
+<tspan x="2222.8" dy="17.8">contracts already. Kafka replaces SQS.</tspan>
+<tspan x="2222.8" dy="17.8"> </tspan>
+<tspan x="2222.8" dy="17.8">Multi-region: single writer region +</tspan>
+<tspan x="2222.8" dy="17.8">regional read replicas + regional ISR.</tspan>
+<tspan x="2222.8" dy="17.8">Timescale for cabinet telemetry,</tspan>
+<tspan x="2222.8" dy="17.8">pgvector for the AI spec assistant.</tspan>
+<tspan x="2222.8" dy="17.8"> </tspan>
+<tspan x="2222.8" dy="17.8">TRIGGERS, not dates: p95 primary CPU</tspan>
+<tspan x="2222.8" dy="17.8">&gt;60%, deploy lead time &gt;1 day, or two</tspan>
+<tspan x="2222.8" dy="17.8">teams blocked on one repository.</tspan>
+</text>
+<text x="0.0" y="5368.9" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">6 · Capacity, SLOs and the risks worth building against</tspan>
+</text>
+<rect x="0.0" y="5401.6" width="960.0" height="519.5" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="14.0" y="5432.2" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">Capacity — sized from reality, not vanity</tspan>
+</text>
+<text x="14.0" y="5457.1" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">TRAFFIC  A B2B refrigeration brand in India lands around</tspan>
+<tspan x="14.0" dy="17.8">  150-300k pageviews/month  -&gt;  about 0.1 rps average.</tspan>
+<tspan x="14.0" dy="17.8">  Trade-show or campaign peak: 20-40 rps for a couple of hours.</tspan>
+<tspan x="14.0" dy="17.8">  With 95%+ CDN offload the origin sees under 2 rps even at peak.</tspan>
+<tspan x="14.0" dy="17.8">  One small instance and one replica is genuinely enough.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">WRITES  30-80 leads/day, ~10 applications/day, ~20 publishes/week.</tspan>
+<tspan x="14.0" dy="17.8">  Hundreds of writes per day. A single primary is correct.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">STORAGE  350 SKUs x (8 images x 300 KB + 2 PDFs x 3 MB) ~ 8 GB in S3.</tspan>
+<tspan x="14.0" dy="17.8">  Postgres stays under 2 GB, so the entire working set fits in RAM.</tspan>
+<tspan x="14.0" dy="17.8">  No sharding, ever, at this scale. Anyone proposing it is designing</tspan>
+<tspan x="14.0" dy="17.8">  for their promotion packet rather than for this business.</tspan>
+<tspan x="14.0" dy="17.8"> </tspan>
+<tspan x="14.0" dy="17.8">THE REAL BILL IS EGRESS  Images dominate cost and LCP alike. AVIF plus</tspan>
+<tspan x="14.0" dy="17.8">  exact-width srcset plus immutable long-cache cuts it by roughly 70%,</tspan>
+<tspan x="14.0" dy="17.8">  which is why the image CDN in layer 2 is not a nice-to-have.</tspan>
+</text>
+<rect x="980.0" y="5401.6" width="960.0" height="519.5" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="994.0" y="5432.2" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="994.0" dy="0.0">SLOs and the performance budget</tspan>
+</text>
+<text x="994.0" y="5457.1" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="994.0" dy="0.0">AVAILABILITY   site 99.9%  ·  POST /v1/leads 99.95%</tspan>
+<tspan x="994.0" dy="17.8">               the lead endpoint gets the tighter target because it is</tspan>
+<tspan x="994.0" dy="17.8">               the only revenue-carrying write in the system.</tspan>
+<tspan x="994.0" dy="17.8"> </tspan>
+<tspan x="994.0" dy="17.8">LATENCY        TTFB p75 &lt; 400 ms   ·   internal API p99 &lt; 300 ms</tspan>
+<tspan x="994.0" dy="17.8"> </tspan>
+<tspan x="994.0" dy="17.8">WEB VITALS     LCP p75 &lt; 2.0 s  ·  INP &lt; 200 ms  ·  CLS &lt; 0.1</tspan>
+<tspan x="994.0" dy="17.8">               enforced by Lighthouse CI budgets — a regression fails</tspan>
+<tspan x="994.0" dy="17.8">               the build rather than quietly shipping. CWV is a Google</tspan>
+<tspan x="994.0" dy="17.8">               ranking input, so this is an SEO control, not polish.</tspan>
+<tspan x="994.0" dy="17.8"> </tspan>
+<tspan x="994.0" dy="17.8">DURABILITY     RPO 5 min (WAL ship)  ·  RTO 30 min, drilled quarterly</tspan>
+<tspan x="994.0" dy="17.8">               leads: zero tolerance -&gt; outbox + DLQ + alert on depth &gt; 0</tspan>
+<tspan x="994.0" dy="17.8"> </tspan>
+<tspan x="994.0" dy="17.8">FRESHNESS      publish -&gt; live p95 &lt; 30 s  ·  index lag p95 &lt; 60 s</tspan>
+<tspan x="994.0" dy="17.8"> </tspan>
+<tspan x="994.0" dy="17.8">A11Y / SEO     WCAG 2.2 AA with axe clean in CI · schema.org Product,</tspan>
+<tspan x="994.0" dy="17.8">               Organization, BreadcrumbList · sitemap per locale ·</tspan>
+<tspan x="994.0" dy="17.8">               301 map maintained on every information-architecture change</tspan>
+<tspan x="994.0" dy="17.8"> </tspan>
+<tspan x="994.0" dy="17.8">ERROR BUDGET   0.1%/month ~ 43 min. Budget exhausted -&gt; feature freeze</tspan>
+<tspan x="994.0" dy="17.8">               and the next sprint is reliability work. Not negotiable.</tspan>
+</text>
+<rect x="1960.0" y="5401.6" width="960.0" height="519.5" rx="12" fill="#ffffff" stroke="#343a40" stroke-width="2.0"/>
+<text x="1974.0" y="5432.2" font-size="18.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1974.0" dy="0.0">Top risks and what we actually build for them</tspan>
+</text>
+<text x="1974.0" y="5457.1" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1974.0" dy="0.0">1  SEO REGRESSION ON MIGRATION — the existing URLs are the asset, and a</tspan>
+<tspan x="1974.0" dy="17.8">   rebuild is the single most common way to lose organic traffic.</tspan>
+<tspan x="1974.0" dy="17.8">   Build: crawl and freeze the current URL inventory, redirect table</tspan>
+<tspan x="1974.0" dy="17.8">   loaded into edge KV, pre-launch diff of titles / canonicals /</tspan>
+<tspan x="1974.0" dy="17.8">   structured data, staged traffic rollout with rank monitoring.</tspan>
+<tspan x="1974.0" dy="17.8"> </tspan>
+<tspan x="1974.0" dy="17.8">2  SILENT LEAD LOSS — invisible and expensive.</tspan>
+<tspan x="1974.0" dy="17.8">   Build: synthetic end-to-end lead probe every 5 min, alert on zero</tspan>
+<tspan x="1974.0" dy="17.8">   leads in a business hour, DLQ depth alarm, weekly DB-vs-CRM reconcile.</tspan>
+<tspan x="1974.0" dy="17.8"> </tspan>
+<tspan x="1974.0" dy="17.8">3  SPAM AND COMPETITOR PRICE SCRAPING.</tspan>
+<tspan x="1974.0" dy="17.8">   Build: Turnstile + honeypot + per-IP buckets; dealer pricing behind an</tspan>
+<tspan x="1974.0" dy="17.8">   authenticated scope from phase 3 rather than public HTML.</tspan>
+<tspan x="1974.0" dy="17.8"> </tspan>
+<tspan x="1974.0" dy="17.8">4  IMAGE BLOAT FROM MARKETING UPLOADS — the usual cause of a slow site.</tspan>
+<tspan x="1974.0" dy="17.8">   Build: the Media service enforces max dimensions, generates AVIF/WebP</tspan>
+<tspan x="1974.0" dy="17.8">   variants, rejects anything over 8 MB, emits a blurhash placeholder.</tspan>
+<tspan x="1974.0" dy="17.8"> </tspan>
+<tspan x="1974.0" dy="17.8">5  SINGLE-WRITER POSTGRES IS A SINGLE POINT OF FAILURE.</tspan>
+<tspan x="1974.0" dy="17.8">   Build: multi-AZ with automatic failover, PgBouncer reconnect, and a</tspan>
+<tspan x="1974.0" dy="17.8">   read-only degraded mode so the catalogue keeps serving from cache</tspan>
+<tspan x="1974.0" dy="17.8">   even while the primary is being replaced.</tspan>
+<tspan x="1974.0" dy="17.8"> </tspan>
+<tspan x="1974.0" dy="17.8">6  VENDOR CONCENTRATION (one PaaS + one CDN).</tspan>
+<tspan x="1974.0" dy="17.8">   Build: ship as a container and keep the DB plain Postgres, so leaving</tspan>
+<tspan x="1974.0" dy="17.8">   is a weekend of work rather than a rewrite.</tspan>
+</text>
+<text x="0.0" y="5983.1" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Legend:  green = system of record / recommended choice   ·   red = rejected option   ·   amber = viable alternative or partial adoption   ·   [seam] = the service boundary to extract first when phase 3 arrives   ·   dashed container = logical grouping, not a deployment unit.</tspan>
+</text>
+</svg>

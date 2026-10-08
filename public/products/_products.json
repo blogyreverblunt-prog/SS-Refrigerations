@@ -1,0 +1,165 @@
+{
+  "source": "https://www.hoshizaki.com/en/solutions-innovation/products/refrigeration",
+  "scraped": "2026-10-08",
+  "note": "Images and copy scraped from Hoshizaki Global's refrigeration catalogue page. Descriptions are verbatim. Image-to-product mapping verified against the raw HTML, not inferred from document order. These are reference assets for the catalogue build (docs/ia/SITE-SECTIONS-REPORT.md §5) -- replace with owned photography and rewritten copy before any public launch.",
+  "pending": "Background-removed cut-outs to be supplied by the client. Overwrite each file at the same path, or add a sibling '<slug>-cutout.png'; nothing else needs to change.",
+  "categories": [
+    {
+      "slug": "reach-in-refrigerator",
+      "name": "Reach-in Refrigerator",
+      "file": "public/products/reach-in-refrigerator.jpg",
+      "source_file": "https://www.hoshizaki.com/sites/default/files/2025-12/refrigeration_1.jpg",
+      "width": 1295,
+      "height": 1020,
+      "description": "Our commercial upright refrigerators come in a range of sizes and configurations — including refrigerator, freezer, and dual temp refrigerator-freezer combos. Offered in one-, two-, and three-section units with full or half doors in stainless steel or glass, they meet diverse business needs. Built for reliability and high cooling performance, our refrigerators are designed to support professional kitchens and operations across industries.",
+      "availability": [
+        "Japan",
+        "East and Southeast Asia",
+        "South Asia",
+        "Oceania",
+        "Europe",
+        "Middle East & Africa",
+        "North America",
+        "Latin America"
+      ],
+      "sub_types": [
+        "Refrigerator",
+        "Freezer",
+        "Dual-temp",
+        "Convertible"
+      ],
+      "india_available": true
+    },
+    {
+      "slug": "undercounter-refrigerator",
+      "name": "Undercounter Refrigerator",
+      "file": "public/products/undercounter-refrigerator.jpg",
+      "source_file": "https://www.hoshizaki.com/sites/default/files/2025-12/refrigeration_2.jpg",
+      "width": 1295,
+      "height": 1020,
+      "description": "Designed to fit under counters, these units make efficient use of space in any kitchen and other applications. Available in refrigerator, freezer, and dual-temp combination models, the lineup also includes drawer configurations for added convenience and accessibility.",
+      "availability": [
+        "Japan",
+        "East and Southeast Asia",
+        "South Asia",
+        "Oceania",
+        "Europe",
+        "Middle East & Africa",
+        "North America",
+        "Latin America"
+      ],
+      "sub_types": [
+        "Undercounter",
+        "Worktop",
+        "Drawer units",
+        "Chef base"
+      ],
+      "india_available": true
+    },
+    {
+      "slug": "glass-door-refrigerator",
+      "name": "Glass Door Refrigerator / Visi Cooler",
+      "file": "public/products/glass-door-refrigerator.jpg",
+      "source_file": "https://www.hoshizaki.com/sites/default/files/2025-12/refrigeration_3.jpg",
+      "width": 1295,
+      "height": 972,
+      "description": "Available in a wide range of models — from display cases to reach-in and compact units — our glass door refrigerators combine efficient cold storage with flexible merchandising functions. Designed to suit different store layouts and business needs, they offer an ideal balance of visibility and performance.",
+      "availability": [
+        "Japan",
+        "East and Southeast Asia",
+        "South Asia",
+        "Middle East & Africa",
+        "North America",
+        "Latin America"
+      ],
+      "sub_types": [
+        "Visi coolers",
+        "Countertop units",
+        "Full-height merchandisers",
+        "Compact units"
+      ],
+      "india_available": true
+    },
+    {
+      "slug": "sushi-display-case",
+      "name": "Sushi Display Case",
+      "file": "public/products/sushi-display-case.jpg",
+      "source_file": "https://www.hoshizaki.com/sites/default/files/2025-12/refrigeration_4.jpg",
+      "width": 1295,
+      "height": 972,
+      "description": "Specially designed for Japanese cuisine, these display cases preserve ingredients’ flavor while maximizing visibility. With an emphasis on presentation and ease of use, the lineup offers both refrigerated display cases (available worldwide) and those designed to maintain high humidity and constant temperature (Japan and Asian market only).",
+      "availability": [
+        "Japan",
+        "East and Southeast Asia",
+        "South Asia",
+        "Oceania",
+        "Europe",
+        "Middle East & Africa",
+        "North America"
+      ],
+      "sub_types": [
+        "Refrigerated display case",
+        "High-humidity constant-temperature case (Japan and Asia only)"
+      ],
+      "india_available": true,
+      "note": "The report repositions this as the broader 'Display Cases & Showcases' category -- pastry, confectionery and deli cabinets -- since sushi cases alone are a narrow fit for the Indian market."
+    },
+    {
+      "slug": "walk-in-refrigerator",
+      "name": "Walk-in Refrigerator",
+      "file": "public/products/walk-in-refrigerator.jpg",
+      "source_file": "https://www.hoshizaki.com/sites/default/files/2025-12/refrigeration_5.jpg",
+      "width": 1295,
+      "height": 972,
+      "description": "Ideal for storing large quantities of refrigerated products, these walk-in units offer flexible, temperature control and maintain uniform cooling throughout the chamber with forced-air circulation. Available in freezer, refrigerator, and high-humidity models, they provide reliable solutions for a wide range of industries and applications.",
+      "availability": [
+        "Japan"
+      ],
+      "sub_types": [
+        "Freezer",
+        "Refrigerator",
+        "High-humidity"
+      ],
+      "india_available": false,
+      "note": "MARKED JAPAN-ONLY by Hoshizaki. Confirm supply before publishing this category."
+    },
+    {
+      "slug": "deep-freezer",
+      "name": "Deep Freezer",
+      "file": "public/products/deep-freezer.jpg",
+      "source_file": "https://www.hoshizaki.com/sites/default/files/2025-12/refrigeration_6.jpg",
+      "width": 1295,
+      "height": 972,
+      "description": "Equipped with advanced freezing systems, high-quality insulation, and compressors, our deep freezers are ideal for long-term storage of frozen products. Hoshizaki’s technology enables ultra-low temperature storage (down to -60°C) for maximum freshness.",
+      "availability": [
+        "Japan",
+        "East and Southeast Asia",
+        "South Asia"
+      ],
+      "sub_types": [
+        "Hard-top",
+        "Glass-top",
+        "Ultra-low temperature (to -60°C)"
+      ],
+      "india_available": true
+    }
+  ],
+  "other": [
+    {
+      "slug": "refrigeration-hero",
+      "name": "Refrigeration category hero",
+      "file": "public/products/refrigeration-hero.jpg",
+      "source_file": "https://www.hoshizaki.com/sites/default/files/2026-01/refrigeration_hero.jpg",
+      "width": 1920,
+      "height": 667,
+      "description": "Banner image from the top of the Hoshizaki refrigeration page. A lifestyle/environment shot, not a product cut-out -- background removal does not apply to this one.",
+      "cutout_applicable": false
+    }
+  ],
+  "page_intro": "With decades of experience in cooling innovation, the Hoshizaki Group delivers a wide range of commercial refrigerators and display showcases for a variety of industries and settings. From compact undercounter units to upright cabinets and glass-door merchandisers, our refrigeration solutions combine energy efficiency, usability, and low environmental impact. We have led the industry with innovations such as the early adoption of natural refrigerants, and we remain committed to delivering reliable, future-ready solutions for kitchens and businesses around the world.",
+  "page_disclaimer": "*Product availability varies by region and country. Styles may vary by market.",
+  "not_scraped": [
+    "Brand logos on the same page (Hoshizaki, Fogel, Macom, Ozti, Structural Concepts, Western) -- third-party trademarks, not product imagery.",
+    "Individual model/SKU pages -- the Hoshizaki Global page stops at these six category families and carries no model codes, spec tables or spec-sheet PDFs."
+  ]
+}

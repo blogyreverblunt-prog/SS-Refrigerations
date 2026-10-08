@@ -1,0 +1,33 @@
+# ---- secrets -----------------------------------------------------------
+# Never commit a real credential. Only .env.example is tracked.
+.env
+.env.*
+!.env.example
+
+# ---- dependencies ------------------------------------------------------
+node_modules/
+.pnp
+.pnp.*
+
+# ---- next --------------------------------------------------------------
+.next/
+out/
+build/
+next-env.d.ts
+
+# ---- tooling -----------------------------------------------------------
+coverage/
+*.tsbuildinfo
+.eslintcache
+.turbo/
+
+# ---- local -------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+
+# ---- generated ---------------------------------------------------------
+# Drizzle migrations ARE checked in (HLD-FREE-TIER.md §5.1). Only the
+# throwaway introspection output is ignored.
+drizzle/meta/_journal.json.bak
