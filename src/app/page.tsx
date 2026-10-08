@@ -16,6 +16,8 @@ import Link from "next/link";
 import { container } from "@/lib/container";
 import { SiteHeader } from "@/components/site-header";
 import { EnquiryForm } from "@/components/enquiry-form";
+import { ProductViewer } from "@/components/product-viewer";
+import { cabinetFromVariant } from "@/components/product-viewer/types";
 import {
   ArrowRight,
   Cabinet,
@@ -59,6 +61,22 @@ export default async function HomePage() {
   const hero = products.find((p) => p.slug === "reach-in-refrigerator") ?? products[0];
   const showcase = products.filter((p) => p.slug !== hero?.slug).slice(0, 3);
 
+  const heroSlug = hero?.slug ?? "reach-in-refrigerator";
+
+  /*
+    No 3D asset exists for these units, but the catalogue already stores
+    every cabinet's dimensions. The hero model is generated from the lead
+    variant's dims_mm, so it is correct for whatever product is live rather
+    than hard-coded to one. When a real glTF arrives this becomes
+    `{ kind: "model", url }` and nothing else changes.
+  */
+  const heroVariant = hero
+    ? (await repo.findProductBySlug(hero.slug)).variants[0]
+    : undefined;
+  const heroCabinet = heroVariant
+    ? cabinetFromVariant(heroSlug, heroVariant.dimsMm)
+    : null;
+
   return (
     <>
       {/* ---------------------------------------- panel 1: nav + hero + stats */}
@@ -97,13 +115,19 @@ export default async function HomePage() {
               </div>
 
               <div className="hero__media">
-                <Image
-                  src={productImage(hero?.slug ?? "reach-in-refrigerator")}
+                {/*
+                  The poster is the LCP element and renders immediately; the
+                  3D cabinet is generated from the variant's own dims_mm and
+                  loaded only when the visitor asks for it.
+                */}
+                <ProductViewer
+                  poster={productImage(heroSlug)}
                   alt={hero?.name ?? "Reach-in refrigerator"}
-                  width={1295}
-                  height={1020}
-                  priority
-                  sizes="(max-width: 1024px) 90vw, 560px"
+                  source={
+                    heroCabinet
+                      ? { kind: "procedural", spec: heroCabinet }
+                      : { kind: "static" }
+                  }
                 />
               </div>
             </section>
