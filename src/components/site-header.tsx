@@ -9,14 +9,24 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { site } from "@/content/site";
+
 import { BrandMark, Menu } from "./icons";
 
+/**
+ * Five items, and every one of them a page.
+ *
+ * They used to be `/#anchors` into the landing page, two of which resolved
+ * into the footer. Five primary items is also where the audited sites that
+ * are easy to use sit; the ones at nine are harder to use, not richer
+ * (SITE-SECTIONS-REPORT.md §7).
+ */
 const LINKS = [
   { href: "/products", label: "Products" },
-  { href: "/#technology", label: "Technology" },
-  { href: "/#industries", label: "Industries" },
-  { href: "/#support", label: "Support" },
-  { href: "/#company", label: "Company" },
+  { href: "/industries", label: "Industries" },
+  { href: "/support", label: "Service & Support" },
+  { href: "/downloads", label: "Downloads" },
+  { href: "/about", label: "About" },
 ] as const;
 
 export function SiteHeader() {
@@ -33,12 +43,13 @@ export function SiteHeader() {
   return (
     <header>
       <nav className="nav" aria-label="Primary">
-        <Link className="brand" href="/" aria-label="KALT Refrigeration — home">
+        <Link className="brand" href="/" aria-label={`${site.brand.name} — home`}>
           <span style={{ color: "var(--ink)", display: "flex" }}>
             <BrandMark />
           </span>
           <span className="brand__name">
-            KALT<span className="brand__sub">Refrigeration</span>
+            {site.brand.short}
+            <span className="brand__sub">{site.brand.sub}</span>
           </span>
         </Link>
 
@@ -49,7 +60,7 @@ export function SiteHeader() {
         </ul>
 
         <div className="nav__actions">
-          <Link className="btn btn--primary" href="/#enquire">Request a Quote</Link>
+          <Link className="btn btn--primary" href="/contact#enquiry">Request a Quote</Link>
           <button
             className="nav__toggle"
             aria-expanded={open}
@@ -66,7 +77,7 @@ export function SiteHeader() {
         {LINKS.map((l) => (
           <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>{l.label}</Link>
         ))}
-        <Link className="btn btn--primary btn--block" href="/#enquire" onClick={() => setOpen(false)}>
+        <Link className="btn btn--primary btn--block" href="/contact#enquiry" onClick={() => setOpen(false)}>
           Request a Quote
         </Link>
       </div>

@@ -10,7 +10,14 @@
   /* ---- colour ---------------------------------------------------------- */
   --ink:          #0f1115;
   --ink-2:        #2a2d33;
-  --ink-3:        #6b7280;
+  /*
+    Secondary text. Was #6b7280, which is 4.39:1 on --surface-2 and on
+    --accent-soft — under WCAG AA's 4.5 for normal text, and this token
+    carries .small, .eyebrow, table headers and every caption on the site.
+    #676e7c is a half-step darker, indistinguishable in use, and clears AA
+    on all four backgrounds it is ever set against (4.65 worst case).
+  */
+  --ink-3:        #676e7c;
   --line:         #e6e8ec;
   --surface:      #f8f9fb;
   --surface-2:    #f2f4f7;
@@ -20,7 +27,8 @@
   --accent-soft:  #eff4ff;
   --danger:       #c92a2a;
   --danger-soft:  #fff5f5;
-  --ok:           #2b8a3e;
+  /* Same reason: #2b8a3e was 4.07:1 on --ok-soft. This is 4.87. */
+  --ok:           #267c37;
   --ok-soft:      #ebfbee;
 
   /* ---- type ------------------------------------------------------------ */
@@ -524,4 +532,315 @@ textarea.field { resize: vertical; min-height: 92px; }
 
 @media (max-width: 760px) {
   .viewer__hint { display: none; }   /* no hover, no scroll-to-zoom hint */
+}
+
+/* ========================================================== inner pages ===
+   One chrome for every page below the landing page. The nav shares the first
+   white panel with a page hero, exactly as it shares one with the home hero;
+   every content section below is another panel on the same off-white ground.
+
+   Nothing here introduces a colour, a radius or a shadow — these are the
+   tokens at the top of this file, rearranged.
+   ========================================================================= */
+
+/* --- page hero (first panel, under the nav) ------------------------------ */
+.phero { display: grid; gap: var(--s-5); align-content: start;
+         padding: var(--s-12) var(--s-6) var(--s-10); }
+.phero > * { max-width: 62ch; }
+.phero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4);
+                  max-width: none; }
+
+/* In-page anchors. Scrolls horizontally on a phone rather than wrapping to
+   three lines and pushing the content below the fold. */
+.subnav { display: flex; gap: var(--s-2); overflow-x: auto; scrollbar-width: none;
+          padding: var(--s-3) var(--s-6); border-top: 1px solid var(--line);
+          background: var(--surface); }
+.subnav::-webkit-scrollbar { display: none; }
+.subnav a { font-size: var(--fs-xs); font-weight: 600; color: var(--ink-2);
+            white-space: nowrap; background: var(--panel);
+            border: 1px solid var(--line); border-radius: var(--r-pill);
+            padding: var(--s-2) var(--s-4);
+            transition: color var(--dur-fast) var(--ease),
+                        border-color var(--dur-fast) var(--ease); }
+.subnav a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* --- content block ------------------------------------------------------- */
+.blk { display: grid; gap: var(--s-6); padding: var(--s-10) var(--s-6); }
+.blk + .blk { border-top: 1px solid var(--line); }
+.band { display: grid; gap: var(--s-3); max-width: 58ch; }
+
+/* --- generic card grid (n-up, set --cols) -------------------------------- */
+.cards { display: grid; grid-template-columns: repeat(var(--cols,3), minmax(0,1fr));
+         gap: var(--s-5); }
+.cards--2 { --cols: 2; }
+.cards--4 { --cols: 4; }
+.cards--5 { --cols: 5; }
+.card { display: grid; gap: var(--s-3); align-content: start; padding: var(--s-5);
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease); }
+.card:hover { border-color: #d7dbe2; background: var(--panel); }
+.card__icon { display: grid; place-items: center; width: 36px; height: 36px;
+              border-radius: var(--r-sm); background: var(--accent-soft); color: var(--accent); }
+.card__title { font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+.card p { font-size: var(--fs-xs); color: var(--ink-3); }
+.card .link { margin-top: var(--s-1); }
+
+/* --- label / value rows ------------------------------------------------- */
+.rows { background: var(--panel); border: 1px solid var(--line);
+        border-radius: var(--r-md); overflow: clip; }
+.rows__row { display: grid; grid-template-columns: 180px minmax(0,1fr);
+             gap: var(--s-4); padding: var(--s-4) var(--s-5); }
+.rows__row + .rows__row { border-top: 1px solid var(--line); }
+.rows__k { font-size: var(--fs-xs); font-weight: 600; color: var(--ink-3); }
+.rows__v { font-size: var(--fs-sm); color: var(--ink); }
+.rows__v a:hover { color: var(--accent); }
+
+/* --- helpline callout ---------------------------------------------------- */
+.callout { display: grid; gap: var(--s-5); padding: var(--s-6);
+           background: var(--accent-soft); border: 1px solid #d6e4ff;
+           border-radius: var(--r-md); }
+.callout__grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+                 gap: var(--s-5); }
+.callout__k { font-size: var(--fs-label); font-weight: 600; text-transform: uppercase;
+              letter-spacing: var(--tracking-label); color: var(--ink-3); }
+.callout__v { font-size: var(--fs-lead); font-weight: 600; color: var(--ink);
+              letter-spacing: -.01em; }
+.callout__v a:hover { color: var(--accent); }
+
+/* --- proof chips --------------------------------------------------------- */
+.proof { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+.proof > span { display: inline-flex; align-items: center; gap: var(--s-2);
+                font-size: var(--fs-xs); font-weight: 600; color: var(--ink);
+                background: var(--surface-2); border: 1px solid var(--line);
+                border-radius: var(--r-pill); padding: var(--s-2) var(--s-4); }
+
+/* --- numbered steps -----------------------------------------------------
+   Each <li> is a two-column grid: the counter, then ONE element holding the
+   step. The copy must be wrapped in that element — a bare text node beside
+   the <strong> becomes its own anonymous grid item, lands back in the 26px
+   counter column, and wraps to one character per line. (It did. A browser
+   screenshot is the only thing that showed it.)                           */
+.steps { display: grid; gap: var(--s-4); counter-reset: step; padding: 0; list-style: none; }
+.steps li { display: grid; grid-template-columns: 26px minmax(0,1fr); gap: var(--s-4);
+            align-items: start; font-size: var(--fs-xs); color: var(--ink-3); }
+.steps li::before { counter-increment: step; content: counter(step);
+                    display: grid; place-items: center; width: 26px; height: 26px;
+                    border-radius: var(--r-pill); background: var(--accent-soft);
+                    color: var(--accent); font-size: var(--fs-label); font-weight: 700; }
+.steps__body { display: grid; gap: var(--s-1); min-width: 0; }
+.steps strong { display: block; color: var(--ink); font-size: var(--fs-sm); }
+
+/* --- FAQ ---------------------------------------------------------------- */
+.faq { display: grid; gap: var(--s-2); }
+.faq details { background: var(--panel); border: 1px solid var(--line);
+               border-radius: var(--r-sm); }
+.faq summary { display: flex; justify-content: space-between; gap: var(--s-4);
+               padding: var(--s-4) var(--s-5); cursor: pointer; list-style: none;
+               font-size: var(--fs-sm); font-weight: 600; color: var(--ink); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--ink-3); font-weight: 400; }
+.faq details[open] summary::after { content: "\2013"; }
+.faq details > p { padding: 0 var(--s-5) var(--s-4); font-size: var(--fs-xs);
+                   color: var(--ink-3); max-width: 70ch; }
+
+/* --- downloads ---------------------------------------------------------- */
+.pills { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.pill { font-size: var(--fs-xs); font-weight: 600; color: var(--ink-2);
+        background: var(--panel); border: 1px solid var(--line);
+        border-radius: var(--r-pill); padding: var(--s-2) var(--s-4); white-space: nowrap;
+        transition: color var(--dur-fast) var(--ease),
+                    border-color var(--dur-fast) var(--ease); }
+.pill:hover { color: var(--accent); border-color: var(--accent); }
+.pill[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.dl { background: var(--panel); border: 1px solid var(--line);
+      border-radius: var(--r-md); overflow: clip; }
+.dl__row { display: grid; grid-template-columns: 36px minmax(0,1fr) auto;
+           gap: var(--s-4); align-items: center; padding: var(--s-4) var(--s-5); }
+.dl__row + .dl__row { border-top: 1px solid var(--line); }
+.dl__icon { display: grid; place-items: center; width: 36px; height: 36px;
+            border-radius: var(--r-sm); background: var(--surface-2); color: var(--ink-3); }
+.dl__title { font-size: var(--fs-sm); font-weight: 600; color: var(--ink); }
+.dl__meta { font-size: var(--fs-label); text-transform: uppercase;
+            letter-spacing: var(--tracking-label); color: var(--ink-3); margin-top: 2px; }
+
+/* --- two-column page split (form + aside) ------------------------------- */
+.split { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr);
+         gap: var(--s-6); align-items: start; }
+.aside { display: grid; gap: var(--s-5); align-content: start; }
+
+/* --- industry block ----------------------------------------------------- */
+.ind { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+       gap: var(--s-8); align-items: center; }
+.ind__media { aspect-ratio: 4/3; border-radius: var(--r-md); overflow: clip;
+              background: var(--surface-2); }
+.ind__media img { width: 100%; height: 100%; object-fit: cover; }
+.ind__copy { display: grid; gap: var(--s-4); align-content: start; }
+.ind--flip .ind__media { order: 2; }
+
+/* --- city list ---------------------------------------------------------- */
+.citylist { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+            gap: var(--s-2) var(--s-4); }
+.citylist li { font-size: var(--fs-xs); color: var(--ink-2); }
+
+/* --- long-form / legal prose -------------------------------------------- */
+.prose { display: grid; gap: var(--s-5); max-width: 72ch; }
+.prose h2 { font-size: var(--fs-lead); letter-spacing: -.01em; }
+.prose h3 { font-size: var(--fs-body); }
+.prose p, .prose li { font-size: var(--fs-sm); color: var(--ink-2); }
+.prose ul { display: grid; gap: var(--s-2); }
+.prose li { position: relative; padding-left: var(--s-5); }
+.prose li::before { content: "\2014"; position: absolute; left: 0; color: var(--ink-3); }
+
+/* --- template marker ----------------------------------------------------
+   Every value the business still has to supply carries this badge, so the
+   placeholders are findable by eye as well as by grep. Flip `isTemplate` in
+   src/content/site.ts to remove all of them at once.                       */
+.tmpl { display: inline-block; font-size: var(--fs-label); font-weight: 700;
+        text-transform: uppercase; letter-spacing: var(--tracking-label);
+        color: var(--accent); background: var(--accent-soft);
+        border: 1px dashed #b9cdff; border-radius: var(--r-pill);
+        padding: 1px var(--s-2); vertical-align: middle; }
+
+/* ========================================================= model picker ===
+   The product page's chooser (docs/ia/PURE-PLAY-BENCHMARK.md, option C): a
+   model list, the selected model, and a quote rail that follows it.
+
+   Three columns on a laptop → list plus model with the rail below on a
+   tablet → one column on a phone, where the list turns into a scrollable
+   chip row and the quote rail becomes a bar fixed to the bottom of the
+   viewport. Same markup at every width; only the grid changes.
+   ========================================================================= */
+
+.picker { display: grid; grid-template-columns: 300px minmax(0,1fr) 320px;
+          gap: var(--s-6); padding: var(--s-8) var(--s-6); align-items: start; }
+.picker__col { display: grid; gap: var(--s-4); align-content: start; }
+.picker__list { display: grid; gap: var(--s-3); }
+
+.picker__row { display: block; width: 100%; text-align: left; padding: var(--s-4);
+               background: var(--panel); border: 1px solid var(--line);
+               border-radius: var(--r-md); cursor: pointer;
+               transition: border-color var(--dur-fast) var(--ease),
+                           background var(--dur-fast) var(--ease); }
+.picker__row:hover { border-color: #d7dbe2; }
+.picker__row[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.picker__head { display: flex; justify-content: space-between; align-items: baseline;
+                gap: var(--s-3); }
+.picker__code { font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+.picker__cap { font-size: var(--fs-xs); color: var(--ink-3); }
+.picker__sub { display: block; font-size: var(--fs-xs); color: var(--ink-3);
+               margin-top: var(--s-1); }
+
+.picker__media { background: var(--surface-2); border-radius: var(--r-md);
+                 padding: var(--s-6); display: grid; place-items: center; min-height: 340px; }
+.picker__media img { max-height: 320px; width: auto; object-fit: contain;
+                     mix-blend-mode: multiply; }
+.picker__title { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-3); }
+
+/* compare checkboxes, in the left column and on the phone */
+.checks { display: grid; gap: var(--s-2); }
+.check { display: flex; align-items: center; gap: var(--s-3); cursor: pointer;
+         padding: var(--s-2) var(--s-3); font-size: var(--fs-xs); color: var(--ink-2);
+         background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-sm); }
+.check input { accent-color: var(--accent); flex: none; }
+.check strong { color: var(--ink); font-weight: 600; }
+.check .check__cap { margin-left: auto; color: var(--ink-3); }
+
+/* the quote rail */
+.rail { position: sticky; top: var(--s-6); display: grid; gap: var(--s-4); }
+.rail__card { display: grid; gap: var(--s-3); padding: var(--s-5); background: var(--panel);
+              border: 1px solid var(--line); border-radius: var(--r-md); }
+.rail__card--soft { background: var(--accent-soft); border-color: #d6e4ff; }
+.rail__price { font-size: var(--fs-lead); font-weight: 600; letter-spacing: -.01em;
+               color: var(--ink); }
+.rail__split { border-top: 1px solid var(--line); padding-top: var(--s-3);
+               display: grid; gap: var(--s-2); }
+
+/* phone action bar — the rail, reduced to the one decision */
+.actionbar { display: none; }
+.actionbar__spacer { display: none; }
+
+@media (max-width: 1024px) {
+  .picker { grid-template-columns: 260px minmax(0,1fr); padding: var(--s-6) var(--s-5); }
+  .picker__rail { grid-column: 1 / -1; }
+  .rail { position: static; grid-template-columns: 1fr 1fr; }
+}
+
+/* The middle column is narrower than a full-width PDP, so three glance
+   columns start breaking values across lines before the phone breakpoint. */
+@media (max-width: 1200px) {
+  .picker .glance { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+@media (max-width: 760px) {
+  .picker { grid-template-columns: 1fr; gap: var(--s-5); }
+
+  /*
+    Re-order for a thumb. `display: contents` dissolves the left column so
+    its blocks become grid items in their own right, which is what lets the
+    chosen model's photograph and specification sit directly under the model
+    chips — with the shortlist builder and the quote rail after them, where
+    they belong once a model is picked.
+  */
+  .picker > .picker__col:first-child { display: contents; }
+  .picker > .picker__col:first-child > .eyebrow { order: 0; }
+  .picker__list { order: 1; }
+  .picker > .picker__col:nth-child(2) { order: 2; }
+  .picker > .picker__col:first-child > .rail__split { order: 3; }
+  .picker__rail { order: 4; }
+
+  /* The model list becomes a thumb-scrollable chip row. */
+  .picker__list { grid-auto-flow: column; grid-auto-columns: max-content;
+                  overflow-x: auto; scrollbar-width: none; }
+  .picker__list::-webkit-scrollbar { display: none; }
+  .picker__row { border-radius: var(--r-pill); padding: var(--s-3) var(--s-4); }
+  .picker__sub { display: none; }
+  .picker__media { min-height: 240px; padding: var(--s-4); }
+  .rail { grid-template-columns: 1fr; }
+
+  .actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+               display: grid; gap: var(--s-2); padding: var(--s-3) var(--s-4);
+               background: rgba(255,255,255,.96); border-top: 1px solid var(--line);
+               backdrop-filter: blur(6px); }
+  .actionbar__meta { display: flex; justify-content: space-between; align-items: baseline;
+                     gap: var(--s-3); font-size: var(--fs-xs); color: var(--ink-3); }
+  .actionbar__meta strong { color: var(--ink); }
+  .actionbar__row { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--s-2); }
+  /* Keeps the footer clear of the fixed bar. */
+  .actionbar__spacer { display: block; height: 104px; }
+}
+
+/* `.picker .glance` outranks the global `.glance` rule, so the single-column
+   fallback for a small phone has to be restated here or "1300 L · 45.9 cu ft"
+   breaks across two lines. */
+@media (max-width: 420px) {
+  .picker .glance { grid-template-columns: 1fr; }
+}
+
+/* --- compare ------------------------------------------------------------- */
+.cmp-bar { display: flex; flex-wrap: wrap; gap: var(--s-4); align-items: flex-end;
+           justify-content: space-between; }
+.spec-table td.is-diff { background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.spec-table .cmp-col { background: var(--panel); color: var(--ink); font-size: var(--fs-sm);
+                       letter-spacing: -.01em; text-transform: none; }
+
+@media (max-width: 1024px) {
+  .cards { --cols: 2; }
+  .split { grid-template-columns: 1fr; }
+  .ind { grid-template-columns: 1fr; gap: var(--s-5); }
+  .ind--flip .ind__media { order: 0; }
+  .callout__grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 760px) {
+  .phero { padding: var(--s-10) var(--s-5) var(--s-8); }
+  .blk { padding: var(--s-8) var(--s-5); }
+  .subnav { padding: var(--s-3) var(--s-5); }
+  .cards { --cols: 1; }
+  .callout__grid { grid-template-columns: 1fr; }
+  .rows__row { grid-template-columns: 1fr; gap: var(--s-1); }
+  .dl__row { grid-template-columns: 28px minmax(0,1fr); }
+  .dl__icon { width: 28px; height: 28px; }
+  .dl__row .btn { grid-column: 2; justify-self: start; }
 }

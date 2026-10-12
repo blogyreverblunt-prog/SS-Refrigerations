@@ -70,6 +70,21 @@ const serverSchema = z.object({
   /* -- abuse defence ----------------------------------------------------- */
   TURNSTILE_SECRET_KEY: z.string().optional(),
   /**
+   * The browser half of the same control.
+   *
+   * These two are a PAIR and neither is useful alone. The secret verifies a
+   * token; the site key is what makes a browser produce one. Shipping the
+   * secret without this key is the failure that took the lead form down on
+   * 2026-10-12: the verifier failed closed in production and no request could
+   * ever satisfy it. `capabilities.turnstile` now requires both, and
+   * /api/health reports each half separately so the broken middle state is
+   * visible rather than silent.
+   *
+   * NEXT_PUBLIC_ because the browser must see it. A Turnstile site key is
+   * public by design — it appears in the HTML of every site that uses one.
+   */
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
+  /**
    * DPDP: raw IPs are never persisted. They are HMAC'd with this salt so the
    * same visitor is still detectable for abuse scoring. Rotating the salt
    * deliberately breaks that linkage.
@@ -79,6 +94,22 @@ const serverSchema = z.object({
   /* -- shared secrets guarding machine-to-machine routes ---------------- */
   CRON_SECRET: z.string().optional(),
   REVALIDATE_SECRET: z.string().optional(),
+
+  /* -- analytics --------------------------------------------------------
+   * A seam, not a vendor. Point these at a COOKIELESS, first-party-ish
+   * analytics script — Plausible, Umami, Fathom, Vercel Analytics — and the
+   * tag appears on every page; leave them unset and no third-party script
+   * is loaded at all.
+   *
+   * Cookieless is the requirement, not a preference: the moment the script
+   * sets a cookie or fingerprints a visitor, this site needs a consent
+   * banner and a longer privacy notice. Google Analytics is that moment.
+   *
+   * These are NEXT_PUBLIC_ because the browser must see them; they are a
+   * public script URL and a public domain name, never a secret.
+   */
+  NEXT_PUBLIC_ANALYTICS_SRC: z.string().url().optional(),
+  NEXT_PUBLIC_ANALYTICS_DOMAIN: z.string().optional(),
 
   /* -- behaviour switches ------------------------------------------------ */
   /** Set true to let the app boot with a stub DB — used by CI typechecks. */
@@ -139,6 +170,28 @@ function parse(): ServerEnv {
       ...raw,
       DATABASE_URL: raw.DATABASE_URL ?? "postgres://stub:stub@localhost:5432/stub",
     });
+  }
+
+  /**
+   * APP_URL carries a localhost default so `next dev` needs no configuration.
+   * In production that default is not a convenience, it is a silent fault.
+   *
+   * Every page sets `revalidate = false`, so whatever origin the BUILD sees is
+   * frozen into sitemap.xml, robots.txt, metadataBase and every canonical and
+   * OpenGraph URL. Ship it wrong and the build is still green, every page
+   * still renders, and the only symptom is that Google indexes a sitemap full
+   * of http://localhost:3000 — which nobody notices for weeks.
+   *
+   * A deployment that cannot name its own origin must stop rather than guess.
+   * This is checked on the raw input, before `.default()` fires, because after
+   * that there is no way to tell a supplied value from a fallback.
+   */
+  if (raw.NODE_ENV === "production" && !raw.APP_URL) {
+    throw new EnvironmentError([
+      "APP_URL: required when NODE_ENV=production — it is baked into sitemap.xml, " +
+        "robots.txt and every canonical URL at build time, so a wrong value cannot " +
+        "be corrected without a rebuild",
+    ]);
   }
 
   const result = serverSchema.safeParse(raw);
@@ -202,8 +255,21 @@ export const capabilities = {
   get whatsapp(): boolean {
     return Boolean(env.WHATSAPP_PHONE_NUMBER_ID && env.WHATSAPP_ACCESS_TOKEN);
   },
+  /**
+   * Bot defence is only "configured" when BOTH halves are present. Requiring
+   * just the secret is what allowed a deployment where the server demanded a
+   * token that no browser was ever told to produce.
+   */
   get turnstile(): boolean {
+    return Boolean(env.TURNSTILE_SECRET_KEY && env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+  },
+  /** The server half alone — reported separately so a half-setup is visible. */
+  get turnstileSecret(): boolean {
     return Boolean(env.TURNSTILE_SECRET_KEY);
+  },
+  /** The browser half alone. */
+  get turnstileWidget(): boolean {
+    return Boolean(env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
   },
   get isProduction(): boolean {
     return env.NODE_ENV === "production";

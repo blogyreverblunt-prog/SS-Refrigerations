@@ -29,6 +29,10 @@ export async function GET() {
         telegram: capabilities.telegram,
         whatsapp: capabilities.whatsapp,
         turnstile: capabilities.turnstile,
+        // Reported separately so a half-configured pair is visible. A
+        // deployment with the secret but no site key rejects every lead.
+        turnstileSecret: capabilities.turnstileSecret,
+        turnstileWidget: capabilities.turnstileWidget,
       },
       notificationChannels: container.notifier().registered(),
     });

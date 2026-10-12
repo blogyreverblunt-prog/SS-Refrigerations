@@ -1,0 +1,90 @@
+# Production deploy — push to main.
+#
+# Why GitHub Actions rather than Vercel's own Git integration: this repo gates
+# a deploy on `typecheck` and `lint`, which Vercel does not run. The build then
+# happens here ONCE and only `.vercel/output` is uploaded (`--prebuilt`), so
+# Vercel never rebuilds the same artefact.
+#
+# Because of that, `vercel.json` sets `git.deploymentEnabled: false`. Remove
+# that and every push deploys twice — once from here, once from Vercel.
+name: Deploy to Vercel (production)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two production deploys race. Queue them instead of cancelling:
+# a cancelled deploy can leave the alias pointing at the older build.
+concurrency:
+  group: vercel-production
+  cancel-in-progress: false
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  check:
+    name: Typecheck and lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - run: npm ci
+
+      # `tsc --noEmit` and `eslint` never execute app code, so no credential is
+      # needed here. The flag only stops src/lib/env.ts throwing if something
+      # downstream does read it.
+      - run: npm run typecheck
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+      - run: npm run lint
+        env:
+          SKIP_ENV_VALIDATION: "true"
+
+  deploy:
+    name: Build and deploy
+    needs: check
+    runs-on: ubuntu-latest
+    # Attach a GitHub Environment so production secrets can require a reviewer.
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      # Downloads the project settings AND the Production environment variables
+      # into .vercel/.env.production.local, which `vercel build` then reads.
+      # This is why DATABASE_URL belongs in Vercel's project settings and does
+      # not need to be duplicated as a GitHub secret.
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      # `next build` runs inside this step. It queries Neon via
+      # generateStaticParams, so DATABASE_URL must be set in Vercel and the
+      # database must be reachable and migrated, or this step fails.
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy
+        id: deploy
+        run: |
+          url="$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed: $url" >> "$GITHUB_STEP_SUMMARY"

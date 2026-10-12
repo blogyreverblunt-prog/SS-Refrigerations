@@ -6,6 +6,18 @@
  * needs the drawing and the CAD, the purchase manager needs warranty, power
  * rating and a spec sheet to put in a tender (docs/ia/SITE-SECTIONS-REPORT.md §4).
  *
+ * The layout is the model picker — option C of the three sampled
+ * (docs/ia/PURE-PLAY-BENCHMARK.md §4): the model list leads, and the
+ * specification, the drawing, the spec sheet and the quote all follow the
+ * selection. One family page, every model code on it, and the enquiry
+ * carries the SKU the visitor actually chose.
+ *
+ * This file stays a SERVER component. It reads the catalogue, flattens the
+ * variants into props, and hands the interactive shell to `ModelPicker`; the
+ * sections below the picker — the full specification table, service, related
+ * models — are passed as `children` and so are still server-rendered inside
+ * it. A crawler gets the complete HTML either way.
+ *
  * ISR with on-demand revalidation only. `generateStaticParams` pre-renders
  * every live product at build, so a visitor never waits on a database that
  * is cold-starting.
@@ -17,10 +29,13 @@ import { notFound } from "next/navigation";
 
 import { NotFoundError } from "@/core";
 import { container } from "@/lib/container";
-import { SiteHeader } from "@/components/site-header";
-import { EnquiryForm } from "@/components/enquiry-form";
-import { ArrowRight, Download } from "@/components/icons";
+import { PageSection, Tmpl } from "@/components/page-shell";
+import { ModelPicker, type PickerModel } from "@/components/model-picker";
+import { ArrowRight, Scale, Shield, Wrench } from "@/components/icons";
+import { INDUSTRIES } from "@/content/industries";
+import { site, telLink, whatsappLink } from "@/content/site";
 import type { ProductDetail, VariantRow } from "@/modules/catalog";
+import { env } from "@/lib/env";
 
 export const revalidate = false;
 export const dynamicParams = true;
@@ -89,147 +104,213 @@ export default async function ProductPage(
 ) {
   const { slug } = await params;
   const product = await load(slug);
-  const lead = product.variants[0];
   const specs = product.specs as { subTypes?: string[]; availableInIndia?: boolean } | null;
+  const subTypes = specs?.subTypes ?? [];
+
+  /*
+    Flattened for the picker. The sub-type is matched positionally where the
+    family declares as many sub-types as it has models — honest when it
+    lines up, null when it does not, rather than guessing.
+  */
+  const aligned = subTypes.length === product.variants.length;
+  const models: PickerModel[] = product.variants.map((v, i) => ({
+    id: v.id,
+    modelCode: v.modelCode,
+    capacityL: num(v.capacityL),
+    tempMinC: num(v.tempMinC),
+    tempMaxC: num(v.tempMaxC),
+    refrigerant: v.refrigerant,
+    powerW: v.powerW,
+    dims: (v.dimsMm as { w?: number; d?: number; h?: number } | null) ?? null,
+    mrpInr: num(v.mrpInr),
+    subType: aligned ? (subTypes[i] ?? null) : null,
+  }));
+
+  // Which industries recommend this family — the reverse of the mapping on
+  // /industries, so the two pages can never disagree.
+  const servesIndustries = INDUSTRIES.filter((i) =>
+    i.products.some((p) => p.slug === product.slug),
+  );
+
+  // Everything else in the catalogue, for the related rail.
+  const others = (await container.catalogRepo().listLive(24))
+    .filter((p) => p.slug !== product.slug)
+    .slice(0, 3);
+
+  const warranty = site.warranty[0] ?? { parts: "—", compressor: "—", labour: "—" };
 
   return (
     <>
-      <div className="section">
-        <div className="container">
-          <div className="panel">
-            <SiteHeader />
-
-            <section className="pdp">
-              <div className="pdp__media">
-                <Image
-                  src={productImage(product.slug)}
-                  alt={product.name}
-                  width={1295}
-                  height={1020}
-                  priority
-                  sizes="(max-width: 1024px) 90vw, 560px"
-                />
-              </div>
-
-              <div className="pdp__copy">
-                <nav className="crumb" aria-label="Breadcrumb">
-                  <Link href="/">Home</Link><span>/</span>
-                  <Link href="/products">Products</Link><span>/</span>
-                  <span style={{ color: "var(--ink)" }}>{product.name}</span>
-                </nav>
-
-                <h1 className="pdp__title">{product.name}</h1>
-                {product.series && <p className="eyebrow">{product.series}</p>}
-                <p>{product.summary}</p>
-
-                {/* At-a-glance, metric first. */}
-                {lead && (
-                  <dl className="glance">
-                    <div><dt>Capacity</dt><dd>{capacity(lead)}</dd></div>
-                    <div><dt>Temperature</dt><dd>{tempRange(lead)}</dd></div>
-                    <div><dt>Refrigerant</dt><dd>{lead.refrigerant ?? "—"}</dd></div>
-                    <div><dt>W × D × H</dt><dd>{dims(lead)} mm</dd></div>
-                    <div><dt>Power</dt><dd>{lead.powerW ? `${lead.powerW} W` : "—"}</dd></div>
-                    <div><dt>Models</dt><dd>{product.variants.length}</dd></div>
-                  </dl>
-                )}
-
-                {/*
-                  The pricing seam, rendered. Every variant's mrp_inr is NULL
-                  today, so this shows the quote path instead of a number.
-                  Switching pricing on is a template change here, not a
-                  migration — see SITE-SECTIONS-REPORT.md §4.
-                */}
-                <p className="price-slot">
-                  {lead?.mrpInr
-                    ? <><strong>₹{Number(lead.mrpInr).toLocaleString("en-IN")}</strong> + GST</>
-                    : <>Priced per site. <strong>Request a quote</strong> for current pricing, freight and installation.</>}
-                </p>
-
-                <div className="hero__actions">
-                  <Link className="btn btn--primary" href="#enquire">
-                    Request a Quote <ArrowRight />
-                  </Link>
-                  <button className="btn btn--ghost" type="button" disabled>
-                    Download Spec Sheet <Download />
-                  </button>
-                </div>
-
-                {specs?.subTypes && specs.subTypes.length > 0 && (
-                  <div className="chips">
-                    {specs.subTypes.map((t) => <span className="chip" key={t}>{t}</span>)}
-                  </div>
-                )}
-
-                {specs?.availableInIndia === false && (
-                  <p className="notice notice--err" role="note">
-                    <strong>Regional availability</strong>
-                    This family is not currently supplied in this market. Contact us
-                    to discuss alternatives.
-                  </p>
-                )}
-              </div>
-            </section>
-          </div>
-        </div>
-      </div>
-
-      {/* -------------------------------------------------- spec table */}
-      <section className="section">
-        <div className="container">
-          <div className="panel" style={{ padding: "var(--s-6)" }}>
-            <div className="table-wrap">
-              <table className="spec-table">
-                <caption>Specifications by model</caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Model code</th>
-                    <th scope="col">Capacity</th>
-                    <th scope="col">Temperature</th>
-                    <th scope="col">Refrigerant</th>
-                    <th scope="col">Power</th>
-                    <th scope="col">W × D × H (mm)</th>
-                    <th scope="col">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {product.variants.map((v) => (
-                    <tr key={v.id}>
-                      <th scope="row">{v.modelCode}</th>
-                      <td>{capacity(v)}</td>
-                      <td>{tempRange(v)}</td>
-                      <td>{v.refrigerant ?? "—"}</td>
-                      <td>{v.powerW ? `${v.powerW} W` : "—"}</td>
-                      <td>{dims(v)}</td>
-                      <td>{v.mrpInr ? `₹${Number(v.mrpInr).toLocaleString("en-IN")}` : "On request"}</td>
+      <ModelPicker
+        turnstileSiteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+        product={{
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          series: product.series,
+          summary: product.summary,
+        }}
+        image={productImage(product.slug)}
+        models={models}
+        subTypes={subTypes}
+        docs={product.documents.map((d) => ({
+          id: d.id,
+          kind: d.kind,
+          title: d.title,
+          storageKey: d.storageKey,
+        }))}
+        warranty={{
+          parts: warranty.parts,
+          compressor: warranty.compressor,
+          labour: warranty.labour,
+        }}
+        salesPhone={site.contact.salesPhone}
+        salesTel={telLink(site.contact.salesPhone)}
+        whatsapp={whatsappLink(`Enquiry about ${product.name}:`)}
+        serviceCities={site.serviceCities.length}
+        unavailable={specs?.availableInIndia === false}
+      >
+        {/* ----------------------------------------- full specification table
+            The picker shows one model; this shows all of them. It stays
+            server-rendered because a tender team prints it and a crawler
+            indexes every model code on it. */}
+        <section className="section" id="specification">
+          <div className="container">
+            <div className="panel" style={{ padding: "var(--s-6)" }}>
+              <div className="table-wrap">
+                <table className="spec-table">
+                  <caption>Every model in this family</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Model code</th>
+                      <th scope="col">Capacity</th>
+                      <th scope="col">Temperature</th>
+                      <th scope="col">Refrigerant</th>
+                      <th scope="col">Power</th>
+                      <th scope="col">W × D × H (mm)</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Compare</th>
                     </tr>
-                  ))}
-                  {product.variants.length === 0 && (
-                    <tr><td colSpan={7}>No model codes published for this family yet.</td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------ inline enquiry */}
-      <section className="section" id="enquire">
-        <div className="container">
-          <div className="panel" style={{ padding: "var(--s-8) var(--s-6)" }}>
-            <div style={{ display: "grid", gap: "var(--s-6)", maxWidth: "640px" }}>
-              <div>
-                <p className="eyebrow">Request a quote</p>
-                <h2 className="h3" style={{ marginTop: "var(--s-2)" }}>
-                  Enquire about the {product.name}
-                </h2>
+                  </thead>
+                  <tbody>
+                    {product.variants.map((v) => (
+                      <tr key={v.id}>
+                        <th scope="row">{v.modelCode}</th>
+                        <td>{capacity(v)}</td>
+                        <td>{tempRange(v)}</td>
+                        <td>{v.refrigerant ?? "—"}</td>
+                        <td>{v.powerW ? `${v.powerW} W` : "—"}</td>
+                        <td>{dims(v)}</td>
+                        <td>
+                          {v.mrpInr
+                            ? `₹${Number(v.mrpInr).toLocaleString("en-IN")}`
+                            : "On request"}
+                        </td>
+                        <td>
+                          <Link className="link link--accent" href={`/compare?m=${v.modelCode}`}>
+                            Add <ArrowRight size={12} />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                    {product.variants.length === 0 && (
+                      <tr><td colSpan={8}>No model codes published for this family yet.</td></tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
-              <EnquiryForm modelContext={{ productId: product.id, name: product.name }} />
+              <p className="small" style={{ marginTop: "var(--s-4)" }}>
+                Dimensions are nominal and exclude handles and service clearances —
+                see <Link className="link link--accent" href="/terms#specs">specification notice</Link>.
+                Rated at 43 °C ambient, 230 V / 50 Hz single phase.{" "}
+                <Tmpl label="confirm per model" />
+              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* ------------------------------------------------ service, warranty */}
+        <PageSection
+          id="warranty"
+          eyebrow="Warranty and service"
+          title="What happens after it is installed."
+        >
+          <div className="cards">
+            <article className="card">
+              <span className="card__icon"><Shield /></span>
+              <h3 className="card__title">Warranty</h3>
+              <p>
+                {warranty.parts} parts, {warranty.compressor} on the compressor and{" "}
+                {warranty.labour} labour on this range. <Tmpl label="confirm per range" />
+              </p>
+              <Link className="link link--accent" href="/support#warranty">
+                Full terms <ArrowRight size={12} />
+              </Link>
+            </article>
+            <article className="card">
+              <span className="card__icon"><Wrench /></span>
+              <h3 className="card__title">Service &amp; AMC</h3>
+              <p>
+                Engineers in {site.serviceCities.length} cities, genuine spares, and
+                preventive visits before summer rather than during it.
+              </p>
+              <Link className="link link--accent" href="/support#amc">
+                AMC plans <ArrowRight size={12} />
+              </Link>
+            </article>
+            <article className="card">
+              <span className="card__icon"><Scale /></span>
+              <h3 className="card__title">Still deciding?</h3>
+              <p>
+                Put this family against another, side by side, and send the shortlist
+                as one enquiry.
+              </p>
+              <Link className="link link--accent" href="/compare">
+                Compare models <ArrowRight size={12} />
+              </Link>
+            </article>
+          </div>
+        </PageSection>
+
+        {/* -------------------------------------------- suitable for / related */}
+        {servesIndustries.length > 0 && (
+          <PageSection
+            eyebrow="Suitable for"
+            title="Where this range earns its place."
+            lead="Each link opens the section for that business, with the temperature band and the rest of the shortlist."
+          >
+            <div className="chips">
+              {servesIndustries.map((i) => (
+                <Link className="chip chip--accent" href={`/industries#${i.slug}`} key={i.slug}>
+                  {i.name}
+                </Link>
+              ))}
+            </div>
+          </PageSection>
+        )}
+
+        {others.length > 0 && (
+          <PageSection eyebrow="Related" title="Also worth looking at.">
+            <div className="showcase">
+              {others.map((p) => (
+                <article className="panel show" key={p.id}>
+                  <div className="show__body">
+                    <h3 className="show__title">{p.name}</h3>
+                    <p>{p.summary?.slice(0, 120)}…</p>
+                    <Link className="link link--accent" href={`/products/${p.slug}`}>
+                      Learn more <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                  <div className="show__media">
+                    <Image src={productImage(p.slug)} alt={p.name} fill
+                           sizes="(max-width: 420px) 100vw, (max-width: 760px) 38vw, 170px" />
+                  </div>
+                </article>
+              ))}
+            </div>
+          </PageSection>
+        )}
+      </ModelPicker>
     </>
   );
 }

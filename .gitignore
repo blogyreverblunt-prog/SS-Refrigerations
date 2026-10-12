@@ -9,6 +9,10 @@ node_modules/
 .pnp
 .pnp.*
 
+# Vercel CLI: holds the linked project id and the env vars `vercel pull`
+# downloads. Both are credentials.
+.vercel/
+
 # ---- next --------------------------------------------------------------
 .next/
 out/
@@ -31,3 +35,6 @@ npm-debug.log*
 # Drizzle migrations ARE checked in (HLD-FREE-TIER.md §5.1). Only the
 # throwaway introspection output is ignored.
 drizzle/meta/_journal.json.bak
+
+# Headless-Chrome screenshots from scripts/browser-check.mjs
+.browser-check/

@@ -1,0 +1,821 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2496" height="3964" viewBox="-48 -48 2496 3964">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+<rect x="-48" y="-48" width="2496" height="3964" fill="#ffffff"/>
+<text x="0.0" y="31.3" font-size="34.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">As-Built  ·  Production  ·  2026-10-12</tspan>
+</text>
+<text x="0.0" y="61.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">KALT / SS Commercial Refrigeration.   https://ss-refrigeration.vercel.app   —   live and public.</tspan>
+<tspan x="0.0" dy="21.0">This canvas draws only what is deployed. The Phase 1 roadmap — R2, QStash, WhatsApp, the admin — is ss-refrigeration-free-tier, which by design contains components that do not exist yet; this one does not. The Phase 2-3 target canvas (Kafka, OpenSearch, multi-AZ) was deleted on 2026-10-12:</tspan>
+<tspan x="0.0" dy="21.0">its triggers have not fired and the picture was being read as the plan. HLD.md keeps the reasoning.</tspan>
+<tspan x="0.0" dy="21.0">Open faults and their fixes: docs/ops/REMEDIATION-PLAN.md</tspan>
+</text>
+<rect x="0.0" y="156.1" width="2400.0" height="96.1" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="14.0" y="187.6" font-size="19.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">THE SITE RENDERS CORRECTLY AND CAPTURES NOTHING.  Lead capture is the only revenue path, and it is closed.</tspan>
+</text>
+<text x="14.0" y="213.3" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">POST /api/leads returns 400 captcha_failed on every request. lib/adapters/captcha.ts fails closed in production, which is correct on its own — but no Turnstile widget exists in any component, so no request can carry a token. Setting TURNSTILE_SECRET_KEY does not fix it; that only changes the error to "Missing verification token".</tspan>
+<tspan x="14.0" dy="18.5">Everything that builds, renders and deploys is green. 22 routes, 18 passing browser checks, no console error, no failed request. Every one of those checks tested rendering. None submitted the form.</tspan>
+</text>
+<text x="0.0" y="324.3" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">1 — The two request paths, as they behave today</tspan>
+</text>
+<text x="0.0" y="349.9" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Read path is healthy and entirely static. Write path stops at the second hop.</tspan>
+</text>
+<rect x="0.0" y="376.6" width="385.0" height="96.0" rx="12" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.0"/>
+<text x="192.5" y="408.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="192.5" dy="0.0">Visitor</tspan>
+</text>
+<text x="192.5" y="431.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="192.5" dy="0.0">Browser</tspan>
+<tspan x="192.5" dy="17.0">India / global</tspan>
+</text>
+<rect x="403.0" y="376.6" width="385.0" height="96.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="595.5" y="408.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="595.5" dy="0.0">Vercel CDN</tspan>
+</text>
+<text x="595.5" y="431.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="595.5" dy="0.0">Static HTML + JS</tspan>
+<tspan x="595.5" dy="17.0">global edge</tspan>
+</text>
+<rect x="806.0" y="376.6" width="385.0" height="96.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="998.5" y="408.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="998.5" dy="0.0">Prerendered page</tspan>
+</text>
+<text x="998.5" y="431.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="998.5" dy="0.0">22 routes</tspan>
+<tspan x="998.5" dy="17.0">revalidate = false</tspan>
+</text>
+<rect x="1209.0" y="376.6" width="385.0" height="96.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1401.5" y="408.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1401.5" dy="0.0">200 OK</tspan>
+</text>
+<text x="1401.5" y="431.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1401.5" dy="0.0">No origin hop</tspan>
+<tspan x="1401.5" dy="17.0">No DB query</tspan>
+</text>
+<line x1="389.0" y1="424.6" x2="399.0" y2="424.6" stroke="#495057" stroke-width="2.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<line x1="792.0" y1="424.6" x2="802.0" y2="424.6" stroke="#495057" stroke-width="2.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<line x1="1195.0" y1="424.6" x2="1205.0" y2="424.6" stroke="#495057" stroke-width="2.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1612.0" y="412.6" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1612.0" dy="0.0">READ PATH — works. The CDN answers from a file built at deploy time. No function runs and the database stays</tspan>
+<tspan x="1612.0" dy="17.6">asleep.</tspan>
+</text>
+<rect x="0.0" y="494.6" width="385.0" height="96.0" rx="12" fill="#e7f5ff" stroke="#1971c2" stroke-width="2.0"/>
+<text x="192.5" y="526.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="192.5" dy="0.0">Visitor</tspan>
+</text>
+<text x="192.5" y="549.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="192.5" dy="0.0">Submits the</tspan>
+<tspan x="192.5" dy="17.0">enquiry form</tspan>
+</text>
+<rect x="403.0" y="494.6" width="385.0" height="96.0" rx="12" fill="#fff0f6" stroke="#c2255c" stroke-width="2.0"/>
+<text x="595.5" y="526.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="595.5" dy="0.0">POST /api/leads</tspan>
+</text>
+<text x="595.5" y="549.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="595.5" dy="0.0">Function, iad1</tspan>
+<tspan x="595.5" dy="17.0">force-dynamic</tspan>
+</text>
+<rect x="806.0" y="494.6" width="385.0" height="96.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="998.5" y="526.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="998.5" dy="0.0">captcha.verify()</tspan>
+</text>
+<text x="998.5" y="549.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="998.5" dy="0.0">FAILS CLOSED</tspan>
+<tspan x="998.5" dy="17.0">no widget sends a token</tspan>
+</text>
+<rect x="1209.0" y="494.6" width="385.0" height="96.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1401.5" y="526.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="middle" xml:space="preserve">
+<tspan x="1401.5" dy="0.0">400</tspan>
+</text>
+<text x="1401.5" y="549.8" font-size="12.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="middle" xml:space="preserve">
+<tspan x="1401.5" dy="0.0">captcha_failed</tspan>
+<tspan x="1401.5" dy="17.0">nothing is written</tspan>
+</text>
+<line x1="389.0" y1="542.6" x2="399.0" y2="542.6" stroke="#495057" stroke-width="2.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<line x1="792.0" y1="542.6" x2="802.0" y2="542.6" stroke="#495057" stroke-width="2.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<line x1="1195.0" y1="542.6" x2="1205.0" y2="542.6" stroke="#c92a2a" stroke-width="2.0" stroke-linecap="round" marker-end="url(#ah)"/>
+<text x="1612.0" y="520.6" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#c92a2a" text-anchor="start" xml:space="preserve">
+<tspan x="1612.0" dy="0.0">WRITE PATH — blocked. The gate sits BEFORE the transaction, so the outbox never gets the chance to protect the</tspan>
+<tspan x="1612.0" dy="17.6">lead. Honeypot and per-IP rate limit are built and working; they run before the captcha and are not the</tspan>
+<tspan x="1612.0" dy="17.6">problem.</tspan>
+</text>
+<text x="0.0" y="662.7" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">2 — Host and edge</tspan>
+</text>
+<text x="0.0" y="688.3" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Vercel project ss-refrigeration, team managekalt-5790, Hobby plan.</tspan>
+</text>
+<rect x="0.0" y="715.0" width="2400.0" height="230.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="748.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#f08c00" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">HOST</tspan>
+</text>
+<rect x="210.0" y="737.0" width="422.0" height="186.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="224.0" y="764.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">Vercel  ·  Hobby</tspan>
+</text>
+<text x="224.0" y="787.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">Project  ss-refrigeration</tspan>
+<tspan x="224.0" dy="16.3">Team  managekalt-5790</tspan>
+<tspan x="224.0" dy="16.3">Plan  Hobby</tspan>
+<tspan x="224.0" dy="16.3"> </tspan>
+<tspan x="224.0" dy="16.3">Hobby forbids commercial</tspan>
+<tspan x="224.0" dy="16.3">use. This is a live breach,</tspan>
+<tspan x="224.0" dy="16.3">not a future one.</tspan>
+</text>
+<rect x="652.0" y="737.0" width="422.0" height="186.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="666.0" y="764.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">Functions  ·  iad1</tspan>
+</text>
+<text x="666.0" y="787.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">Washington DC, US East</tspan>
+<tspan x="666.0" dy="16.3">Node 22.x  ·  nodejs runtime</tspan>
+<tspan x="666.0" dy="16.3">maxDuration 60 s (cron)</tspan>
+<tspan x="666.0" dy="16.3"> </tspan>
+<tspan x="666.0" dy="16.3">Neon is in Singapore.</tspan>
+<tspan x="666.0" dy="16.3">Every query crosses the</tspan>
+<tspan x="666.0" dy="16.3">Pacific. ~220 ms RTT.</tspan>
+</text>
+<rect x="1094.0" y="737.0" width="422.0" height="186.0" rx="12" fill="#fff9db" stroke="#f08c00" stroke-width="2.0"/>
+<text x="1108.0" y="764.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">Edge CDN</tspan>
+</text>
+<text x="1108.0" y="787.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">Static HTML + assets</tspan>
+<tspan x="1108.0" dy="16.3">global PoPs</tspan>
+<tspan x="1108.0" dy="16.3"> </tspan>
+<tspan x="1108.0" dy="16.3">Images served unoptimised</tspan>
+<tspan x="1108.0" dy="16.3">from public/ — no R2, no</tspan>
+<tspan x="1108.0" dy="16.3">image loader (not built).</tspan>
+</text>
+<rect x="1536.0" y="737.0" width="422.0" height="186.0" rx="12" fill="#f8f9fa" stroke="#495057" stroke-width="2.0"/>
+<text x="1550.0" y="764.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">Access</tspan>
+</text>
+<text x="1550.0" y="787.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">Production domain  PUBLIC</tspan>
+<tspan x="1550.0" dy="16.3">ss-refrigeration.vercel.app</tspan>
+<tspan x="1550.0" dy="16.3"> </tspan>
+<tspan x="1550.0" dy="16.3">Preview + deployment URLs</tspan>
+<tspan x="1550.0" dy="16.3">sit behind Vercel auth.</tspan>
+<tspan x="1550.0" dy="16.3">Verified by request.</tspan>
+</text>
+<rect x="1978.0" y="737.0" width="422.0" height="186.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1992.0" y="764.8" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">Response headers</tspan>
+</text>
+<text x="1992.0" y="787.9" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">HSTS 2 y + preload</tspan>
+<tspan x="1992.0" dy="16.3">X-Content-Type-Options</tspan>
+<tspan x="1992.0" dy="16.3">Referrer-Policy</tspan>
+<tspan x="1992.0" dy="16.3">X-Frame-Options DENY</tspan>
+<tspan x="1992.0" dy="16.3">Permissions-Policy</tspan>
+<tspan x="1992.0" dy="16.3"> </tspan>
+<tspan x="1992.0" dy="16.3">No CSP — needs nonces.</tspan>
+</text>
+<text x="0.0" y="1003.1" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">3 — Render surface</tspan>
+</text>
+<text x="0.0" y="1028.7" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">22 routes. Every page sets revalidate = false, so nothing regenerates on a timer and the database sleeps between deploys. This is HLD-FREE-TIER §4.1 enforced, and it is the decision that keeps the Neon compute budget intact.</tspan>
+</text>
+<rect x="0.0" y="1055.4" width="2400.0" height="230.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1089.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#099268" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">STATIC</tspan>
+<tspan x="18.0" dy="18.8">SSG</tspan>
+</text>
+<rect x="210.0" y="1077.4" width="422.0" height="186.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="224.0" y="1105.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">Marketing  ·  6</tspan>
+</text>
+<text x="224.0" y="1128.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">/           home</tspan>
+<tspan x="224.0" dy="16.3">/about</tspan>
+<tspan x="224.0" dy="16.3">/industries</tspan>
+<tspan x="224.0" dy="16.3">/compare</tspan>
+<tspan x="224.0" dy="16.3">/privacy</tspan>
+<tspan x="224.0" dy="16.3">/terms</tspan>
+</text>
+<rect x="652.0" y="1077.4" width="422.0" height="186.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="666.0" y="1105.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">Catalogue  ·  7</tspan>
+</text>
+<text x="666.0" y="1128.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">/products</tspan>
+<tspan x="666.0" dy="16.3">/products/[slug]  ×5</tspan>
+<tspan x="666.0" dy="16.3">  reach-in-refrigerator</tspan>
+<tspan x="666.0" dy="16.3">  undercounter-refrigerator</tspan>
+<tspan x="666.0" dy="16.3">  sushi-display-case</tspan>
+<tspan x="666.0" dy="16.3">  + 2 more</tspan>
+<tspan x="666.0" dy="16.3"> </tspan>
+<tspan x="666.0" dy="16.3">dynamicParams = true</tspan>
+</text>
+<rect x="1094.0" y="1077.4" width="422.0" height="186.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1108.0" y="1105.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">Lead surfaces  ·  2</tspan>
+</text>
+<text x="1108.0" y="1128.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">/contact</tspan>
+<tspan x="1108.0" dy="16.3">/support</tspan>
+<tspan x="1108.0" dy="16.3"> </tspan>
+<tspan x="1108.0" dy="16.3">Both POST to /api/leads.</tspan>
+<tspan x="1108.0" dy="16.3">Both are currently</tspan>
+<tspan x="1108.0" dy="16.3">rejected. See §1.</tspan>
+</text>
+<rect x="1536.0" y="1077.4" width="422.0" height="186.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1550.0" y="1105.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">Resources  ·  1</tspan>
+</text>
+<text x="1550.0" y="1128.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">/downloads</tspan>
+<tspan x="1550.0" dy="16.3"> </tspan>
+<tspan x="1550.0" dy="16.3">Spec sheets and CAD</tspan>
+<tspan x="1550.0" dy="16.3">drawings are NOT UPLOADED</tspan>
+<tspan x="1550.0" dy="16.3">YET — the page renders the</tspan>
+<tspan x="1550.0" dy="16.3">placeholder state.</tspan>
+</text>
+<rect x="1978.0" y="1077.4" width="422.0" height="186.0" rx="12" fill="#f8f9fa" stroke="#495057" stroke-width="2.0"/>
+<text x="1992.0" y="1105.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">Generated  ·  6</tspan>
+</text>
+<text x="1992.0" y="1128.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">/sitemap.xml</tspan>
+<tspan x="1992.0" dy="16.3">/robots.txt</tspan>
+<tspan x="1992.0" dy="16.3">/icon.svg</tspan>
+<tspan x="1992.0" dy="16.3">/opengraph-image</tspan>
+<tspan x="1992.0" dy="16.3">/_not-found</tspan>
+<tspan x="1992.0" dy="16.3"> </tspan>
+<tspan x="1992.0" dy="16.3">Origin read from APP_URL</tspan>
+<tspan x="1992.0" dy="16.3">at build. Verified correct.</tspan>
+</text>
+<text x="0.0" y="1343.5" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">4 — Server functions</tspan>
+</text>
+<text x="0.0" y="1369.1" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Six route handlers, all force-dynamic, all nodejs runtime.</tspan>
+</text>
+<rect x="0.0" y="1395.8" width="2400.0" height="228.3" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1429.6" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#c2255c" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">FUNCTIONS</tspan>
+</text>
+<rect x="210.0" y="1417.8" width="348.3" height="184.3" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="224.0" y="1445.2" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">POST /api/leads</tspan>
+</text>
+<text x="224.0" y="1468.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">THE ONLY REVENUE WRITE</tspan>
+<tspan x="224.0" dy="16.3"> </tspan>
+<tspan x="224.0" dy="16.3">honeypot -&gt; rate limit -&gt;</tspan>
+<tspan x="224.0" dy="16.3">captcha -&gt; idempotency -&gt;</tspan>
+<tspan x="224.0" dy="16.3">txn(lead + item + outbox)</tspan>
+<tspan x="224.0" dy="16.3"> </tspan>
+<tspan x="224.0" dy="16.3">BLOCKED AT CAPTCHA</tspan>
+</text>
+<rect x="578.3" y="1417.8" width="348.3" height="184.3" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="592.3" y="1445.2" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="592.3" dy="0.0">GET /api/cron/[job]</tspan>
+</text>
+<text x="592.3" y="1468.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="592.3" dy="0.0">Bearer CRON_SECRET</tspan>
+<tspan x="592.3" dy="16.3">maxDuration 60</tspan>
+<tspan x="592.3" dy="16.3"> </tspan>
+<tspan x="592.3" dy="16.3">maintenance | guardrails</tspan>
+<tspan x="592.3" dy="16.3">outbox-sweep</tspan>
+<tspan x="592.3" dy="16.3"> </tspan>
+<tspan x="592.3" dy="16.3">401 without the secret —</tspan>
+<tspan x="592.3" dy="16.3">verified by request.</tspan>
+</text>
+<rect x="946.7" y="1417.8" width="348.3" height="184.3" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="960.7" y="1445.2" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="960.7" dy="0.0">POST /api/jobs/[task]</tspan>
+</text>
+<text x="960.7" y="1468.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="960.7" dy="0.0">QStash delivery target</tspan>
+<tspan x="960.7" dy="16.3">Signature-verified</tspan>
+<tspan x="960.7" dy="16.3"> </tspan>
+<tspan x="960.7" dy="16.3">QSTASH keys are unset, so</tspan>
+<tspan x="960.7" dy="16.3">nothing ever calls this.</tspan>
+</text>
+<rect x="1315.0" y="1417.8" width="348.3" height="184.3" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1329.0" y="1445.2" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1329.0" dy="0.0">POST /api/revalidate</tspan>
+</text>
+<text x="1329.0" y="1468.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1329.0" dy="0.0">Bearer REVALIDATE_SECRET</tspan>
+<tspan x="1329.0" dy="16.3"> </tspan>
+<tspan x="1329.0" dy="16.3">Publish webhook -&gt;</tspan>
+<tspan x="1329.0" dy="16.3">revalidateTag. Secret is</tspan>
+<tspan x="1329.0" dy="16.3">set; no publisher exists</tspan>
+<tspan x="1329.0" dy="16.3">to call it yet.</tspan>
+</text>
+<rect x="1683.3" y="1417.8" width="348.3" height="184.3" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1697.3" y="1445.2" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1697.3" dy="0.0">GET /api/catalog</tspan>
+</text>
+<text x="1697.3" y="1468.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1697.3" dy="0.0">Read API over the</tspan>
+<tspan x="1697.3" dy="16.3">catalogue module.</tspan>
+<tspan x="1697.3" dy="16.3">Built and serving.</tspan>
+</text>
+<rect x="2051.7" y="1417.8" width="348.3" height="184.3" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="2065.7" y="1445.2" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2065.7" dy="0.0">GET /api/health</tspan>
+</text>
+<text x="2065.7" y="1468.1" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2065.7" dy="0.0">Capability report.</tspan>
+<tspan x="2065.7" dy="16.3"> </tspan>
+<tspan x="2065.7" dy="16.3">Returns every integration</tspan>
+<tspan x="2065.7" dy="16.3">flag. This is how the</tspan>
+<tspan x="2065.7" dy="16.3">unconfigured adapters were</tspan>
+<tspan x="2065.7" dy="16.3">found.</tspan>
+</text>
+<text x="0.0" y="1682.2" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">5 — Modules and adapters</tspan>
+</text>
+<text x="0.0" y="1707.8" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">src/modules/* are the seams; each exposes only index.ts and an ESLint rule enforces it. src/lib/container.ts is the composition root — it reads the capability flags in env.ts and wires a real adapter or deregisters the channel. That is why a missing token degrades one feature instead of breaking the lead path.</tspan>
+</text>
+<rect x="0.0" y="1734.5" width="2400.0" height="148.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1768.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#c2255c" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">MODULES</tspan>
+</text>
+<rect x="210.0" y="1756.5" width="295.7" height="104.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="224.0" y="1784.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">catalog</tspan>
+</text>
+<text x="224.0" y="1807.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">Products, variants,</tspan>
+<tspan x="224.0" dy="16.3">specs. Feeds SSG.</tspan>
+</text>
+<rect x="525.7" y="1756.5" width="295.7" height="104.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="539.7" y="1784.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="539.7" dy="0.0">leads</tspan>
+</text>
+<text x="539.7" y="1807.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="539.7" dy="0.0">Enquiry service. Correct</tspan>
+<tspan x="539.7" dy="16.3">— the adapter blocks it.</tspan>
+</text>
+<rect x="841.4" y="1756.5" width="295.7" height="104.0" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="855.4" y="1784.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="855.4" dy="0.0">outbox</tspan>
+</text>
+<text x="855.4" y="1807.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="855.4" dy="0.0">Transactional outbox</tspan>
+<tspan x="855.4" dy="16.3">+ sweeper.</tspan>
+</text>
+<rect x="1157.1" y="1756.5" width="295.7" height="104.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1171.1" y="1784.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1171.1" dy="0.0">notify</tspan>
+</text>
+<text x="1171.1" y="1807.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1171.1" dy="0.0">Channel registry.</tspan>
+<tspan x="1171.1" dy="16.3">No channel is live.</tspan>
+</text>
+<rect x="1472.9" y="1756.5" width="295.7" height="104.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="1486.9" y="1784.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1486.9" dy="0.0">content</tspan>
+</text>
+<text x="1486.9" y="1807.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1486.9" dy="0.0">Structured content.</tspan>
+<tspan x="1486.9" dy="16.3">No publisher UI.</tspan>
+</text>
+<rect x="1788.6" y="1756.5" width="295.7" height="104.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="1802.6" y="1784.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1802.6" dy="0.0">media</tspan>
+</text>
+<text x="1802.6" y="1807.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1802.6" dy="0.0">Upload + derive.</tspan>
+<tspan x="1802.6" dy="16.3">No bucket configured.</tspan>
+</text>
+<rect x="2104.3" y="1756.5" width="295.7" height="104.0" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="2118.3" y="1784.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2118.3" dy="0.0">search</tspan>
+</text>
+<text x="2118.3" y="1807.4" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2118.3" dy="0.0">tsvector. Not wired</tspan>
+<tspan x="2118.3" dy="16.3">to a UI yet.</tspan>
+</text>
+<rect x="0.0" y="1896.5" width="2400.0" height="163.0" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="1930.3" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#7048e8" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">ADAPTERS</tspan>
+<tspan x="18.0" dy="18.8">lib/</tspan>
+</text>
+<rect x="210.0" y="1918.5" width="348.3" height="119.0" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="224.0" y="1945.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">db.ts  -&gt;  Neon</tspan>
+</text>
+<text x="224.0" y="1968.8" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">CONFIGURED</tspan>
+<tspan x="224.0" dy="16.3">Pooled driver. The only</tspan>
+<tspan x="224.0" dy="16.3">integration that is live.</tspan>
+</text>
+<rect x="578.3" y="1918.5" width="348.3" height="119.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="592.3" y="1945.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="592.3" dy="0.0">adapters/captcha.ts</tspan>
+</text>
+<text x="592.3" y="1968.8" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="592.3" dy="0.0">Turnstile</tspan>
+<tspan x="592.3" dy="16.3">NOT CONFIGURED — and</tspan>
+<tspan x="592.3" dy="16.3">fails closed, so it blocks</tspan>
+<tspan x="592.3" dy="16.3">every lead. See §1.</tspan>
+</text>
+<rect x="946.7" y="1918.5" width="348.3" height="119.0" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="960.7" y="1945.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="960.7" dy="0.0">adapters/mail.ts</tspan>
+</text>
+<text x="960.7" y="1968.8" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="960.7" dy="0.0">Resend</tspan>
+<tspan x="960.7" dy="16.3">NOT CONFIGURED</tspan>
+<tspan x="960.7" dy="16.3">No lead reaches a human.</tspan>
+</text>
+<rect x="1315.0" y="1918.5" width="348.3" height="119.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1329.0" y="1945.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1329.0" dy="0.0">adapters/queue.ts</tspan>
+</text>
+<text x="1329.0" y="1968.8" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1329.0" dy="0.0">QStash</tspan>
+<tspan x="1329.0" dy="16.3">NOT CONFIGURED</tspan>
+<tspan x="1329.0" dy="16.3">Outbox has no fast drain.</tspan>
+</text>
+<rect x="1683.3" y="1918.5" width="348.3" height="119.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1697.3" y="1945.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1697.3" dy="0.0">adapters/cache.ts</tspan>
+</text>
+<text x="1697.3" y="1968.8" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1697.3" dy="0.0">Upstash Redis</tspan>
+<tspan x="1697.3" dy="16.3">NOT CONFIGURED</tspan>
+<tspan x="1697.3" dy="16.3">Rate limiting degrades.</tspan>
+</text>
+<rect x="2051.7" y="1918.5" width="348.3" height="119.0" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="2065.7" y="1945.9" font-size="14.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="2065.7" dy="0.0">adapters/storage.ts</tspan>
+</text>
+<text x="2065.7" y="1968.8" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="2065.7" dy="0.0">Cloudflare R2</tspan>
+<tspan x="2065.7" dy="16.3">NOT CONFIGURED</tspan>
+<tspan x="2065.7" dy="16.3">Uploads are refused.</tspan>
+</text>
+<text x="0.0" y="2117.6" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">6 — Data and the async backbone</tspan>
+</text>
+<rect x="0.0" y="2150.4" width="2400.0" height="245.3" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="2184.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#2f9e44" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">DATA</tspan>
+</text>
+<rect x="210.0" y="2172.4" width="422.0" height="201.3" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="224.0" y="2200.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">Neon PostgreSQL</tspan>
+</text>
+<text x="224.0" y="2223.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">ap-southeast-1  (Singapore)</tspan>
+<tspan x="224.0" dy="16.3">Pooled connection string</tspan>
+<tspan x="224.0" dy="16.3">3 migrations applied</tspan>
+<tspan x="224.0" dy="16.3"> </tspan>
+<tspan x="224.0" dy="16.3">Read at BUILD time by</tspan>
+<tspan x="224.0" dy="16.3">generateStaticParams — so a</tspan>
+<tspan x="224.0" dy="16.3">deploy needs a reachable,</tspan>
+<tspan x="224.0" dy="16.3">migrated database.</tspan>
+</text>
+<rect x="652.0" y="2172.4" width="422.0" height="201.3" rx="12" fill="#ebfbee" stroke="#2f9e44" stroke-width="2.0"/>
+<text x="666.0" y="2200.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">Tables in use</tspan>
+</text>
+<text x="666.0" y="2223.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">product</tspan>
+<tspan x="666.0" dy="16.3">product_variant</tspan>
+<tspan x="666.0" dy="16.3">lead</tspan>
+<tspan x="666.0" dy="16.3">lead_item</tspan>
+<tspan x="666.0" dy="16.3">outbox</tspan>
+<tspan x="666.0" dy="16.3"> </tspan>
+<tspan x="666.0" dy="16.3">5 live products prerendered</tspan>
+<tspan x="666.0" dy="16.3">at the last deploy.</tspan>
+</text>
+<rect x="1094.0" y="2172.4" width="422.0" height="201.3" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1108.0" y="2200.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">Outbox  ·  intact</tspan>
+</text>
+<text x="1108.0" y="2223.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">The lead row and the event</tspan>
+<tspan x="1108.0" dy="16.3">row commit in ONE</tspan>
+<tspan x="1108.0" dy="16.3">transaction. That guarantee</tspan>
+<tspan x="1108.0" dy="16.3">is built and correct.</tspan>
+<tspan x="1108.0" dy="16.3"> </tspan>
+<tspan x="1108.0" dy="16.3">It is simply never reached,</tspan>
+<tspan x="1108.0" dy="16.3">because the captcha gate</tspan>
+<tspan x="1108.0" dy="16.3">rejects the request first.</tspan>
+</text>
+<rect x="1536.0" y="2172.4" width="422.0" height="201.3" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1550.0" y="2200.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">Drain  ·  degraded</tspan>
+</text>
+<text x="1550.0" y="2223.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">QStash schedule: NOT BUILT</tspan>
+<tspan x="1550.0" dy="16.3">Nightly forced sweep: BUILT</tspan>
+<tspan x="1550.0" dy="16.3"> </tspan>
+<tspan x="1550.0" dy="16.3">So an event waits up to 24 h</tspan>
+<tspan x="1550.0" dy="16.3">instead of 15 min — and then</tspan>
+<tspan x="1550.0" dy="16.3">finds no notification channel</tspan>
+<tspan x="1550.0" dy="16.3">configured, so it cannot be</tspan>
+<tspan x="1550.0" dy="16.3">published at all.</tspan>
+</text>
+<rect x="1978.0" y="2172.4" width="422.0" height="201.3" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1992.0" y="2200.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">Backup  ·  NONE</tspan>
+</text>
+<text x="1992.0" y="2223.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">HLD-FREE-TIER §4.3 calls the</tspan>
+<tspan x="1992.0" dy="16.3">nightly pg_dump to R2 "the</tspan>
+<tspan x="1992.0" dy="16.3">single most important cron</tspan>
+<tspan x="1992.0" dy="16.3">job in the system".</tspan>
+<tspan x="1992.0" dy="16.3"> </tspan>
+<tspan x="1992.0" dy="16.3">It is not built. No R2 bucket</tspan>
+<tspan x="1992.0" dy="16.3">exists. Neon Free keeps a</tspan>
+<tspan x="1992.0" dy="16.3">6 h history window and takes</tspan>
+<tspan x="1992.0" dy="16.3">no scheduled backup.</tspan>
+</text>
+<text x="0.0" y="2453.7" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">7 — Schedulers and delivery</tspan>
+</text>
+<rect x="0.0" y="2486.4" width="2400.0" height="228.9" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="2520.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#e03131" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">CRON</tspan>
+</text>
+<rect x="210.0" y="2508.4" width="532.5" height="184.9" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="224.0" y="2536.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">Vercel Cron  ·  maintenance</tspan>
+</text>
+<text x="224.0" y="2559.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">0 3 * * *    daily</tspan>
+<tspan x="224.0" dy="16.3">Prune published outbox rows,</tspan>
+<tspan x="224.0" dy="16.3">forced sweep.</tspan>
+<tspan x="224.0" dy="16.3">REGISTERED — verified on the</tspan>
+<tspan x="224.0" dy="16.3">deployment record.</tspan>
+</text>
+<rect x="762.5" y="2508.4" width="532.5" height="184.9" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="776.5" y="2536.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="776.5" dy="0.0">Vercel Cron  ·  guardrails</tspan>
+</text>
+<text x="776.5" y="2559.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="776.5" dy="0.0">30 3 * * *   daily</tspan>
+<tspan x="776.5" dy="16.3">Lead count, outbox backlog,</tspan>
+<tspan x="776.5" dy="16.3">stuck events -&gt; notifier.</tspan>
+<tspan x="776.5" dy="16.3">REGISTERED.</tspan>
+<tspan x="776.5" dy="16.3"> </tspan>
+<tspan x="776.5" dy="16.3">The alarm fires into a</tspan>
+<tspan x="776.5" dy="16.3">notifier with no channel.</tspan>
+</text>
+<rect x="1315.0" y="2508.4" width="532.5" height="184.9" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="1329.0" y="2536.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1329.0" dy="0.0">Hobby cron limits</tspan>
+</text>
+<text x="1329.0" y="2559.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1329.0" dy="0.0">Once per day maximum.</tspan>
+<tspan x="1329.0" dy="16.3">±59 min of slop.</tspan>
+<tspan x="1329.0" dy="16.3"> </tspan>
+<tspan x="1329.0" dy="16.3">A sub-daily expression fails</tspan>
+<tspan x="1329.0" dy="16.3">at deploy time, which is why</tspan>
+<tspan x="1329.0" dy="16.3">the 15-minute sweeper cannot</tspan>
+<tspan x="1329.0" dy="16.3">live here.</tspan>
+</text>
+<rect x="1867.5" y="2508.4" width="532.5" height="184.9" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1881.5" y="2536.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1881.5" dy="0.0">Synthetic lead probe</tspan>
+</text>
+<text x="1881.5" y="2559.3" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1881.5" dy="0.0">NOT BUILT.</tspan>
+<tspan x="1881.5" dy="16.3"> </tspan>
+<tspan x="1881.5" dy="16.3">HLD §11 risk 2 and</tspan>
+<tspan x="1881.5" dy="16.3">HLD-FREE-TIER §3.3 both</tspan>
+<tspan x="1881.5" dy="16.3">specify it. It is the one</tspan>
+<tspan x="1881.5" dy="16.3">control that would have</tspan>
+<tspan x="1881.5" dy="16.3">caught the §1 fault before a</tspan>
+<tspan x="1881.5" dy="16.3">visitor did.</tspan>
+</text>
+<rect x="0.0" y="2729.4" width="2400.0" height="261.6" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="2763.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#099268" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">CI / CD</tspan>
+</text>
+<rect x="210.0" y="2751.4" width="422.0" height="217.6" rx="12" fill="#e6fcf5" stroke="#099268" stroke-width="2.0"/>
+<text x="224.0" y="2779.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">GitHub Actions  ·  written</tspan>
+</text>
+<text x="224.0" y="2802.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">.github/workflows/</tspan>
+<tspan x="224.0" dy="16.3">  deploy-production.yml</tspan>
+<tspan x="224.0" dy="16.3">  deploy-preview.yml</tspan>
+<tspan x="224.0" dy="16.3"> </tspan>
+<tspan x="224.0" dy="16.3">typecheck + lint  -&gt;</tspan>
+<tspan x="224.0" dy="16.3">vercel build  -&gt;</tspan>
+<tspan x="224.0" dy="16.3">vercel deploy --prebuilt</tspan>
+</text>
+<rect x="652.0" y="2751.4" width="422.0" height="217.6" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="666.0" y="2779.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">NOT ACTIVE</tspan>
+</text>
+<text x="666.0" y="2802.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">git ls-remote origin returns</tspan>
+<tspan x="666.0" dy="16.3">NO REFS. The repository is</tspan>
+<tspan x="666.0" dy="16.3">empty.</tspan>
+<tspan x="666.0" dy="16.3"> </tspan>
+<tspan x="666.0" dy="16.3">The deployed code exists only</tspan>
+<tspan x="666.0" dy="16.3">in an uncommitted local</tspan>
+<tspan x="666.0" dy="16.3">working tree.</tspan>
+</text>
+<rect x="1094.0" y="2751.4" width="422.0" height="217.6" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1108.0" y="2779.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">vercel.json</tspan>
+</text>
+<text x="1108.0" y="2802.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">git.deploymentEnabled false</tspan>
+<tspan x="1108.0" dy="16.3">— otherwise Vercel's own Git</tspan>
+<tspan x="1108.0" dy="16.3">integration deploys the same</tspan>
+<tspan x="1108.0" dy="16.3">commit a second time.</tspan>
+<tspan x="1108.0" dy="16.3"> </tspan>
+<tspan x="1108.0" dy="16.3">2 cron definitions.</tspan>
+</text>
+<rect x="1536.0" y="2751.4" width="422.0" height="217.6" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1550.0" y="2779.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">Windows trap</tspan>
+</text>
+<text x="1550.0" y="2802.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">vercel build symlinks</tspan>
+<tspan x="1550.0" dy="16.3">duplicate functions and on</tspan>
+<tspan x="1550.0" dy="16.3">Windows writes the target</tspan>
+<tspan x="1550.0" dy="16.3">with BACKSLASHES.</tspan>
+<tspan x="1550.0" dy="16.3"> </tspan>
+<tspan x="1550.0" dy="16.3">--prebuilt from Windows -&gt;</tspan>
+<tspan x="1550.0" dy="16.3">ENOENT on the Linux builder.</tspan>
+<tspan x="1550.0" dy="16.3">CI is Linux and is fine.</tspan>
+</text>
+<rect x="1978.0" y="2751.4" width="422.0" height="217.6" rx="12" fill="#f8f9fa" stroke="#495057" stroke-width="2.0"/>
+<text x="1992.0" y="2779.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">Secrets needed</tspan>
+</text>
+<text x="1992.0" y="2802.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">VERCEL_TOKEN</tspan>
+<tspan x="1992.0" dy="16.3">VERCEL_ORG_ID</tspan>
+<tspan x="1992.0" dy="16.3">VERCEL_PROJECT_ID</tspan>
+<tspan x="1992.0" dy="16.3"> </tspan>
+<tspan x="1992.0" dy="16.3">The two ids are the orgId</tspan>
+<tspan x="1992.0" dy="16.3">and projectId in</tspan>
+<tspan x="1992.0" dy="16.3">.vercel/project.json after</tspan>
+<tspan x="1992.0" dy="16.3">`vercel link`. That file is</tspan>
+<tspan x="1992.0" dy="16.3">gitignored, and the ids are</tspan>
+<tspan x="1992.0" dy="16.3">not repeated here.</tspan>
+</text>
+<text x="0.0" y="3049.0" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">8 — Environment contract, as set</tspan>
+</text>
+<text x="0.0" y="3074.7" font-size="14.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Six variables are set on Production and Preview. src/lib/env.ts is the only file that reads process.env; an ESLint rule makes every other read a build error.</tspan>
+</text>
+<rect x="0.0" y="3101.4" width="2400.0" height="228.9" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="3135.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">ENV</tspan>
+</text>
+<rect x="210.0" y="3123.4" width="422.0" height="184.9" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="224.0" y="3151.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">SET  ·  6</tspan>
+</text>
+<text x="224.0" y="3174.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">DATABASE_URL</tspan>
+<tspan x="224.0" dy="16.3">APP_URL</tspan>
+<tspan x="224.0" dy="16.3">LEAD_IP_HASH_SALT</tspan>
+<tspan x="224.0" dy="16.3">CRON_SECRET</tspan>
+<tspan x="224.0" dy="16.3">REVALIDATE_SECRET</tspan>
+<tspan x="224.0" dy="16.3">MAIL_FROM</tspan>
+</text>
+<rect x="652.0" y="3123.4" width="422.0" height="184.9" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="666.0" y="3151.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">APP_URL  ·  the trap</tspan>
+</text>
+<text x="666.0" y="3174.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">Defaults to localhost:3000.</tspan>
+<tspan x="666.0" dy="16.3">The build ACCEPTS that and</tspan>
+<tspan x="666.0" dy="16.3">bakes it into sitemap, robots</tspan>
+<tspan x="666.0" dy="16.3">and every canonical URL.</tspan>
+<tspan x="666.0" dy="16.3"> </tspan>
+<tspan x="666.0" dy="16.3">Set correctly here before the</tspan>
+<tspan x="666.0" dy="16.3">first build. Verified in the</tspan>
+<tspan x="666.0" dy="16.3">live output.</tspan>
+</text>
+<rect x="1094.0" y="3123.4" width="422.0" height="184.9" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="1108.0" y="3151.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">EMPTY  ·  integrations</tspan>
+</text>
+<text x="1108.0" y="3174.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">RESEND_API_KEY  SALES_INBOX</tspan>
+<tspan x="1108.0" dy="16.3">TURNSTILE_SECRET_KEY</tspan>
+<tspan x="1108.0" dy="16.3">QSTASH_*  ·  UPSTASH_REDIS_*</tspan>
+<tspan x="1108.0" dy="16.3">R2_*  ·  TELEGRAM_*</tspan>
+<tspan x="1108.0" dy="16.3">WHATSAPP_*  ·  DATABASE_URL_RO</tspan>
+<tspan x="1108.0" dy="16.3">NEXT_PUBLIC_ANALYTICS_*</tspan>
+</text>
+<rect x="1536.0" y="3123.4" width="422.0" height="184.9" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1550.0" y="3151.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">NEVER SET IN PROD</tspan>
+</text>
+<text x="1550.0" y="3174.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">SKIP_ENV_VALIDATION</tspan>
+<tspan x="1550.0" dy="16.3">  boots the app on a stub DB</tspan>
+<tspan x="1550.0" dy="16.3">NODE_ENV</tspan>
+<tspan x="1550.0" dy="16.3">  Vercel sets it</tspan>
+<tspan x="1550.0" dy="16.3"> </tspan>
+<tspan x="1550.0" dy="16.3">Both deliberately omitted.</tspan>
+</text>
+<rect x="1978.0" y="3123.4" width="422.0" height="184.9" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1992.0" y="3151.2" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">Missing from the contract</tspan>
+</text>
+<text x="1992.0" y="3174.2" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">NEXT_PUBLIC_TURNSTILE_SITE_KEY</tspan>
+<tspan x="1992.0" dy="16.3"> </tspan>
+<tspan x="1992.0" dy="16.3">The browser half of the bot</tspan>
+<tspan x="1992.0" dy="16.3">defence needs it, and env.ts</tspan>
+<tspan x="1992.0" dy="16.3">has no such key — which is the</tspan>
+<tspan x="1992.0" dy="16.3">structural reason §1 exists.</tspan>
+</text>
+<text x="0.0" y="3388.4" font-size="24.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">9 — What was verified, and how</tspan>
+</text>
+<rect x="0.0" y="3421.1" width="2400.0" height="228.9" rx="14" fill="#fcfcfd" stroke="#ced4da" stroke-width="1.5" stroke-dasharray="10 7"/>
+<text x="18.0" y="3454.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#2b8a3e" text-anchor="start" xml:space="preserve">
+<tspan x="18.0" dy="0.0">EVIDENCE</tspan>
+</text>
+<rect x="210.0" y="3443.1" width="422.0" height="184.9" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="224.0" y="3470.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">Headless Chrome</tspan>
+</text>
+<text x="224.0" y="3494.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="224.0" dy="0.0">18 route/viewport pairs,</tspan>
+<tspan x="224.0" dy="16.3">desktop 1360 and phone 390.</tspan>
+<tspan x="224.0" dy="16.3">Stylesheet ATTACHED and its</tspan>
+<tspan x="224.0" dy="16.3">token resolving. No console</tspan>
+<tspan x="224.0" dy="16.3">error. No failed request.</tspan>
+<tspan x="224.0" dy="16.3">No horizontal overflow.</tspan>
+</text>
+<rect x="652.0" y="3443.1" width="422.0" height="184.9" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="666.0" y="3470.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">Privacy posture</tspan>
+</text>
+<text x="666.0" y="3494.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="666.0" dy="0.0">0 cookies set.</tspan>
+<tspan x="666.0" dy="16.3">0 third-party origins.</tspan>
+<tspan x="666.0" dy="16.3"> </tspan>
+<tspan x="666.0" dy="16.3">So the no-consent-banner</tspan>
+<tspan x="666.0" dy="16.3">decision still holds. Adding</tspan>
+<tspan x="666.0" dy="16.3">GA4 would end that.</tspan>
+</text>
+<rect x="1094.0" y="3443.1" width="422.0" height="184.9" rx="12" fill="#d3f9d8" stroke="#2b8a3e" stroke-width="2.0"/>
+<text x="1108.0" y="3470.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">SEO origin</tspan>
+</text>
+<text x="1108.0" y="3494.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1108.0" dy="0.0">sitemap.xml and robots.txt</tspan>
+<tspan x="1108.0" dy="16.3">both emit the production</tspan>
+<tspan x="1108.0" dy="16.3">domain, not localhost.</tspan>
+<tspan x="1108.0" dy="16.3">Checked by request.</tspan>
+</text>
+<rect x="1536.0" y="3443.1" width="422.0" height="184.9" rx="12" fill="#ffe3e3" stroke="#c92a2a" stroke-width="2.0"/>
+<text x="1550.0" y="3470.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">Lead path</tspan>
+</text>
+<text x="1550.0" y="3494.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1550.0" dy="0.0">POST with a valid body -&gt;</tspan>
+<tspan x="1550.0" dy="16.3">400 captcha_failed.</tspan>
+<tspan x="1550.0" dy="16.3"> </tspan>
+<tspan x="1550.0" dy="16.3">The captcha runs BEFORE</tspan>
+<tspan x="1550.0" dy="16.3">persist(), so the probe wrote</tspan>
+<tspan x="1550.0" dy="16.3">no row.</tspan>
+</text>
+<rect x="1978.0" y="3443.1" width="422.0" height="184.9" rx="12" fill="#fff3bf" stroke="#e67700" stroke-width="2.0"/>
+<text x="1992.0" y="3470.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">Content state</tspan>
+</text>
+<text x="1992.0" y="3494.0" font-size="11.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="1992.0" dy="0.0">TEMPLATE badges are live and</tspan>
+<tspan x="1992.0" dy="16.3">public: phone renders as</tspan>
+<tspan x="1992.0" dy="16.3">+91 00000 00000, plus a</tspan>
+<tspan x="1992.0" dy="16.3">placeholder GSTIN and one</tspan>
+<tspan x="1992.0" dy="16.3">testimonial.</tspan>
+<tspan x="1992.0" dy="16.3"> </tspan>
+<tspan x="1992.0" dy="16.3">src/content/site.ts</tspan>
+<tspan x="1992.0" dy="16.3">isTemplate = true</tspan>
+</text>
+<rect x="0.0" y="3694.1" width="2400.0" height="107.5" rx="12" fill="#f1f3f5" stroke="#868e96" stroke-width="2.0"/>
+<text x="14.0" y="3721.9" font-size="15.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#1a1d23" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">DELIBERATELY NOT DRAWN — every component below appears in the other two canvases and does not exist in this build.</tspan>
+</text>
+<text x="14.0" y="3745.9" font-size="12.5" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#495057" text-anchor="start" xml:space="preserve">
+<tspan x="14.0" dy="0.0">R2 bucket and the AVIF derive pipeline · lib/image-loader.ts · QStash queue and the 15-minute sweeper schedule · Upstash Redis · WhatsApp Cloud API and the WhatsApp-first call to action · Resend · Telegram · Turnstile widget · synthetic lead probe · nightly pg_dump · /admin and Auth.js · careers, news, installations · search UI · Debezium, Kafka,</tspan>
+<tspan x="14.0" dy="17.8">OpenSearch, read replica, PgBouncer, multi-AZ.</tspan>
+<tspan x="14.0" dy="17.8">They are not errors in those documents — they are the plan. They are omitted here so that this canvas can be trusted as a description of the running system. Status table: HLD-FREE-TIER.md §0a.</tspan>
+</text>
+<text x="0.0" y="3843.6" font-size="13.0" font-family="Inter, Helvetica Neue, Helvetica, Arial, sans-serif" fill="#6c757d" text-anchor="start" xml:space="preserve">
+<tspan x="0.0" dy="0.0">Legend: green = built, configured and verified · amber = built but degraded, or a limit worth watching · red = broken, missing, or non-compliant · grey = present in code but unconfigured, so inert · teal = built and serving (render tier, modules) · blue = the visitor · yellow-edge = host and CDN. Every claim on this canvas was checked</tspan>
+<tspan x="0.0" dy="18.2">against the live deployment on 2026-10-12 — see the docstring in _src/gen_current.py for the exact commands. Faults and fixes: docs/ops/REMEDIATION-PLAN.md</tspan>
+</text>
+</svg>

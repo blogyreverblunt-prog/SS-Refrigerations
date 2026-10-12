@@ -120,9 +120,14 @@ export default tseslint.config(
   },
 
   /* Config files run in Node and legitimately read the raw environment.
-     They are also outside the TS program, so type-aware rules misfire. */
+     They are also outside the TS program, so type-aware rules misfire.
+
+     `scripts/*.mjs` is the same case: plain Node tooling (browser-check
+     drives headless Chrome), outside tsconfig's include, and it reads
+     process.env for CHROME_PATH because there is no Next runtime to read
+     env through. */
   {
-    files: ["*.config.{ts,mjs,js}", "drizzle.config.ts"],
+    files: ["*.config.{ts,mjs,js}", "drizzle.config.ts", "scripts/**/*.mjs"],
     rules: {
       "no-restricted-properties": "off",
       "@typescript-eslint/no-unused-vars": "off",

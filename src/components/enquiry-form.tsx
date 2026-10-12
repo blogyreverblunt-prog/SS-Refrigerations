@@ -21,7 +21,10 @@
  */
 import { useId, useRef, useState } from "react";
 
+import { site } from "@/content/site";
+
 import { ArrowRight } from "./icons";
+import { TURNSTILE_FIELD, TurnstileWidget, resetTurnstile } from "./turnstile";
 
 interface Issue {
   path: string;
@@ -31,6 +34,38 @@ interface Issue {
 interface Props {
   /** Pre-selects the enquiry on a product page. */
   modelContext?: { productId: string; name: string } | undefined;
+  /**
+   * The model code the visitor picked, when the page has a picker.
+   *
+   * It turns the RFQ from "someone wants a reach-in" into "someone wants two
+   * HR-128MA-S", which is the difference between a lead the desk has to
+   * phone about and one it can quote. `lead_item` already carries
+   * `variant_id` and `qty`, so this needed no schema change — and when the
+   * picker's selection changes, so does the line item.
+   */
+  variantContext?: { variantId: string; modelCode: string } | undefined;
+  /**
+   * What kind of enquiry this instance collects. `dealership` is still a
+   * `contact` lead — LEAD_TYPE has no partner value and inventing one would
+   * be a migration — so it is labelled on the first line of the message
+   * instead, which is where the sales desk reads it anyway.
+   */
+  kind?: "enquiry" | "dealership";
+  /** Chip shown above the fields, e.g. "Dealership enquiry". */
+  intro?: string;
+  submitLabel?: string;
+  messageLabel?: string;
+  messagePlaceholder?: string;
+  /**
+   * Cloudflare Turnstile site key, read from `env` by the server component
+   * that renders this form and passed down because a client component may not
+   * touch `process.env`.
+   *
+   * Undefined renders no widget and sends no token, which is the correct local
+   * development behaviour — `captcha.ts` only enforces when both halves of the
+   * key pair are configured.
+   */
+  turnstileSiteKey?: string | undefined;
 }
 
 type Status =
@@ -39,7 +74,16 @@ type Status =
   | { kind: "sent"; ref: string; duplicate: boolean }
   | { kind: "failed"; message: string; issues: Issue[] };
 
-export function EnquiryForm({ modelContext }: Props) {
+export function EnquiryForm({
+  modelContext,
+  variantContext,
+  kind = "enquiry",
+  intro,
+  submitLabel,
+  messageLabel = "What do you need?",
+  messagePlaceholder = "Model, quantity, site and timeline if you have them.",
+  turnstileSiteKey,
+}: Props) {
   const uid = useId();
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   // Stable for the life of this form instance; rotated only after success.
@@ -55,6 +99,12 @@ export function EnquiryForm({ modelContext }: Props) {
 
     setStatus({ kind: "sending" });
 
+    const written = String(data.get("message") ?? "").trim();
+    const message =
+      kind === "dealership"
+        ? `Dealership / distributor enquiry\n\n${written}`.trim()
+        : written || undefined;
+
     const payload = {
       type: modelContext ? "rfq" : "contact",
       name: String(data.get("name") ?? ""),
@@ -62,10 +112,21 @@ export function EnquiryForm({ modelContext }: Props) {
       phone: String(data.get("phone") ?? "") || undefined,
       company: String(data.get("company") ?? "") || undefined,
       city: String(data.get("city") ?? "") || undefined,
-      message: String(data.get("message") ?? "") || undefined,
+      message,
       consent: data.get("consent") === "on",
       website: String(data.get("website") ?? ""),
-      items: modelContext ? [{ productId: modelContext.productId, qty: 1 }] : [],
+      // Injected into this form by the Turnstile script; absent when no site
+      // key is configured, which the server tolerates in that same state.
+      captchaToken: String(data.get(TURNSTILE_FIELD) ?? "") || undefined,
+      items: modelContext
+        ? [
+            {
+              productId: modelContext.productId,
+              ...(variantContext ? { variantId: variantContext.variantId } : {}),
+              qty: Number(data.get("qty") ?? 1) || 1,
+            },
+          ]
+        : [],
       source: { landingPath: window.location.pathname },
     };
 
@@ -85,6 +146,8 @@ export function EnquiryForm({ modelContext }: Props) {
       };
 
       if (!res.ok) {
+        // The spent token cannot be replayed, so a retry needs a fresh one.
+        resetTurnstile();
         setStatus({
           kind: "failed",
           message: body.error?.message ?? "We could not send that. Please try again.",
@@ -95,6 +158,7 @@ export function EnquiryForm({ modelContext }: Props) {
 
       setStatus({ kind: "sent", ref: body.ref ?? "", duplicate: Boolean(body.duplicate) });
       form.reset();
+      resetTurnstile();
       idempotencyKey.current = crypto.randomUUID();
     } catch {
       setStatus({
@@ -137,9 +201,16 @@ export function EnquiryForm({ modelContext }: Props) {
         </div>
       )}
 
-      {modelContext && (
+      {(modelContext || intro) && (
         <div className="chips">
-          <span className="chip chip--accent">Enquiring about: {modelContext.name}</span>
+          {intro && <span className="chip chip--accent">{intro}</span>}
+          {modelContext && (
+            <span className="chip chip--accent">
+              {variantContext
+                ? `Quoting: ${variantContext.modelCode}`
+                : `Enquiring about: ${modelContext.name}`}
+            </span>
+          )}
         </div>
       )}
 
@@ -169,15 +240,26 @@ export function EnquiryForm({ modelContext }: Props) {
         </div>
       </div>
 
-      <div className="field-group">
-        <label htmlFor={`${uid}-company`}>Company</label>
-        <input className="field" id={`${uid}-company`} name="company" autoComplete="organization" />
+      <div className="form__row">
+        <div className="field-group">
+          <label htmlFor={`${uid}-company`}>Company</label>
+          <input className="field" id={`${uid}-company`} name="company" autoComplete="organization" />
+        </div>
+        {/* Quantity only where there is a product to count. It becomes
+            `lead_item.qty`, which is what makes the enquiry quotable. */}
+        {modelContext && (
+          <div className="field-group">
+            <label htmlFor={`${uid}-qty`}>Quantity</label>
+            <input className="field" id={`${uid}-qty`} name="qty" type="number"
+                   min={1} max={999} defaultValue={1} />
+          </div>
+        )}
       </div>
 
       <div className="field-group">
-        <label htmlFor={`${uid}-message`}>What do you need?</label>
+        <label htmlFor={`${uid}-message`}>{messageLabel}</label>
         <textarea className="field" id={`${uid}-message`} name="message"
-                  placeholder="Model, quantity, site and timeline if you have them." />
+                  placeholder={messagePlaceholder} />
       </div>
 
       {/* Honeypot. Never shown, never tabbable, never autofilled. */}
@@ -189,7 +271,8 @@ export function EnquiryForm({ modelContext }: Props) {
       <label className="consent" htmlFor={`${uid}-consent`}>
         <input id={`${uid}-consent`} name="consent" type="checkbox" required />
         <span>
-          I agree to KALT storing these details in order to respond to this enquiry.
+          I agree to {site.brand.name} storing these details in order to respond to
+          this enquiry.
           {issueFor("consent") && (
             <strong style={{ color: "var(--danger)", display: "block" }}>
               {issueFor("consent")}
@@ -198,8 +281,10 @@ export function EnquiryForm({ modelContext }: Props) {
         </span>
       </label>
 
+      <TurnstileWidget siteKey={turnstileSiteKey} />
+
       <button className="btn btn--primary" type="submit" disabled={busy}>
-        {busy ? "Sending…" : "Send enquiry"} {!busy && <ArrowRight />}
+        {busy ? "Sending…" : (submitLabel ?? "Send enquiry")} {!busy && <ArrowRight />}
       </button>
     </form>
   );

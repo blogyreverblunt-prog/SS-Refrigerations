@@ -7,7 +7,9 @@
     "node": ">=20.9.0"
   },
   "scripts": {
+    "predev": "node scripts/guard-dev.mjs",
     "dev": "next dev",
+    "browser-check": "node scripts/browser-check.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

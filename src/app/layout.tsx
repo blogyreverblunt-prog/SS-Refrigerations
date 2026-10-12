@@ -2,7 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { Analytics } from "@/components/analytics";
+import { TurnstileScript } from "@/components/turnstile";
 import { SiteFooter } from "@/components/site-footer";
+import { site } from "@/content/site";
 import { env } from "@/lib/env";
 import "./globals.css";
 
@@ -24,11 +27,30 @@ export const metadata: Metadata = {
    */
   metadataBase: new URL(env.APP_URL),
   title: {
-    default: "KALT Commercial Refrigeration — Reliable. Efficient. Precise.",
-    template: "%s · KALT Refrigeration",
+    default: `${site.brand.name} — Commercial Refrigeration · ${site.brand.tagline}`,
+    template: `%s · ${site.brand.name}`,
   },
   description:
-    "Commercial refrigeration for professional kitchens — reach-in and undercounter cabinets, glass-door merchandisers, display cases and deep freezers.",
+    "Commercial refrigeration for professional kitchens — reach-in and undercounter cabinets, glass-door merchandisers, display cases, deep freezers and walk-in cold rooms, specified for Indian conditions.",
+
+  /**
+   * Inherited by every page, so a link to any route previews correctly. The
+   * image comes from `opengraph-image.tsx` automatically — naming it here
+   * would override the generated one.
+   */
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: site.brand.name,
+    locale: "en_IN",
+    url: "/",
+    title: `${site.brand.name} — Commercial Refrigeration`,
+    description:
+      "Cabinets, merchandisers, display cases, deep freezers and cold rooms for professional kitchens, retail floors and cold stores across India.",
+  },
+  twitter: { card: "summary_large_image" },
+  robots: { index: true, follow: true },
+  formatDetection: { telephone: true, address: false, email: false },
 };
 
 export const viewport: Viewport = {
@@ -51,6 +73,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         */}
         <main id="main">{children}</main>
         <SiteFooter />
+        {/* Renders nothing unless NEXT_PUBLIC_ANALYTICS_SRC is configured. */}
+        <Analytics />
+        {/* One script per page, not per form — the Turnstile API is a
+            singleton and a page can carry more than one enquiry form. */}
+        <TurnstileScript siteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
       </body>
     </html>
   );

@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Status** | Draft for review, Rev 1.0 |
-| **Date** | 2026-10-07 |
+| **Status** | Rev 1.1 — design reviewed against the deployed code |
+| **Date** | 2026-10-07, revised 2026-10-12 after the first production deployment |
 | **Target** | A single developer ships and maintains this. Total infrastructure spend: **$0**. |
 | **Constraint** | Must scale by *swapping services*, never by rewriting application code. |
 | **Supersedes** | §10 Phase 1 of [HLD.md](HLD.md). Everything in §7 (data model) and §8 (ADR-0001, why PostgreSQL) carries over **unchanged** — that is the point. |
@@ -13,9 +13,57 @@
 
 ---
 
+## 0a. Implementation status — 2026-10-12
+
+The site was deployed to production on 2026-10-12, at
+**https://ss-refrigeration.vercel.app**. The deployment revealed differences between this document
+and the code. They are listed here so that a reader knows which parts describe the intended design
+and which parts describe the running system.
+
+`docs/ops/REMEDIATION-PLAN.md` holds the full problem list and the fix for each one.
+
+**Built and running.** Marketing pages, the product catalogue from Neon, the lead API, the outbox
+table, both Vercel cron jobs, the security headers, and on-demand ISR exactly as §4.1 requires.
+
+**Designed here but not built.** Each item stays correct as a design. None of it exists yet:
+
+| Section | Item | Note |
+|---|---|---|
+| §2.2 | `lib/image-loader.ts` and the pre-generated AVIF pipeline | `next.config.ts` currently sets `images.unoptimized: true`. No R2 bucket is configured. |
+| §3.3 | QStash outbox sweeper, every 15 min | QStash is unconfigured. The outbox commits, but nothing drains it. |
+| §3.3 | Synthetic lead probe on GitHub Actions | Not built. See §0b — this gap allowed a production fault to ship. |
+| §3.4 | WhatsApp-first call to action | The form is the primary call to action today. No WhatsApp integration exists. |
+| §5.1 | `careers`, `news`, `installations`, `/admin` | The build is marketing, catalogue and leads only. |
+| §7 | The guardrail report's quota lines | The cron job runs, but it reports lead and outbox counts only. |
+
+**Corrected in this revision.** §3.3's cron table, §5.1's directory tree and §2.2's claim about
+the image loader each contradicted the code. They now match it.
+
+### 0b. The gap that let a broken lead path reach production
+
+Bot defence is half-built, and the half that is missing is the browser half.
+`src/lib/adapters/captcha.ts` fails closed in production, which is correct. But no Turnstile
+widget exists in any component, so no request can ever carry a token. **Every enquiry is rejected
+with HTTP 400.**
+
+This matters to the design, not only to the backlog. §3.2 promises that the database commit is the
+durability boundary and that no third party sits on the user's request path. That promise holds
+for everything after the commit. It says nothing about a gate placed *before* the commit, and that
+is where this failure sits.
+
+The probe in §3.3 is the control that catches exactly this class of fault. It is the one item in
+this document whose absence has already cost something. Build it before the features it was
+supposed to watch.
+
+---
+
 ## 0. Read this first: one blocker and three corrected numbers
 
 ### 0.1 Vercel Hobby forbids commercial use
+
+> **Status 2026-10-12: this is no longer a future risk.** The client's site is live on a Hobby
+> account (`managekalt-5790`), so the deployment is non-compliant now, not at some later launch
+> date. The options below are unchanged. The decision is overdue, not pending.
 
 > *"Hobby teams are restricted to non-commercial personal use only. All commercial usage of the
 > platform requires either a Pro or Enterprise plan."*
@@ -123,7 +171,10 @@ The derive job runs in a normal Vercel function. Five `sharp` resizes of a 2400p
 roughly 3–5 seconds — comfortably inside the 60s Hobby cap, and it runs out of band so the editor's
 upload returns immediately.
 
-`src/lib/image-loader.ts` — **this is the entire image-optimization layer, and the Phase-2 swap point:**
+`src/lib/image-loader.ts` — **this is the intended image-optimization layer and the Phase-2 swap
+point. It is not built yet.** Today `next.config.ts` sets `images.unoptimized: true` and serves the
+files in `public/` directly, because no R2 bucket is configured. The design below stands; treat it
+as the target, not as a description of the running code:
 
 ```ts
 // next.config.ts →  images: { loader: 'custom', loaderFile: './src/lib/image-loader.ts' }
@@ -229,12 +280,21 @@ with one HTTP call and a cron instead of a CDC pipeline.
 nightly backup and useless for anything a customer is waiting on. Three schedulers, each doing what
 it is cheapest at:
 
-| Schedule | Runs on | Cadence | Job | Budget cost |
-|---|---|---|---|---|
-| Outbox sweeper | **QStash Schedules** | every 15 min | Gate on Redis, drain unpublished outbox rows | 96 QStash msgs/day |
-| Synthetic lead probe | **GitHub Actions** | every 15 min | End-to-end POST + assert it lands | ~48 GH min/mo |
-| Nightly maintenance | **Vercel Cron** | 03:00 daily | `pg_dump` → R2, prune outbox/revisions/audit, guardrail report | 1 invocation |
-| Sitemap + IndexNow | **Vercel Cron** | 04:00 daily | Regenerate, ping search engines | 1 invocation |
+| Schedule | Runs on | Cadence | Job | Budget cost | Built? |
+|---|---|---|---|---|---|
+| Outbox sweeper | **QStash Schedules** | every 15 min | Gate on Redis, drain unpublished outbox rows | 96 QStash msgs/day | No — QStash unconfigured |
+| Synthetic lead probe | **GitHub Actions** | every 15 min | End-to-end POST + assert it lands | ~48 GH min/mo | No — see §0b |
+| Nightly maintenance | **Vercel Cron** | 03:00 daily | Prune published outbox rows, forced sweep | 1 invocation | **Yes** |
+| Guardrail report | **Vercel Cron** | 03:30 daily | Lead and outbox counts → notifier (§7) | 1 invocation | **Yes** |
+
+The two built jobs are declared in `vercel.json` and handled by `src/app/api/cron/[job]/route.ts`.
+Vercel sends `Authorization: Bearer $CRON_SECRET` automatically, which is what the route checks.
+
+Two corrections to the original table. The nightly `pg_dump` to R2 is **not** part of the
+maintenance job — no R2 bucket exists yet, so §4.3's statement that the dump "*is* the backup"
+describes an intended control, not a running one. And the **Sitemap + IndexNow** job at 04:00 was
+never built; `sitemap.xml` is generated statically at build time by `src/app/sitemap.ts`, which is
+sufficient while publishing goes through a deploy.
 
 QStash daily budget at full load:
 
@@ -496,49 +556,66 @@ using R2 for storage and Auth.js for auth, so that bundle is not worth 500 MB an
 
 ### 5.1 The shape
 
+As built on 2026-10-12. The original plan is kept below it, because the difference is the
+remaining work rather than a change of direction.
+
 ```
 src/
 ├── app/                              # ROUTES ONLY. Thin. No business logic, no SQL.
-│   ├── (marketing)/                  #   SSG      — home, about, quality, sustainability
-│   ├── (catalog)/
-│   │   ├── products/[category]/page.tsx
-│   │   └── products/[category]/[slug]/page.tsx    # ISR, on-demand revalidation
-│   ├── (resources)/downloads/        #   ISR      — the resource centre
-│   ├── industries/[slug]/
-│   ├── installations/[slug]/
-│   ├── news/[slug]/
-│   ├── careers/[slug]/
-│   ├── admin/                        #   SSR      — auth-gated, server actions
+│   ├── page.tsx  about/  industries/ #   SSG      — marketing surface
+│   ├── products/                     #   SSG      — catalogue index
+│   ├── products/[slug]/              #   SSG + dynamicParams, on-demand revalidation
+│   ├── compare/  downloads/          #   SSG      — resource + comparison surface
+│   ├── support/  contact/            #   SSG      — the two lead forms
+│   ├── privacy/  terms/  not-found   #   SSG
+│   ├── sitemap.ts  robots.ts         #   generated at build from APP_URL
+│   ├── icon.svg  opengraph-image.tsx #   generated marks
 │   └── api/
 │       ├── leads/route.ts            #   the one hot write endpoint
+│       ├── catalog/route.ts          #   read API
+│       ├── health/route.ts           #   capability report
 │       ├── revalidate/route.ts       #   publish webhook → revalidateTag
 │       ├── jobs/[task]/route.ts      #   QStash delivery target (signature-verified)
-│       └── cron/[job]/route.ts       #   Vercel Cron + GitHub Actions target
+│       └── cron/[job]/route.ts       #   Vercel Cron target
+│
+├── core/                             # Errors, logger port, shared primitives.
+├── content/                          # site.ts — every company fact. TEMPLATE badges live here.
+├── components/                       # Presentational only, incl. product-viewer/ (3D).
 │
 ├── modules/                          # THE MONOLITH'S SEAMS. One folder = one future service.
-│   ├── catalog/     ├── queries.ts  mutations.ts  schema.ts  types.ts  index.ts
-│   ├── content/     │
-│   ├── leads/       │   Every module exposes ONLY index.ts.
-│   ├── careers/     │   Nothing outside the module may import its internals.
-│   ├── media/       │   Modules talk to each other through index.ts, or not at all.
-│   ├── search/      │
-│   ├── notify/      │
-│   └── outbox/      └── publish.ts  sweeper.ts  index.ts
+│   ├── catalog/  content/  leads/    #   Every module exposes ONLY index.ts.
+│   ├── media/    notify/   search/   #   Nothing outside may import its internals.
+│   └── outbox/                       #   (`careers` is not built)
 │
-├── lib/                              # ADAPTERS. Each file is a Phase-2 swap point (§6).
+├── lib/
+│   ├── container.ts                  #   composition root — wires ports to adapters
 │   ├── db.ts                         #   Drizzle client + Neon driver
-│   ├── storage.ts                    #   R2 via the S3 API
-│   ├── queue.ts                      #   QStash
-│   ├── cache.ts                      #   Next.js Data Cache (+ Redis later)
-│   ├── mail.ts                       #   Resend
-│   ├── ratelimit.ts                  #   Upstash Redis
-│   ├── image-loader.ts               #   R2 pre-generated variants
-│   └── env.ts                        #   zod-validated, fails the build on a missing var
+│   ├── env.ts                        #   zod-validated, lazy, the only read of process.env
+│   ├── http.ts                       #   request/response helpers, problem+json
+│   └── adapters/                     #   ADAPTERS. Each is a Phase-2 swap point (§6).
+│       ├── cache.ts                  #     Next.js Data Cache (+ Redis when configured)
+│       ├── captcha.ts                #     Turnstile — server half only, see §0b
+│       ├── mail.ts                   #     Resend
+│       ├── queue.ts                  #     QStash
+│       └── storage.ts                #     R2 via the S3 API
 │
-└── db/
-    ├── schema/                       # one file per bounded context, mirroring HLD.md §7
-    └── migrations/                   # drizzle-kit, checked in
+├── db/schema/                        # one file per bounded context, mirroring HLD.md §7
+└── (repo root) drizzle/              # drizzle-kit migrations, checked in
 ```
+
+Three differences from the original plan are deliberate and worth keeping:
+
+- **`lib/container.ts`** is a composition root that did not appear in the plan. It is what lets
+  `capabilities` in `env.ts` choose an adapter at run time, so a missing Telegram token
+  deregisters that channel instead of breaking the lead path.
+- **`lib/adapters/`** groups the swap points in one directory rather than mixing them with
+  `db.ts` and `env.ts`. The seam map in §6 is unaffected.
+- **`src/content/site.ts`** holds every company fact. No page hard-codes a business detail. This
+  is what the TEMPLATE badges render from.
+
+Not built: `careers`, `news`, `installations` and `/admin`. The build is marketing, catalogue and
+leads. `lib/ratelimit.ts` and `lib/image-loader.ts` do not exist; rate limiting lives in
+`adapters/cache.ts`, and there is no image loader (§2.2).
 
 ### 5.2 The one rule that makes it modular
 
@@ -567,7 +644,7 @@ through it.
 | **Auth.js** + Resend magic link | Three staff users. Do not build a password system for three users. |
 | **Custom `/admin`, not Payload/Strapi** | Payload on Postgres is excellent and adds ~80 MB of schema plus a heavier build. At this scale, eight server-action-backed forms are less code, less storage and less to learn. Revisit at Phase 2. |
 | **Marketing copy in MDX, in git** | Zero database rows, zero CU-hours, and `git revert` is the rollback. Only *structured* content (products, news, jobs) needs the database. |
-| **Tailwind + shadcn/ui** | The existing [`assets/css/styles.css`](../../assets/css/styles.css) design tokens port to Tailwind theme variables directly. |
+| ~~**Tailwind + shadcn/ui**~~ → **plain CSS, tokens first** | *Changed in the build, 2026-10-12.* Neither Tailwind nor shadcn/ui is a dependency. The design system is one hand-written stylesheet, [`src/app/globals.css`](../../src/app/globals.css) — 38 custom properties on `:root`, and nothing below that line may hard-code a colour, size or radius. It ships no utility framework and no component library, which is why first-load JS is 103 kB shared. The original row also linked `assets/css/styles.css`, which the Next.js rebuild deleted. |
 
 ### 5.4 Suggested build order
 

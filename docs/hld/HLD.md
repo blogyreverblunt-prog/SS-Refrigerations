@@ -2,11 +2,12 @@
 
 | | |
 |---|---|
-| **Status** | Draft for review, Rev 1.0 |
-| **Date** | 2026-10-07 |
+| **Status** | Rev 1.1 — design reviewed against the deployed code |
+| **Date** | 2026-10-07, revised 2026-10-12 after the first production deployment |
+| **Implementation** | Phase 1 is partly built and **live** at https://ss-refrigeration.vercel.app. This document describes the full design; [HLD-FREE-TIER.md §0a](HLD-FREE-TIER.md) lists what exists today, and [`docs/ops/REMEDIATION-PLAN.md`](../ops/REMEDIATION-PLAN.md) lists the open faults. Statements below that contradict the running code are marked **not built**. |
 | **Scope** | Public brand site, product catalogue, technical resource centre, lead engine, careers |
 | **Reference** | Feature inventory taken from [williamsrefrigeration.co.in](https://www.williamsrefrigeration.co.in/) |
-| **Diagram** | [`ss-refrigeration-hld.excalidraw`](ss-refrigeration-hld.excalidraw) · [`ss-refrigeration-hld.svg`](ss-refrigeration-hld.svg) |
+| **Diagram** | *None.* The target-architecture canvas was deleted on 2026-10-12: it drew Kafka, Debezium, OpenSearch, PgBouncer and multi-AZ failover, and §4 of this document argues that nothing at this traffic volume justifies them. The prose below keeps the reasoning; a picture of it invited the wrong build. Current canvas: [`ss-refrigeration-current.svg`](ss-refrigeration-current.svg) (as-built). Phase 1 roadmap: [`ss-refrigeration-free-tier.svg`](ss-refrigeration-free-tier.svg). |
 | **Decision record** | ADR-0001 (database), §7 of this document |
 
 ---
@@ -120,8 +121,12 @@ migration (§10, risk 1).
 
 ### Layer 3 — Web tier (Next.js App Router)
 - **SSG** for the marketing surface — built at deploy, pure static.
-- **ISR** for catalogue, news and installations — time-based revalidation *plus* on-demand
-  `revalidateTag()` fired by the publish event, so freshness does not depend on a TTL expiring.
+- **ISR** for catalogue, news and installations — on-demand `revalidateTag()` fired by the publish
+  event, so freshness does not depend on a TTL expiring.
+  *Corrected 2026-10-12: this line previously read "time-based revalidation plus on-demand". There
+  is no time-based revalidation anywhere in the build, and there must not be. Every page sets
+  `revalidate = false`. [HLD-FREE-TIER.md §4.1](HLD-FREE-TIER.md) explains why — a timer is a
+  background database poll in disguise, and it alone would exceed the Neon compute budget.*
 - **SSR / streaming RSC** for faceted listing, search and forms.
 - **Route handlers act as a BFF**: one aggregate call per page, and domain services are never
   reachable from the browser.
@@ -163,9 +168,25 @@ idempotent and at-least-once, with a DLQ and an alarm on DLQ depth.
 **The database commit is the durability boundary, and no third party sits on the user's request
 path.** A SaaS outage delays notification; it never loses the lead.
 
+> **Not built, and currently failing — step 2.** Turnstile has a server verifier
+> (`lib/adapters/captcha.ts`) but **no browser widget**, so no request can carry a token. The
+> verifier fails closed in production, so **every enquiry is rejected with HTTP 400**. The
+> honeypot and the per-IP bucket are built and working. See
+> [`docs/ops/REMEDIATION-PLAN.md`](../ops/REMEDIATION-PLAN.md) P1.
+>
+> Note what this exposes about the claim above. "No third party sits on the user's request path"
+> is true of everything *after* the commit, which is where the outbox protects the lead. It was
+> never true of step 2, which sits *before* it. A bot-defence gate is a third party on the request
+> path by definition, and when it fails closed it loses the lead the outbox was built to save.
+
 Verification is part of the design, not an afterthought: a synthetic lead is submitted end-to-end
 every 5 minutes, and an alert fires on *zero* real leads during a business hour. Silent form
 failure is invisible and therefore the most expensive bug available here.
+
+> **Not built.** The probe does not exist. It is the control that would have caught the step-2
+> failure above before a visitor did, and it is the clearest lesson of the first deployment:
+> `next build`, typecheck, lint and 18 headless-browser checks all passed while the only revenue
+> path was broken, because every one of them tested rendering and none submitted the form.
 
 ### 6.2 Publish
 
@@ -443,9 +464,23 @@ and the consent evidence.
 for exceptions; RUM for field Core Web Vitals; structured JSON logs keyed by `request_id`. Alerts
 are multi-window burn-rate on the SLOs in §3, not CPU thresholds.
 
-**CI/CD.** `lint → typecheck → unit → Playwright e2e → Lighthouse budget → terraform plan →
-preview environment → blue/green with automatic rollback`. Infrastructure is Terraform only; no
+**CI/CD.** Target: `lint → typecheck → unit → Playwright e2e → Lighthouse budget → terraform plan
+→ preview environment → blue/green with automatic rollback`. Infrastructure is Terraform only; no
 change is made in a cloud console.
+
+*As built, 2026-10-12.* `.github/workflows/deploy-production.yml` and `deploy-preview.yml` run
+`typecheck → lint → vercel build → vercel deploy --prebuilt`, gated so a red check blocks the
+deploy. `vercel.json` sets `git.deploymentEnabled: false`, because otherwise Vercel's own Git
+integration deploys the same commit a second time. Still missing from the target: unit tests, the
+e2e suite, the Lighthouse budget and Terraform. The missing e2e suite is not a cosmetic gap — see
+§6.1.
+
+One host-specific trap, recorded so nobody loses an afternoon to it. `vercel build` de-duplicates
+identical serverless functions by replacing them with symlinks, and **on Windows it writes those
+link targets with backslashes**, which are not path separators on Vercel's Linux builder. A
+`vercel deploy --prebuilt` from a Windows machine therefore fails with
+`ENOENT ... _not-found.func`. The GitHub Actions runners are Linux and are unaffected. Deploy from
+CI, or from source without `--prebuilt`.
 
 ---
 
@@ -465,8 +500,8 @@ change is made in a cloud console.
 | # | Risk | What gets built |
 |---|---|---|
 | 1 | **SEO regression on migration** — the existing URLs are the asset, and a rebuild is the most common way to lose organic traffic | Crawl and freeze the current URL inventory; redirect table loaded into edge KV; pre-launch diff of titles, canonicals and structured data; staged traffic rollout with rank monitoring |
-| 2 | **Silent lead loss** — invisible and expensive | Synthetic end-to-end lead probe every 5 min; alert on zero leads in a business hour; DLQ depth alarm; weekly DB-vs-CRM reconciliation |
-| 3 | **Spam and competitor price scraping** | Turnstile + honeypot + per-IP buckets; dealer pricing behind an authenticated scope from phase 3 rather than in public HTML |
+| 2 | **Silent lead loss** — invisible and expensive | Synthetic end-to-end lead probe every 5 min; alert on zero leads in a business hour; DLQ depth alarm; weekly DB-vs-CRM reconciliation. **Status 2026-10-12: the probe is not built, and this risk has already materialised** — see §6.1. The "zero leads in 24 h" alarm *is* built, in the guardrail cron. |
+| 3 | **Spam and competitor price scraping** | Turnstile + honeypot + per-IP buckets; dealer pricing behind an authenticated scope from phase 3 rather than in public HTML. **Status: honeypot and per-IP buckets built; Turnstile server-side only, no widget.** |
 | 4 | **Image bloat from marketing uploads** — the usual cause of a slow site | Media service enforces max dimensions, generates AVIF/WebP variants, rejects files over 8 MB, emits a blurhash placeholder |
 | 5 | **Single-writer Postgres is a single point of failure** | Multi-AZ with automatic failover; PgBouncer reconnect; read-only degraded mode so the catalogue keeps serving from cache while the primary is replaced |
 | 6 | **Vendor concentration** (one PaaS + one CDN) | Ship as a container, keep the database as plain Postgres — leaving is a weekend, not a rewrite |
