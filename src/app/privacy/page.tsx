@@ -67,7 +67,12 @@ export default function PrivacyPage() {
           </ul>
           <p>
             We do not use advertising cookies and we do not sell data. We do not collect
-            payment details on this website.
+            payment details on this website. What this site does and does not store on
+            your device is set out in the{" "}
+            <Link className="link link--accent" href="/cookies">
+              cookie policy
+            </Link>
+            .
           </p>
         </div>
       </PageSection>
@@ -152,7 +157,8 @@ export default function PrivacyPage() {
           </div>
         </div>
         <p className="small">
-          See also the <Link className="link link--accent" href="/terms">terms of use</Link>,
+          See also the <Link className="link link--accent" href="/cookies">cookie policy</Link>{" "}
+          and the <Link className="link link--accent" href="/terms">terms of use</Link>,
           which carry the product-image and specification-change notices.
         </p>
       </PageSection>

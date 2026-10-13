@@ -53,8 +53,8 @@ export const site = {
     whatsapp: "910000000000",
     /** TEMPLATE */
     salesEmail: "sales@example.com",
-    /** TEMPLATE */
-    serviceEmail: "service@example.com",
+    /** Customer support. Real — published on /support, /terms and /cookies. */
+    serviceEmail: "managekalt@gmail.com",
     /** TEMPLATE */
     careersEmail: "careers@example.com",
     /** TEMPLATE — the address a DPDP data request goes to. */
@@ -82,10 +82,18 @@ export const site = {
   ],
 
   social: {
-    /** TEMPLATE — "#" renders the icon without a link target. */
+    /**
+     * TEMPLATE — "#" renders the icon without a link target.
+     *
+     * Four marks in the footer, in this order. Facebook, Instagram and
+     * LinkedIn are the three a buyer actually checks before enquiring; the
+     * YouTube mark stays because a product demo is the obvious next thing
+     * this catalogue will want to link to.
+     */
+    facebook: "#",
+    instagram: "#",
     linkedin: "#",
     youtube: "#",
-    instagram: "#",
   },
 
   /* --------------------------------------------------------------- proof */

@@ -186,8 +186,7 @@ export default function SupportPage() {
             <div>
               <p className="callout__k">Service email</p>
               <p className="callout__v">
-                <a href={`mailto:${site.contact.serviceEmail}`}>{site.contact.serviceEmail}</a>{" "}
-                <Tmpl />
+                <a href={`mailto:${site.contact.serviceEmail}`}>{site.contact.serviceEmail}</a>
               </p>
               <p className="small">Replies {site.contact.responseTime}</p>
             </div>
