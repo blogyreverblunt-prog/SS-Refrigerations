@@ -29,6 +29,7 @@ import {
   type StoragePort,
 } from "@/core";
 
+import { AccountRepository, AccountService } from "@/modules/accounts";
 import { CatalogRepository } from "@/modules/catalog";
 import {
   LeadReferenceGenerator,
@@ -102,6 +103,18 @@ const leadRateLimiter = once<RateLimiterPort>(
   () => new UpstashRateLimiter(5, "10 m", "rl:lead", logger().child({ adapter: "ratelimit" })),
 );
 
+/**
+ * 10 attempts per 10 minutes per IP, across registration and sign-in.
+ *
+ * Looser than the lead bucket because a person who mistypes a password three
+ * times is ordinary, and tighter than nothing because this is the one
+ * endpoint on the site worth guessing at. The bucket name carries the action,
+ * so a burst of registrations cannot exhaust somebody's sign-in allowance.
+ */
+const authRateLimiter = once<RateLimiterPort>(
+  () => new UpstashRateLimiter(10, "10 m", "rl:auth", logger().child({ adapter: "ratelimit" })),
+);
+
 const mail = once<MailPort>(() =>
   capabilities.mail ? new ResendMailAdapter() : new ConsoleMailAdapter(),
 );
@@ -126,6 +139,7 @@ const captcha = once<CaptchaVerifierPort>(() => new TurnstileVerifier());
 
 const outboxRepo = once(() => new OutboxRepository(clock()));
 const leadRepo = once(() => new LeadRepository());
+const accountRepo = once(() => new AccountRepository());
 const catalogRepo = once(() => new CatalogRepository());
 
 /* -------------------------------------------------------------------------
@@ -162,6 +176,16 @@ const leadService = once(
       references: leadReferences(),
       clock: clock(),
       logger: logger().child({ module: "leads" }),
+    }),
+);
+
+const accountService = once(
+  () =>
+    new AccountService({
+      repository: accountRepo(),
+      rateLimiter: authRateLimiter(),
+      clock: clock(),
+      logger: logger().child({ module: "accounts" }),
     }),
 );
 
@@ -204,6 +228,8 @@ export const container = {
   outboxSweeper,
   leadRepo,
   leadService,
+  accountRepo,
+  accountService,
   catalogRepo,
   notifier,
 } as const;

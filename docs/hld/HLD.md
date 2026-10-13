@@ -50,8 +50,12 @@ that a modern buyer expects (faceted spec search, and a quote cart).
 | Lead capture | Contact, callback, technical support, **quote cart (RFQ with line items)** | The only revenue-carrying write. Gets the strictest SLO. |
 | Admin | Publish, preview, revision history, role-based access, audit trail | Revisions + append-only audit log. |
 
+| Customer accounts | Optional registration and sign-in, so a payment has a party to attach to | Session rows, not a signed token: logout must revoke. The one dynamic page on an otherwise static site. |
+
 **Explicitly out of scope for v1:** e-commerce checkout, dealer pricing, IoT cabinet telemetry,
 service ticketing. Each is anticipated in the schema and the phase plan, none is built now.
+Accounts moved INTO v1 (see §12 Q1) because payment needs an account to exist first; the
+checkout they are for did not move with them.
 
 ---
 
@@ -512,6 +516,14 @@ CI, or from source without `--prebuilt`.
 
 1. **Is pricing public?** If dealer pricing ever goes on the site, the dealer portal moves from
    phase 3 into phase 2 and authentication becomes a v1 concern.
+   **Answered, partly.** Customer accounts are built — `customer` and
+   `customer_session`, email and password, sessions as rows so logout
+   revokes. They are OPTIONAL: no route redirects an anonymous visitor, the
+   catalogue and the enquiry forms are untouched, and the only page that reads
+   a cookie server-side is `/account`. The header asks `/api/auth/me` from the
+   browser precisely so the rest of the site stays prerendered. Dealer
+   pricing, checkout and payment remain out of scope; what exists is the party
+   an order will later attach to. See §2.
 2. **How many locales, and when?** The schema supports it today; `hreflang` and the translation
    workflow are real cost once committed.
 3. **Which CRM?** It determines the lead payload contract and whether the sync is push or pull.

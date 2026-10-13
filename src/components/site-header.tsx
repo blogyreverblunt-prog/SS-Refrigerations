@@ -7,6 +7,8 @@
  * "Server-rendered HTML is non-negotiable."
  */
 import Link from "next/link";
+
+import { AccountLink } from "./account-link";
 import { useEffect, useState } from "react";
 
 import { site } from "@/content/site";
@@ -60,6 +62,7 @@ export function SiteHeader() {
         </ul>
 
         <div className="nav__actions">
+          <AccountLink className="nav__account" />
           <Link className="btn btn--primary" href="/contact#enquiry">Request a Quote</Link>
           <button
             className="nav__toggle"
@@ -77,6 +80,7 @@ export function SiteHeader() {
         {LINKS.map((l) => (
           <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>{l.label}</Link>
         ))}
+        <AccountLink className="nav__account" />
         <Link className="btn btn--primary btn--block" href="/contact#enquiry" onClick={() => setOpen(false)}>
           Request a Quote
         </Link>

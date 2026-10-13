@@ -78,8 +78,15 @@ const guardrails: CronHandler = async (logger) => {
 const maintenance: CronHandler = async (logger) => {
   const pruned = await container.outboxRepo().prunePublished(30);
   const swept = await container.outboxSweeper().sweep(100, true);
-  logger.log("info", "nightly maintenance complete", { pruned, swept });
-  return { prunedOutboxRows: pruned, sweep: swept };
+  /*
+    Expired sessions are already unusable — resolveSession has the expiry in
+    its predicate — so this is housekeeping against the 1 GB budget rather
+    than a security control, which is why it rides the nightly job instead of
+    earning a schedule of its own.
+  */
+  const sessions = await container.accountService().purgeExpiredSessions();
+  logger.log("info", "nightly maintenance complete", { pruned, swept, sessions });
+  return { prunedOutboxRows: pruned, sweep: swept, expiredSessions: sessions };
 };
 
 const HANDLERS: Record<string, CronHandler> = {
