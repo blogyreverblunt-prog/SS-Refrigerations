@@ -23,6 +23,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { Box, FileText, Pin, Shield } from "@/components/icons";
 import { LegalNote } from "@/components/legal-note";
 import { PageHero, PageSection, Tmpl } from "@/components/page-shell";
 import { site } from "@/content/site";
@@ -103,38 +104,57 @@ export default function PrivacyPage() {
         ]}
       />
 
+      {/*
+        Cards, not a bullet list. This is the one section of the one legal
+        page that people actually arrive wanting to read — "what do they have
+        on me" — and five things you can take in at a glance beat five
+        paragraphs you have to read in order. It is also what stops /privacy
+        looking like /terms looking like /cookies: same card, same tokens,
+        different rhythm.
+      */}
       <PageSection id="collect" eyebrow="What we collect" title="Only what a reply needs.">
-        <div className="prose">
-          <ul>
-            <li>
-              <strong>Enquiry forms.</strong> Name, email, phone, company, city and your
-              message. On a service request, also the model code, serial number,
-              purchase date, invoice number and the contact channel you chose.
-            </li>
-            <li>
-              <strong>Attribution.</strong> The page you were on when you submitted, the
-              referring site and any campaign tag in the link. No cross-site tracking
-              and no advertising profile.
-            </li>
-            <li>
-              <strong>A hashed IP address.</strong> Stored as a one-way HMAC for abuse
-              prevention. The raw address is never written to the database.
-            </li>
-            <li>
-              <strong>Consent.</strong> The moment you ticked the box, recorded against
-              the enquiry.
-            </li>
-            <li>
-              <strong>A customer account, only if you create one.</strong> An account is
-              optional on this site — everything in the catalogue, every spec sheet and
-              every form works without one. If you do register we hold your name, email
-              address, and optionally a phone number and company; the sessions you have
-              open, each with the browser it was opened from, so that signing out can
-              end them; and your password <em>only</em> as a slow one-way hash (scrypt),
-              which cannot be turned back into the password you typed. Nobody here can
+        <div className="cards cards--2">
+          <article className="card">
+            <span className="card__icon"><FileText /></span>
+            <h3 className="card__title">Enquiry forms</h3>
+            <p>
+              Name, email, phone, company, city and your message. On a service request,
+              also the model code, serial number, purchase date, invoice number and the
+              contact channel you chose.
+            </p>
+          </article>
+          <article className="card">
+            <span className="card__icon"><Pin /></span>
+            <h3 className="card__title">Attribution</h3>
+            <p>
+              The page you were on when you submitted, the referring site and any
+              campaign tag in the link. No cross-site tracking and no advertising
+              profile.
+            </p>
+          </article>
+          <article className="card">
+            <span className="card__icon"><Shield /></span>
+            <h3 className="card__title">A hashed IP address</h3>
+            <p>
+              Stored as a one-way HMAC for abuse prevention. The raw address is never
+              written to the database. Your consent is recorded the same way — the
+              moment you ticked the box, against the enquiry.
+            </p>
+          </article>
+          <article className="card">
+            <span className="card__icon"><Box /></span>
+            <h3 className="card__title">An account, only if you make one</h3>
+            <p>
+              Optional — the catalogue, the spec sheets and every form work without one.
+              If you register: your name and email, optionally a phone and company, the
+              sessions you have open with the browser each was opened from, and your
+              password <em>only</em> as a slow one-way hash (scrypt). Nobody here can
               read your password, including us.
-            </li>
-          </ul>
+            </p>
+          </article>
+        </div>
+
+        <div className="prose">
           <p>
             We do not use advertising cookies and we do not sell data. We do not collect
             payment details on this website. What this site does and does not store on

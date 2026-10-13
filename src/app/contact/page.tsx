@@ -18,7 +18,7 @@ import Link from "next/link";
 import { PageHero, PageSection, Tmpl } from "@/components/page-shell";
 import { EnquiryForm } from "@/components/enquiry-form";
 import { ArrowRight, Chat, Phone, Pin, Wrench } from "@/components/icons";
-import { SocialList, SocialRow } from "@/components/social";
+import { SocialRow } from "@/components/social";
 import { site, telLink, whatsappLink } from "@/content/site";
 import { env } from "@/lib/env";
 
@@ -40,40 +40,49 @@ const ANCHORS = [
 ] as const;
 
 /**
- * One desk per row, so an email lands on the right one.
+ * The desks, and what each one handles.
  *
- * All four addresses are the same inbox today (see `site.contact`), and that
- * is fine — the point of publishing them separately is that a visitor knows
- * which subject line to use, and that splitting them later changes nothing on
- * this page.
+ * All five addresses are the same inbox today (see `site.contact`), and a
+ * table that prints one address five times is a table that says nothing. So
+ * `ONE_INBOX` decides the shape: while they are identical the page states the
+ * address once and the table becomes subject lines, which is the thing that
+ * actually routes a message. Give the desks real addresses later and the
+ * three-column version comes back on its own — no edit here.
  */
 const DESKS = [
   {
     desk: "Sales and quotations",
+    tag: "Quote",
     email: site.contact.salesEmail,
     for: "New enquiries, pricing, site visits, tenders",
   },
   {
     desk: "Service and spares",
+    tag: "Service",
     email: site.contact.serviceEmail,
     for: "Breakdowns, AMC, parts, warranty claims",
   },
   {
     desk: "Dealers and distribution",
+    tag: "Dealership",
     email: site.contact.salesEmail,
     for: "Territory enquiries, dealer pricing, brand assets",
   },
   {
     desk: "Careers",
+    tag: "Careers",
     email: site.contact.careersEmail,
-    for: "Applications, with the role in the subject line",
+    for: "Applications, with the role after it",
   },
   {
     desk: "Privacy and data requests",
+    tag: "Privacy",
     email: site.contact.privacyEmail,
     for: "Access, correction or erasure of your data",
   },
 ] as const;
+
+const ONE_INBOX = new Set(DESKS.map((d) => d.email)).size === 1;
 
 export default function ContactPage() {
   return (
@@ -136,20 +145,14 @@ export default function ContactPage() {
       >
         <div className="split">
           <EnquiryForm turnstileSiteKey={env.NEXT_PUBLIC_TURNSTILE_SITE_KEY} />
+          {/*
+            No phone and email here. They are in the three tiles directly
+            below this form and again under "who to write to" — a third copy
+            beside the form they are an alternative to helped nobody. What
+            belongs next to a form is what happens after you press send.
+          */}
           <div className="aside">
             <div className="rows">
-              <div className="rows__row">
-                <span className="rows__k">Sales</span>
-                <span className="rows__v">
-                  <a href={telLink(site.contact.salesPhone)}>{site.contact.salesPhone}</a> <Tmpl />
-                </span>
-              </div>
-              <div className="rows__row">
-                <span className="rows__k">Email</span>
-                <span className="rows__v">
-                  <a href={`mailto:${site.contact.salesEmail}`}>{site.contact.salesEmail}</a>
-                </span>
-              </div>
               <div className="rows__row">
                 <span className="rows__k">Hours</span>
                 <span className="rows__v">{site.contact.hours}</span>
@@ -162,7 +165,7 @@ export default function ContactPage() {
             <p className="small">
               Comparing two models? Put them side by side on{" "}
               <Link className="link link--accent" href="/compare">compare</Link> and send
-              the shortlist with the enquiry.
+              the shortlist with the enquiry. Prefer to talk? The numbers are just below.
             </p>
           </div>
         </div>
@@ -206,33 +209,70 @@ export default function ContactPage() {
         id="write"
         eyebrow="Email"
         title="Who to write to."
-        lead="Five desks, so your message starts in the right place. Every one of them is read, and every one of them answers."
+        lead="Five desks. They share one inbox today, so the subject line is what gets your message to the right person — and every one of them is read."
       >
-        <div className="table-wrap">
-          <table className="spec-table">
-            <caption>Email addresses</caption>
-            <thead>
-              <tr>
-                <th scope="col">Desk</th>
-                <th scope="col">Address</th>
-                <th scope="col">What to send it</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DESKS.map((d) => (
-                <tr key={d.desk}>
-                  <th scope="row">{d.desk}</th>
-                  <td>
-                    <a className="link link--accent" href={`mailto:${d.email}`}>
-                      {d.email}
-                    </a>
-                  </td>
-                  <td>{d.for}</td>
+        {ONE_INBOX ? (
+          <>
+            <div className="prose">
+              <p>
+                Everything reaches the same desk today —{" "}
+                <a
+                  className="link link--accent"
+                  href={`mailto:${site.contact.salesEmail}`}
+                >
+                  {site.contact.salesEmail}
+                </a>{" "}
+                — so the subject line is what routes it. Put one of these at the front of
+                yours and it lands with the right person.
+              </p>
+            </div>
+            <div className="table-wrap">
+              <table className="spec-table">
+                <caption>Subject lines</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Start with</th>
+                    <th scope="col">For</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {DESKS.map((d) => (
+                    <tr key={d.desk}>
+                      <th scope="row">{d.tag}</th>
+                      <td>{d.for}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <div className="table-wrap">
+            <table className="spec-table">
+              <caption>Email addresses</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Desk</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">What to send it</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {DESKS.map((d) => (
+                  <tr key={d.desk}>
+                    <th scope="row">{d.desk}</th>
+                    <td>
+                      <a className="link link--accent" href={`mailto:${d.email}`}>
+                        {d.email}
+                      </a>
+                    </td>
+                    <td>{d.for}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <div className="split">
           <div className="prose">
@@ -264,10 +304,9 @@ export default function ContactPage() {
             <p className="eyebrow">Follow us</p>
             <p className="small">
               Installations, new models and service notices. The marks below go live as
-              soon as the profiles do.
+              soon as the profiles do — Facebook, Instagram, LinkedIn and YouTube.
             </p>
             <SocialRow size={16} />
-            <SocialList />
           </div>
         </div>
       </PageSection>
@@ -308,14 +347,29 @@ export default function ContactPage() {
           ))}
         </div>
 
+        {/*
+          The single legal-identity block on the site. It was here and again
+          beside the grievance officer below; "who you are dealing with" is an
+          answer to "where are you", so it lives with the addresses.
+        */}
         <div className="rows">
           <div className="rows__row">
             <span className="rows__k">Registered name</span>
             <span className="rows__v">{site.legal.entity} <Tmpl /></span>
           </div>
           <div className="rows__row">
+            <span className="rows__k">CIN</span>
+            <span className="rows__v">{site.legal.cin} <Tmpl /></span>
+          </div>
+          <div className="rows__row">
             <span className="rows__k">GSTIN</span>
             <span className="rows__v">{site.legal.gstin} <Tmpl /></span>
+          </div>
+          <div className="rows__row">
+            <span className="rows__k">Jurisdiction</span>
+            <span className="rows__v">
+              Courts at {site.legal.jurisdiction} <Tmpl label="confirm" />
+            </span>
           </div>
           <div className="rows__row">
             <span className="rows__k">Business hours</span>
@@ -354,12 +408,6 @@ export default function ContactPage() {
                 <span className="rows__v">
                   A display of the core range, a service-trained technician and
                   stocking of fast-moving spares. <Tmpl label="confirm" />
-                </span>
-              </div>
-              <div className="rows__row">
-                <span className="rows__k">Who to ask</span>
-                <span className="rows__v">
-                  <a href={`mailto:${site.contact.salesEmail}`}>{site.contact.salesEmail}</a>
                 </span>
               </div>
             </div>
@@ -426,34 +474,21 @@ export default function ContactPage() {
           </div>
 
           <div className="aside">
-            <p className="eyebrow">Who you are dealing with</p>
-            <div className="rows">
-              <div className="rows__row">
-                <span className="rows__k">Registered name</span>
-                <span className="rows__v">{site.legal.entity} <Tmpl /></span>
-              </div>
-              <div className="rows__row">
-                <span className="rows__k">CIN</span>
-                <span className="rows__v">{site.legal.cin} <Tmpl /></span>
-              </div>
-              <div className="rows__row">
-                <span className="rows__k">GSTIN</span>
-                <span className="rows__v">{site.legal.gstin} <Tmpl /></span>
-              </div>
-              <div className="rows__row">
-                <span className="rows__k">Jurisdiction</span>
-                <span className="rows__v">
-                  Courts at {site.legal.jurisdiction} <Tmpl label="confirm" />
-                </span>
-              </div>
-            </div>
+            <p className="eyebrow">If we do not fix it</p>
             <p className="small">
-              Beyond us: the National Consumer Helpline on <strong>1915</strong>, the
-              consumer commission with jurisdiction over you, or — for anything about
-              your personal data — the Data Protection Board of India. See the{" "}
+              Escalating past us needs no permission from us. The National Consumer
+              Helpline takes complaints on <strong>1915</strong>, as does the consumer
+              commission with jurisdiction over you; anything about your personal data
+              can go to the Data Protection Board of India.
+            </p>
+            <p className="small">
+              Our registered name, CIN, GSTIN and the courts that govern a dispute are
+              with the addresses under{" "}
+              <Link className="link link--accent" href="#offices">offices</Link>. The{" "}
               <Link className="link link--accent" href="/privacy#rights">privacy policy</Link>{" "}
-              and the{" "}
-              <Link className="link link--accent" href="/terms#law">terms of use</Link>.
+              sets out your data rights and the{" "}
+              <Link className="link link--accent" href="/terms#law">terms of use</Link>{" "}
+              the governing law.
             </p>
           </div>
         </div>

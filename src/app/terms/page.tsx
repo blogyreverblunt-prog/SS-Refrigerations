@@ -116,33 +116,30 @@ export default function TermsPage() {
         </div>
       </PageSection>
 
+      {/*
+        Prose, not a key/value slab. A quotation clause is read once, start to
+        finish, by someone deciding whether to raise a PO — unlike §orders
+        below, which is scanned for a number and stays tabular. Two sections
+        that read differently because they are used differently.
+      */}
       <PageSection id="quotes" eyebrow="Quotations" title="What a quote commits us to.">
-        <div className="rows">
-          <div className="rows__row">
-            <span className="rows__k">Validity</span>
-            <span className="rows__v">
-              {site.orders.quoteValidity}, unless the quotation says otherwise{" "}
-              <Tmpl label="confirm" />
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Taxes</span>
-            <span className="rows__v">{site.orders.gst}</span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Freight</span>
-            <span className="rows__v">{site.orders.freight}</span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Lead time</span>
-            <span className="rows__v">
-              {site.orders.leadTime} <Tmpl label="confirm" /> — indicative, and running
-              from a confirmed order and any advance
-            </span>
-          </div>
-        </div>
         <div className="prose">
           <ul>
+            <li>
+              <strong>It is valid for {site.orders.quoteValidity}</strong>{" "}
+              <Tmpl label="confirm" />, unless the quotation itself says otherwise.
+              After that we will re-price rather than honour a number that has stopped
+              being true.
+            </li>
+            <li>
+              <strong>Taxes and freight are separate.</strong> {site.orders.gst}.{" "}
+              {site.orders.freight}.
+            </li>
+            <li>
+              <strong>Lead times are indicative:</strong> {site.orders.leadTime}{" "}
+              <Tmpl label="confirm" />, running from a confirmed order and any advance —
+              not from the date you asked.
+            </li>
             <li>
               Unloading, positioning, electrical work and any civil work are quoted as
               separate lines where they apply.
