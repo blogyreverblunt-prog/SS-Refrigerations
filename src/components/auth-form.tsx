@@ -30,7 +30,35 @@ type Status =
   | { kind: "sending" }
   | { kind: "failed"; message: string; issues: Issue[] };
 
-export function AuthForm({ mode, next }: { mode: "login" | "register"; next?: string }) {
+/**
+ * Google's mark, inline.
+ *
+ * Their brand guidelines require the four-colour "G" at its own colours, so
+ * this one icon does not take `currentColor` like every other icon on the
+ * site. Drawing it in the site's ink instead would be both wrong and against
+ * the terms of using the button.
+ */
+function GoogleMark() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true">
+      <path fill="#4285F4" d="M17.6 9.2c0-.6-.1-1.3-.2-1.9H9v3.5h4.8a4.1 4.1 0 0 1-1.8 2.7v2.2h2.9c1.7-1.6 2.7-3.9 2.7-6.5Z" />
+      <path fill="#34A853" d="M9 18c2.4 0 4.5-.8 6-2.2l-2.9-2.2c-.8.5-1.8.9-3.1.9-2.4 0-4.4-1.6-5.1-3.8H.9v2.3A9 9 0 0 0 9 18Z" />
+      <path fill="#FBBC05" d="M3.9 10.7a5.4 5.4 0 0 1 0-3.4V5H.9a9 9 0 0 0 0 8l3-2.3Z" />
+      <path fill="#EA4335" d="M9 3.6c1.3 0 2.5.5 3.4 1.3l2.6-2.6A9 9 0 0 0 .9 5l3 2.3C4.6 5.2 6.6 3.6 9 3.6Z" />
+    </svg>
+  );
+}
+
+export function AuthForm({
+  mode,
+  next,
+  google = false,
+}: {
+  mode: "login" | "register";
+  next?: string;
+  /** Renders the provider button. False when the server has no credentials. */
+  google?: boolean;
+}) {
   const uid = useId();
   const [status, setStatus] = useState<Status>({ kind: "idle" });
 
@@ -53,7 +81,8 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next?: st
           name: String(data.get("name") ?? ""),
           email: String(data.get("email") ?? ""),
           password: String(data.get("password") ?? ""),
-          phone: String(data.get("phone") ?? "") || undefined,
+          // Required now, so it is sent as typed and the server decides.
+          phone: String(data.get("phone") ?? ""),
           company: String(data.get("company") ?? "") || undefined,
           website: String(data.get("website") ?? ""),
         }
@@ -95,6 +124,28 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next?: st
 
   return (
     <form className="form" onSubmit={onSubmit} noValidate>
+      {/*
+        Google first, then the rule, then the form. The provider button goes
+        above because somebody who has one wants it immediately, and because a
+        button placed under a password field reads as an afterthought.
+
+        It is an <a>, not a fetch: /api/auth/google is a redirect to another
+        origin, so the browser has to navigate. `next` rides along in the
+        query string and is re-checked server-side before it is used.
+      */}
+      {google && (
+        <>
+          <a
+            className="btn btn--ghost btn--block btn--provider"
+            href={`/api/auth/google${next ? `?next=${encodeURIComponent(next)}` : ""}`}
+          >
+            <GoogleMark />
+            {registering ? "Sign up with Google" : "Continue with Google"}
+          </a>
+          <p className="or-rule">or</p>
+        </>
+      )}
+
       {status.kind === "failed" && (
         <div className="notice notice--err" role="alert">
           <strong>{status.message}</strong>
@@ -158,16 +209,27 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next?: st
         </div>
         {registering && (
           <div className="field-group">
-            <label htmlFor={`${uid}-phone`}>Phone <span className="muted">(optional)</span></label>
-            <input
-              className="field"
-              id={`${uid}-phone`}
-              name="phone"
-              type="tel"
-              autoComplete="tel"
-              placeholder="9876543210"
-              aria-invalid={Boolean(issueFor("phone"))}
-            />
+            <label htmlFor={`${uid}-phone`}>Contact number</label>
+            {/*
+              The country code is shown, not typed. India is the whole market
+              today, so a selector would be several decisions with one likely
+              answer — and the server still accepts a full +<code> number, so
+              somebody abroad who types one is not turned away.
+            */}
+            <div className="input-group">
+              <span className="input-group__prefix">+91</span>
+              <input
+                className="field"
+                id={`${uid}-phone`}
+                name="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel-national"
+                placeholder="98765 43210"
+                aria-invalid={Boolean(issueFor("phone"))}
+                required
+              />
+            </div>
             {issueFor("phone") && (
               <strong style={{ color: "var(--danger)", fontSize: "var(--fs-xs)" }}>
                 {issueFor("phone")}

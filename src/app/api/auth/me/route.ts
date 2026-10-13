@@ -32,7 +32,14 @@ export async function GET(request: NextRequest) {
     return json(
       {
         customer: who
-          ? { id: who.id, name: who.name, email: who.email, company: who.company }
+          ? {
+              id: who.id,
+              name: who.name,
+              email: who.email,
+              company: who.company,
+              // The header draws the avatar from this; null means initials.
+              image: who.image,
+            }
           : null,
       },
       200,

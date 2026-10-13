@@ -8,7 +8,12 @@
 import { and, eq, gt, lt } from "drizzle-orm";
 
 import { db, dbRead } from "@/lib/db";
-import { customer, customerSession, type CustomerStatus } from "@/db/schema";
+import {
+  customer,
+  customerIdentity,
+  customerSession,
+  type CustomerStatus,
+} from "@/db/schema";
 
 export interface CustomerRecord {
   readonly id: string;
@@ -19,18 +24,34 @@ export interface CustomerRecord {
   readonly status: CustomerStatus;
   readonly emailVerifiedAt: Date | null;
   readonly createdAt: Date;
+  /** Avatar URL, from Google. Null for anyone who registered with a password. */
+  readonly image: string | null;
 }
 
 export interface CustomerWithSecret extends CustomerRecord {
-  readonly passwordHash: string;
+  /** Null for an account created through Google, which has no password. */
+  readonly passwordHash: string | null;
 }
 
 export interface CreateCustomerCommand {
   readonly email: string;
-  readonly passwordHash: string;
+  /** Null creates an account that can only be signed into through a provider. */
+  readonly passwordHash: string | null;
   readonly name: string;
   readonly phone?: string | undefined;
   readonly company?: string | undefined;
+  readonly image?: string | null;
+  /** Set when a provider asserts the address is verified. */
+  readonly emailVerifiedAt?: Date | null;
+}
+
+/** One external account, as the provider describes it. */
+export interface ProviderIdentity {
+  /** "google". */
+  readonly provider: string;
+  /** The provider's immutable subject id — never the email address. */
+  readonly providerAccountId: string;
+  readonly email?: string | null;
 }
 
 export interface CreateSessionCommand {
@@ -52,6 +73,18 @@ export interface AccountRepositoryPort {
   findByEmail(email: string): Promise<CustomerWithSecret | null>;
   markLoggedIn(customerId: string): Promise<void>;
   updatePasswordHash(customerId: string, passwordHash: string): Promise<void>;
+  /** The lookup a provider sign-in starts with. */
+  findByProviderAccount(
+    provider: string,
+    providerAccountId: string,
+  ): Promise<CustomerRecord | null>;
+  /** Idempotent: re-signing in with the same Google account relinks nothing. */
+  linkIdentity(customerId: string, identity: ProviderIdentity): Promise<void>;
+  /** Keeps the avatar and display name current with the provider. */
+  updateProfileFromProvider(
+    customerId: string,
+    patch: { name?: string; image?: string | null },
+  ): Promise<void>;
   createSession(command: CreateSessionCommand): Promise<void>;
   resolveSession(tokenHash: Buffer, now: Date): Promise<ResolvedSession | null>;
   deleteSession(tokenHash: Buffer): Promise<void>;
@@ -68,6 +101,7 @@ const PUBLIC_COLUMNS = {
   status: customer.status,
   emailVerifiedAt: customer.emailVerifiedAt,
   createdAt: customer.createdAt,
+  image: customer.image,
 } as const;
 
 export class AccountRepository implements AccountRepositoryPort {
@@ -97,6 +131,8 @@ export class AccountRepository implements AccountRepositoryPort {
         name: command.name,
         phone: command.phone ?? null,
         company: command.company ?? null,
+        image: command.image ?? null,
+        emailVerifiedAt: command.emailVerifiedAt ?? null,
       })
       .returning(PUBLIC_COLUMNS);
     if (!row) throw new Error("customer insert returned no row");
@@ -121,6 +157,61 @@ export class AccountRepository implements AccountRepositoryPort {
 
   async updatePasswordHash(customerId: string, passwordHash: string): Promise<void> {
     await db().update(customer).set({ passwordHash }).where(eq(customer.id, customerId));
+  }
+
+  async findByProviderAccount(
+    provider: string,
+    providerAccountId: string,
+  ): Promise<CustomerRecord | null> {
+    const [row] = await dbRead()
+      .select(PUBLIC_COLUMNS)
+      .from(customerIdentity)
+      .innerJoin(customer, eq(customer.id, customerIdentity.customerId))
+      .where(
+        and(
+          eq(customerIdentity.provider, provider),
+          eq(customerIdentity.providerAccountId, providerAccountId),
+        ),
+      )
+      .limit(1);
+    return row ? toRecord(row) : null;
+  }
+
+  /**
+   * Upsert on (provider, provider_account_id) — the unique index. Signing in
+   * again with the same Google account therefore touches `last_used_at` and
+   * writes nothing else, and two sign-ins racing cannot produce two links.
+   */
+  async linkIdentity(customerId: string, identity: ProviderIdentity): Promise<void> {
+    await db()
+      .insert(customerIdentity)
+      .values({
+        customerId,
+        provider: identity.provider,
+        providerAccountId: identity.providerAccountId,
+        email: identity.email ?? null,
+        lastUsedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: [customerIdentity.provider, customerIdentity.providerAccountId],
+        set: { lastUsedAt: new Date(), email: identity.email ?? null },
+      });
+  }
+
+  /**
+   * Only ever widens what we hold: a name is not overwritten with an empty
+   * one, and a picture is not cleared because Google happened to omit it.
+   */
+  async updateProfileFromProvider(
+    customerId: string,
+    patch: { name?: string; image?: string | null },
+  ): Promise<void> {
+    const set: { name?: string; image?: string } = {};
+    if (patch.name?.trim()) set.name = patch.name.trim();
+    if (patch.image) set.image = patch.image;
+    if (Object.keys(set).length === 0) return;
+
+    await db().update(customer).set(set).where(eq(customer.id, customerId));
   }
 
   async createSession(command: CreateSessionCommand): Promise<void> {
@@ -191,6 +282,7 @@ function toRecord(row: {
   status: string;
   emailVerifiedAt: Date | null;
   createdAt: Date;
+  image: string | null;
 }): CustomerRecord {
   return {
     id: row.id,
@@ -201,6 +293,7 @@ function toRecord(row: {
     status: row.status === "suspended" ? "suspended" : "active",
     emailVerifiedAt: row.emailVerifiedAt,
     createdAt: row.createdAt,
+    image: row.image,
   };
 }
 

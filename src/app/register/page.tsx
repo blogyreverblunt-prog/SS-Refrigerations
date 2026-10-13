@@ -1,10 +1,14 @@
 /**
  * Create an account.
  *
- * Asks for a name, an email and a password, with phone and company optional.
- * It does not ask for an address or a GST number: those belong to an order,
- * they go stale between registering and buying, and every extra field here is
- * paid for in registrations that do not finish.
+ * Asks for a name, an email, a password and a contact number, with company
+ * optional. The number is required because a commercial refrigeration order
+ * is settled by phone — a delivery slot, a site measurement, an engineer at
+ * the gate — and an account with no number is one we cannot service.
+ *
+ * It still does not ask for an address or a GST number: those belong to an
+ * order, they go stale between registering and buying, and every extra field
+ * here is paid for in registrations that do not finish.
  */
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -12,6 +16,7 @@ import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 import { PageHero, PageSection } from "@/components/page-shell";
 import { site } from "@/content/site";
+import { capabilities } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: "Create an account",
@@ -36,7 +41,7 @@ export default async function RegisterPage({
       />
 
       <PageSection>
-          <AuthForm mode="register" next={next} />
+          <AuthForm mode="register" next={next} google={capabilities.google} />
           <p className="small">
             Already registered?{" "}
             <Link className="link link--accent" href="/login">

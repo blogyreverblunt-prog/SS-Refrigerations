@@ -18,6 +18,7 @@ import Link from "next/link";
 import { AuthForm } from "@/components/auth-form";
 import { PageHero, PageSection } from "@/components/page-shell";
 import { site } from "@/content/site";
+import { capabilities } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -26,12 +27,29 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
+/**
+ * What went wrong at Google, in words a visitor can act on.
+ *
+ * The callback redirects here with a short code and never a description: the
+ * detail that matters to us — a redirect_uri_mismatch, say — belongs in the
+ * log where it can be fixed, and is of no use to the person reading this.
+ */
+const GOOGLE_ERRORS: Record<string, string> = {
+  google_unavailable: "Google sign-in is not switched on yet. Use your email and password.",
+  google_cancelled: "Google sign-in was cancelled. Nothing has changed.",
+  google_expired: "That sign-in attempt timed out. Please try again.",
+  google_state: "That sign-in could not be verified. Please start again from this page.",
+  google_failed:
+    "Google sign-in did not complete. Try again, or use your email and password.",
+};
+
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; error?: string }>;
 }) {
-  const { next } = await searchParams;
+  const { next, error } = await searchParams;
+  const problem = error ? GOOGLE_ERRORS[error] : undefined;
 
   return (
     <>
@@ -42,7 +60,12 @@ export default async function LoginPage({
       />
 
       <PageSection>
-          <AuthForm mode="login" next={next} />
+          {problem && (
+            <div className="notice notice--err" role="alert">
+              <strong>{problem}</strong>
+            </div>
+          )}
+          <AuthForm mode="login" next={next} google={capabilities.google} />
           <p className="small">
             No account yet?{" "}
             <Link className="link link--accent" href="/register">

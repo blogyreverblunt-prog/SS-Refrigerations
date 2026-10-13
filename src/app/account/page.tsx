@@ -15,6 +15,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
+import { Avatar } from "@/components/avatar";
 import { PageHero, PageSection } from "@/components/page-shell";
 import { SignOutButton } from "@/components/sign-out-button";
 import { site } from "@/content/site";
@@ -64,6 +65,24 @@ export default async function AccountPage() {
       />
 
       <PageSection eyebrow="Your details" title="What we have on file.">
+        {/*
+          The picture, where a person expects to find it: Google's if they
+          signed in with Google, their initials otherwise. The caption says
+          which, because "where did that photo come from" deserves an answer
+          without having to ask for one.
+        */}
+        <div className="account-identity">
+          <Avatar name={customer.name} image={customer.image} size={56} />
+          <div>
+            <p className="account-identity__name">{customer.name}</p>
+            <p className="small">
+              {customer.image
+                ? "Picture from your Google account"
+                : "No picture — sign in with Google if you would like to use that one"}
+            </p>
+          </div>
+        </div>
+
         <div className="rows">
           <div className="rows__row">
             <span className="rows__k">Name</span>

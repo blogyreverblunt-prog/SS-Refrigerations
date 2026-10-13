@@ -121,15 +121,122 @@ export class AccountService {
       throw new UnauthorizedError("Those details do not match an account");
     }
 
-    // Raised cost parameters apply on the next successful sign-in, which is
-    // the only moment the plaintext is available to rehash with.
-    if (needsRehash(found.passwordHash)) {
+    /*
+      An account created through Google has no password hash, so `encoded`
+      above was the dummy, `ok` is false, and the request was already
+      rejected. The null check here is for the compiler rather than for a
+      case that can reach it.
+
+      Raised cost parameters apply on the next successful sign-in, which is
+      the only moment the plaintext is available to rehash with.
+    */
+    if (found.passwordHash && needsRehash(found.passwordHash)) {
       const upgraded = await hashPassword(input.password);
       await this.deps.repository.updatePasswordHash(found.id, upgraded);
     }
 
     await this.deps.repository.markLoggedIn(found.id);
     return this.startSession(found, context);
+  }
+
+  /**
+   * Sign in with Google, having already exchanged the code for a profile.
+   *
+   * Three paths, and the order matters:
+   *
+   *   1. The Google account is already linked — sign that customer in. This
+   *      is checked first and on `sub`, so it keeps working after somebody
+   *      changes the email address on their Google account.
+   *   2. No link, but the address is VERIFIED and matches an existing
+   *      account — link it and sign in. This is the convenience that stops a
+   *      person who registered with a password ending up with a second,
+   *      separate account.
+   *   3. Neither — create an account with no password.
+   *
+   * The `emailVerified` guard on path 2 is the whole security of this method.
+   * Without it, anyone able to make an identity provider assert
+   * "someone@yourcustomer.com" could take over that customer's account
+   * without ever knowing the password. Google only reports `email_verified`
+   * false for a narrow set of cases, but "narrow" is not "never", so an
+   * unverified address is never allowed to match an existing row.
+   */
+  async signInWithGoogle(
+    profile: {
+      sub: string;
+      email: string;
+      emailVerified: boolean;
+      name: string;
+      picture: string | null;
+    },
+    context: AuthRequestContext,
+  ): Promise<SignedIn> {
+    await this.enforceRateLimit(context.ip, "google");
+
+    const identity = {
+      provider: "google",
+      providerAccountId: profile.sub,
+      email: profile.email,
+    } as const;
+
+    const linked = await this.deps.repository.findByProviderAccount("google", profile.sub);
+    if (linked) {
+      if (linked.status !== "active") {
+        throw new UnauthorizedError("That account is not available");
+      }
+      await this.deps.repository.linkIdentity(linked.id, identity);
+      await this.deps.repository.updateProfileFromProvider(linked.id, {
+        image: profile.picture,
+      });
+      await this.deps.repository.markLoggedIn(linked.id);
+      this.deps.logger.log("info", "google sign-in", { customerId: linked.id });
+      return this.startSession({ ...linked, image: profile.picture ?? linked.image }, context);
+    }
+
+    if (profile.emailVerified) {
+      const existing = await this.deps.repository.findByEmail(profile.email);
+      if (existing) {
+        if (existing.status !== "active") {
+          throw new UnauthorizedError("That account is not available");
+        }
+        await this.deps.repository.linkIdentity(existing.id, identity);
+        await this.deps.repository.updateProfileFromProvider(existing.id, {
+          image: profile.picture,
+        });
+        await this.deps.repository.markLoggedIn(existing.id);
+        this.deps.logger.log("info", "google linked to existing account", {
+          customerId: existing.id,
+        });
+        return this.startSession(
+          { ...existing, image: profile.picture ?? existing.image },
+          context,
+        );
+      }
+    }
+
+    if (!profile.emailVerified) {
+      // No link and an address we cannot trust: there is nothing safe to do.
+      this.deps.logger.log("info", "google sign-in refused: unverified address");
+      throw new UnauthorizedError(
+        "Google has not verified that address. Sign in with an email and password instead",
+      );
+    }
+
+    const created = await this.deps.repository.create({
+      email: profile.email,
+      // No password, and no placeholder standing in for one.
+      passwordHash: null,
+      name: profile.name,
+      image: profile.picture,
+      // Google asserted it, so it is verified here too.
+      emailVerifiedAt: this.deps.clock.now(),
+    });
+
+    await this.deps.repository.linkIdentity(created.id, identity);
+    this.deps.logger.log("info", "customer registered via google", {
+      customerId: created.id,
+    });
+
+    return this.startSession(created, context);
   }
 
   /** Idempotent: signing out twice, or with a stale cookie, is not an error. */

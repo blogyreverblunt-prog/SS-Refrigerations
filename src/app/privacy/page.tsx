@@ -82,6 +82,12 @@ const PROCESSORS = [
     sees: "Spec sheets, manuals and certificates — no personal data",
     where: "Set at deployment",
   },
+  {
+    service: "Google",
+    role: "Signs you in, only if you choose “Continue with Google”",
+    sees: "That you signed in to this site, and when. Not what you then did here",
+    where: "Global",
+  },
 ] as const;
 
 export default function PrivacyPage() {
@@ -146,10 +152,16 @@ export default function PrivacyPage() {
             <h3 className="card__title">An account, only if you make one</h3>
             <p>
               Optional — the catalogue, the spec sheets and every form work without one.
-              If you register: your name and email, optionally a phone and company, the
-              sessions you have open with the browser each was opened from, and your
+              If you register: your name, email and contact number, optionally a company,
+              the sessions you have open with the browser each was opened from, and your
               password <em>only</em> as a slow one-way hash (scrypt). Nobody here can
               read your password, including us.
+            </p>
+            <p>
+              Sign in with Google instead and we receive your name, email address and the
+              URL of your profile picture — nothing else, no contacts, no calendar, no
+              access to your Google account. We store no password for you at all, and the
+              picture stays on Google&rsquo;s servers; we keep only the link to it.
             </p>
           </article>
         </div>

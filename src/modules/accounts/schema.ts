@@ -49,7 +49,17 @@ export const registerInputSchema = z.object({
   name: z.string().trim().min(2, { message: "Tell us your name" }).max(120),
   email,
   password,
-  phone: phone.optional(),
+  /**
+   * Required, unlike on the enquiry forms.
+   *
+   * An account is the party an order gets attached to, and a commercial
+   * refrigeration order is settled by phone — a delivery slot, a site
+   * measurement, an engineer at the gate. An account with no number on it is
+   * one we cannot service, so it is asked for once here rather than chased
+   * later. Google sign-in is the exception and has no number at all; that is
+   * the price of one-click, and it is asked for at checkout instead.
+   */
+  phone,
   company: z.string().trim().max(160).optional(),
   /**
    * Hidden field. A browser leaves it empty; a bot fills everything it finds.

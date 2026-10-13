@@ -29,6 +29,13 @@
       "when": 1791878966111,
       "tag": "0003_sweet_wong",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791909324762,
+      "tag": "0004_hard_mentallo",
+      "breakpoints": true
     }
   ]
 }

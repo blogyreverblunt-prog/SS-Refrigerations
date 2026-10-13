@@ -697,6 +697,40 @@ textarea.field { resize: vertical; min-height: 92px; }
             gap: var(--s-2) var(--s-4); }
 .citylist li { font-size: var(--fs-xs); color: var(--ink-2); }
 
+/* --- account: avatar, header link, provider button, phone prefix --------- */
+/* .avatar itself is defined with the footer testimonial; these are the two
+   variants the signed-in header and /account need. Sizes come from the
+   component as inline width/height, because one avatar is 24px in the header
+   and 56px on the account page. */
+.avatar--photo { object-fit: cover; background: none; border: 1px solid var(--line); }
+.account-link { display: inline-flex; align-items: center; gap: var(--s-2); }
+.account-identity { display: flex; align-items: center; gap: var(--s-4);
+                    margin-bottom: var(--s-6); }
+.account-identity__name { font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
+
+/* "Continue with Google" — a button, not a link, and visually a peer of
+   .btn--ghost so it never looks more or less trustworthy than the form. */
+.btn--provider { display: inline-flex; align-items: center; justify-content: center;
+                 gap: var(--s-3); }
+.btn--provider svg { flex: none; }
+
+/* The "or" rule between the provider button and the email form. */
+.or-rule { display: flex; align-items: center; gap: var(--s-4);
+           color: var(--ink-3); font-size: var(--fs-xs); }
+.or-rule::before,
+.or-rule::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--line); }
+
+/* A read-only country code welded to the left of the phone input, so the
+   two read as one control. NOT .field-group — that name is already the
+   label-and-input wrapper inside the forms. */
+.input-group { display: flex; align-items: stretch; }
+.input-group__prefix { display: grid; place-items: center; padding: 0 var(--s-3);
+                       border: 1px solid var(--line); border-right: 0;
+                       border-radius: var(--r-sm) 0 0 var(--r-sm);
+                       background: var(--surface); color: var(--ink-2);
+                       font-size: var(--fs-sm); white-space: nowrap; }
+.input-group .field { border-radius: 0 var(--r-sm) var(--r-sm) 0; min-width: 0; flex: 1 1 auto; }
+
 /* --- /sitemap link columns ---------------------------------------------- */
 .sitemap-list { display: grid; gap: var(--s-3); list-style: none; padding: 0; margin: 0; }
 .sitemap-list a { font-size: var(--fs-xs); font-weight: 600; color: var(--ink-2);

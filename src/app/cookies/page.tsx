@@ -62,6 +62,14 @@ const FIRST_PARTY = [
     duration: "30 days, or until you sign out",
     category: "Strictly necessary",
   },
+  {
+    name: "g_state, g_verifier, g_next",
+    setBy: `${site.brand.name} (first party)`,
+    purpose:
+      "Only if you choose “Continue with Google”. They carry a random value that proves the sign-in you come back with is the one you started, and the page you were heading to. Without them, a forged return from Google could sign you in to somebody else's account.",
+    duration: "10 minutes, and deleted the moment you return",
+    category: "Strictly necessary",
+  },
 ] as const;
 
 /**
@@ -175,6 +183,22 @@ export default function CookiesPage() {
         </div>
         <div className="prose">
           <ul>
+            <li>
+              <strong>Google sign-in is opt-in, and so are its cookies.</strong> The
+              three in the table above are set when you press that button and cleared
+              when you come back, about ten minutes later at the outside. Use an email
+              and password instead and they are never set. Google sets its own cookies on
+              its own sign-in page, under{" "}
+              <a
+                className="link link--accent"
+                href="https://policies.google.com/privacy"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                its policy
+              </a>
+              , not ours.
+            </li>
             <li>
               <strong>Nothing at all while you browse.</strong> Reading a product page,
               comparing models, downloading a spec sheet or sending an enquiry writes no

@@ -20,3 +20,14 @@ export {
 } from "./session";
 export { loginInputSchema, registerInputSchema } from "./schema";
 export type { AuthRequestContext, LoginInput, RegisterInput } from "./schema";
+export {
+  GoogleAuthError,
+  G_HANDSHAKE_TTL_SECONDS,
+  G_NEXT_COOKIE,
+  G_STATE_COOKIE,
+  G_VERIFIER_COOKIE,
+  exchangeGoogleCode,
+  googleRedirectUri,
+  startGoogleSignIn,
+} from "./google";
+export type { GoogleHandshake, GoogleProfile } from "./google";

@@ -67,6 +67,26 @@ const serverSchema = z.object({
   WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
   WHATSAPP_ACCESS_TOKEN: z.string().optional(),
 
+  /* -- sign in with Google ----------------------------------------------
+   * A seam, like every other integration here: set both and the button
+   * appears on /login and /register; leave them unset and those pages render
+   * email-and-password only, with no dead button and no request to Google.
+   *
+   * Both halves or neither — the lesson Turnstile already taught this repo. A
+   * client id without a secret produces a button that redirects to Google,
+   * comes back with a code and fails at the token exchange, which is the
+   * worst of the three states because it fails *after* the person has handed
+   * over their consent.
+   *
+   * Google does not charge for this. Create the credential at
+   * console.cloud.google.com → APIs & Services → Credentials → OAuth client
+   * ID (Web application), and register <APP_URL>/api/auth/google/callback as
+   * an authorised redirect URI. The client id is public by design — it
+   * appears in the redirect — and the secret is not.
+   */
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+
   /* -- abuse defence ----------------------------------------------------- */
   TURNSTILE_SECRET_KEY: z.string().optional(),
   /**
@@ -262,6 +282,13 @@ export const capabilities = {
    */
   get turnstile(): boolean {
     return Boolean(env.TURNSTILE_SECRET_KEY && env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
+  },
+  /**
+   * Both halves, for the reason given beside GOOGLE_CLIENT_ID: a half-set
+   * pair fails after the person has already consented at Google.
+   */
+  get google(): boolean {
+    return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET);
   },
   /** The server half alone — reported separately so a half-setup is visible. */
   get turnstileSecret(): boolean {

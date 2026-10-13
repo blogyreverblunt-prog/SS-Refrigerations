@@ -17,10 +17,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { Avatar } from "./avatar";
+
 interface Me {
   id: string;
   name: string;
   email: string;
+  image?: string | null;
 }
 
 export function AccountLink({ className }: { className?: string }) {
@@ -41,9 +44,18 @@ export function AccountLink({ className }: { className?: string }) {
     };
   }, []);
 
+  if (!me) {
+    return (
+      <Link className={className} href="/login">
+        Sign in
+      </Link>
+    );
+  }
+
   return (
-    <Link className={className} href={me ? "/account" : "/login"}>
-      {me ? firstName(me.name) : "Sign in"}
+    <Link className={`${className ?? ""} account-link`.trim()} href="/account">
+      <Avatar name={me.name} image={me.image} size={24} />
+      <span>{firstName(me.name)}</span>
     </Link>
   );
 }
