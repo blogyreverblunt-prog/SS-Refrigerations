@@ -26,6 +26,9 @@ const STATIC: { path: string; priority: number; freq: MetadataRoute.Sitemap[numb
   { path: "/compare", priority: 0.6, freq: "monthly" },
   { path: "/about", priority: 0.6, freq: "yearly" },
   { path: "/contact", priority: 0.7, freq: "yearly" },
+  // The HTML sitemap at /sitemap is a page like any other, so it is listed
+  // here too. This file is the machine version of it.
+  { path: "/sitemap", priority: 0.3, freq: "monthly" },
   { path: "/privacy", priority: 0.2, freq: "yearly" },
   { path: "/cookies", priority: 0.2, freq: "yearly" },
   { path: "/terms", priority: 0.2, freq: "yearly" },

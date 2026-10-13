@@ -697,6 +697,14 @@ textarea.field { resize: vertical; min-height: 92px; }
             gap: var(--s-2) var(--s-4); }
 .citylist li { font-size: var(--fs-xs); color: var(--ink-2); }
 
+/* --- /sitemap link columns ---------------------------------------------- */
+.sitemap-list { display: grid; gap: var(--s-3); list-style: none; padding: 0; margin: 0; }
+.sitemap-list a { font-size: var(--fs-xs); font-weight: 600; color: var(--ink-2);
+                  transition: color var(--dur-fast) var(--ease); }
+.sitemap-list a:hover { color: var(--accent); }
+.sitemap-list__note { display: block; font-size: var(--fs-xs); color: var(--ink-3);
+                      font-weight: 400; margin-top: var(--s-1); }
+
 /* --- long-form / legal prose -------------------------------------------- */
 .prose { display: grid; gap: var(--s-5); max-width: 72ch; }
 .prose h2 { font-size: var(--fs-lead); letter-spacing: -.01em; }

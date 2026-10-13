@@ -143,7 +143,12 @@ export function SiteFooter() {
             <Link href="/terms">Terms</Link>
             <Link href="/terms#ewaste">E-waste</Link>
             <Link href="/contact#grievance">Grievances</Link>
-            <Link href="/sitemap.xml">Sitemap</Link>
+            {/*
+              /sitemap, not /sitemap.xml. The XML file is for crawlers and is
+              declared in robots.txt; sending a visitor to it shows them raw
+              markup and reads as a broken link.
+            */}
+            <Link href="/sitemap">Sitemap</Link>
           </nav>
         </div>
       </div>
