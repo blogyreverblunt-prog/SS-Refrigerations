@@ -601,33 +601,27 @@ export default function SupportPage() {
           </div>
         )}
 
-        <div className="callout">
-          <div className="callout__grid">
-            <div>
-              <p className="callout__k">Safety calls</p>
-              <p className="callout__v">
-                <a href={telLink(site.contact.servicePhone)}>{site.contact.servicePhone}</a>{" "}
-                <Tmpl />
-              </p>
-              <p className="small">Say it is a safety call — it jumps the queue</p>
-            </div>
-            <div>
-              <p className="callout__k">In writing</p>
-              <p className="callout__v">
-                <a href={`mailto:${site.contact.serviceEmail}`}>{site.contact.serviceEmail}</a>
-              </p>
-              <p className="small">With the model, serial and photographs</p>
-            </div>
-            <div>
-              <p className="callout__k">Service notices</p>
-              {/* A div, not a <p className="callout__v">: SocialRow renders a
-                  div, and a div inside a p is invalid HTML that the browser
-                  silently reparents — which shows up as a hydration error. */}
-              <div className="callout__v">
-                <SocialRow />
-              </div>
-              <p className="small">Also posted to our channels as they go live</p>
-            </div>
+        {/*
+          No channel slab here. The helpline, the service address and WhatsApp
+          are already three tiles at the top of this page — repeating them a
+          third time below the fold does not make a safety call easier to
+          make, it just makes the page longer. One link up to #helpline does
+          the job.
+        */}
+        <div className="split">
+          <div className="prose">
+            <p>
+              Safety calls go to the same{" "}
+              <Link className="link link--accent" href="#helpline">helpline</Link> as
+              everything else — say it is a safety call and it jumps the queue. In
+              writing, the service address and the WhatsApp line are in that same block
+              at the top of this page.
+            </p>
+          </div>
+          <div className="aside">
+            <p className="eyebrow">Service notices</p>
+            <p className="small">Posted to our channels as they go live.</p>
+            <SocialRow />
           </div>
         </div>
       </PageSection>

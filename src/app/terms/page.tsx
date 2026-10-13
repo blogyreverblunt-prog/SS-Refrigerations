@@ -29,8 +29,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { LegalNote } from "@/components/legal-note";
 import { PageHero, PageSection, Tmpl } from "@/components/page-shell";
-import { site, telLink } from "@/content/site";
+import { site } from "@/content/site";
 
 export const revalidate = false;
 
@@ -452,46 +453,16 @@ export default function TermsPage() {
               The courts at {site.legal.jurisdiction} <Tmpl label="confirm" />
             </span>
           </div>
-          <div className="rows__row">
-            <span className="rows__k">Grievance officer</span>
-            <span className="rows__v">
-              {site.legal.grievanceOfficer.name},{" "}
-              {site.legal.grievanceOfficer.designation} <Tmpl label="fill in" />
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Complaints to</span>
-            <span className="rows__v">
-              <a href={`mailto:${site.legal.grievanceOfficer.email}`}>
-                {site.legal.grievanceOfficer.email}
-              </a>
-              {" · "}
-              <a href={telLink(site.legal.grievanceOfficer.phone)}>
-                {site.legal.grievanceOfficer.phone}
-              </a>{" "}
-              <Tmpl />
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Answered within</span>
-            <span className="rows__v">
-              {site.legal.grievanceOfficer.acknowledgeWithin} to acknowledge,{" "}
-              {site.legal.grievanceOfficer.resolveWithin} to resolve
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Effective date</span>
-            <span className="rows__v">{site.legal.policyUpdated}</span>
-          </div>
         </div>
         <div className="prose">
           <h3>Complaints before courts</h3>
           <p>
-            If something has gone wrong, the grievance officer above is the fastest route
-            and the one we would rather you used. Escalation does not need our
-            permission: the National Consumer Helpline (1915) and the consumer commission
-            with jurisdiction over you are open to you regardless, as is the Data
-            Protection Board of India for anything about your personal data.
+            A court is the last resort, not the first. Our grievance officer — named,
+            with a phone number and a stated response window, on the{" "}
+            <Link className="link link--accent" href="/contact#grievance">contact page</Link>{" "}
+            — is the fastest route and the one we would rather you used. Escalating past
+            us needs no permission: the National Consumer Helpline (1915) and the
+            consumer commission with jurisdiction over you are open to you regardless.
           </p>
 
           <h3>Changes to these terms</h3>
@@ -537,6 +508,11 @@ export default function TermsPage() {
             </li>
           </ul>
         </div>
+
+        <LegalNote
+          page="terms"
+          writtenAgainst="Sale of Goods Act 1930; Consumer Protection Act 2019 and its E-Commerce Rules 2020"
+        />
       </PageSection>
     </>
   );

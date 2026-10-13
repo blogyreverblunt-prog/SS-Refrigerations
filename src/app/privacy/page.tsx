@@ -23,8 +23,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { LegalNote } from "@/components/legal-note";
 import { PageHero, PageSection, Tmpl } from "@/components/page-shell";
-import { site, telLink } from "@/content/site";
+import { site } from "@/content/site";
 
 export const revalidate = false;
 
@@ -456,99 +457,37 @@ export default function PrivacyPage() {
           </p>
         </div>
 
-        <div className="rows">
-          <div className="rows__row">
-            <span className="rows__k">Effective date</span>
-            <span className="rows__v">{site.legal.policyUpdated}</span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Written against</span>
-            <span className="rows__v">
-              DPDP Act 2023; IT Act 2000 and its SPDI Rules
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Also read</span>
-            <span className="rows__v">
-              <Link className="link link--accent" href="/cookies">Cookie policy</Link>
-              {" · "}
-              <Link className="link link--accent" href="/terms">Terms of use</Link>
-            </span>
-          </div>
-        </div>
       </PageSection>
 
       <PageSection
         id="contact"
         eyebrow="Grievances"
-        title="Who to write to, and what happens then."
-        lead="A named person, because that is what the DPDP Act and the Consumer Protection (E-Commerce) Rules both ask for — and because “support@” is where complaints go to die."
+        title="If we get it wrong."
+        lead="A named person answers for this, because the DPDP Act and the Consumer Protection (E-Commerce) Rules both require one — and because “support@” is where complaints go to die."
       >
-        <div className="rows">
-          <div className="rows__row">
-            <span className="rows__k">Grievance officer</span>
-            <span className="rows__v">
-              {site.legal.grievanceOfficer.name},{" "}
-              {site.legal.grievanceOfficer.designation} <Tmpl label="fill in" />
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Email</span>
-            <span className="rows__v">
-              <a href={`mailto:${site.legal.grievanceOfficer.email}`}>
-                {site.legal.grievanceOfficer.email}
-              </a>
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Phone</span>
-            <span className="rows__v">
-              <a href={telLink(site.legal.grievanceOfficer.phone)}>
-                {site.legal.grievanceOfficer.phone}
-              </a>{" "}
-              <Tmpl /> · {site.contact.hours}
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Acknowledged</span>
-            <span className="rows__v">
-              Within {site.legal.grievanceOfficer.acknowledgeWithin}, with a reference
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Resolved</span>
-            <span className="rows__v">
-              Within {site.legal.grievanceOfficer.resolveWithin} of receipt
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Post</span>
-            <span className="rows__v">
-              {site.offices[0]?.label}, {site.offices[0]?.lines.join(", ")} <Tmpl />
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Entity</span>
-            <span className="rows__v">
-              {site.legal.entity} · GSTIN {site.legal.gstin} <Tmpl />
-            </span>
-          </div>
-        </div>
         <div className="prose">
           <p>
-            If we have not resolved your complaint within that window, or you are not
-            satisfied with how we did, you can escalate: a data protection complaint to
-            the <strong>Data Protection Board of India</strong>, and a consumer complaint
-            to the National Consumer Helpline (1915) or the consumer commission with
-            jurisdiction over you. Neither requires our permission and neither costs you
-            your other remedies.
+            Data requests go to{" "}
+            <a className="link link--accent" href={`mailto:${site.contact.privacyEmail}`}>
+              {site.contact.privacyEmail}
+            </a>{" "}
+            and are answered as set out under{" "}
+            <Link className="link link--accent" href="#rights">your rights</Link> above.
+            A <em>complaint</em> — about a request we handled badly, or anything else we
+            did with your data — goes to our grievance officer, whose name, email, phone,
+            postal address and response windows are published on the{" "}
+            <Link className="link link--accent" href="/contact#grievance">contact page</Link>.
+            They are in one place so that they are in a correct place.
+          </p>
+          <p>
+            If we have not resolved it within the window stated there, or you are not
+            satisfied with how we did, you can take a data protection complaint to the{" "}
+            <strong>Data Protection Board of India</strong>. That needs no permission
+            from us and costs you none of your other remedies.
           </p>
         </div>
-        <p className="small">
-          See also the <Link className="link link--accent" href="/cookies">cookie policy</Link>{" "}
-          and the <Link className="link link--accent" href="/terms">terms of use</Link>,
-          which carry the product-image and specification-change notices.
-        </p>
+
+        <LegalNote page="privacy" writtenAgainst="DPDP Act 2023; IT Act 2000 and its SPDI Rules" />
       </PageSection>
     </>
   );

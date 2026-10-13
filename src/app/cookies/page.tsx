@@ -34,6 +34,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { LegalNote } from "@/components/legal-note";
 import { PageHero, PageSection, Tmpl } from "@/components/page-shell";
 import { site } from "@/content/site";
 
@@ -349,50 +350,17 @@ export default function CookiesPage() {
           </p>
         </div>
 
-        <div className="rows">
-          <div className="rows__row">
-            <span className="rows__k">Grievance officer</span>
-            <span className="rows__v">
-              {site.legal.grievanceOfficer.name},{" "}
-              {site.legal.grievanceOfficer.designation} <Tmpl label="fill in" />
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Data requests</span>
-            <span className="rows__v">
-              <a href={`mailto:${site.contact.privacyEmail}`}>{site.contact.privacyEmail}</a>
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Customer support</span>
-            <span className="rows__v">
-              <a href={`mailto:${site.contact.serviceEmail}`}>{site.contact.serviceEmail}</a>
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Entity</span>
-            <span className="rows__v">
-              {site.legal.entity} · GSTIN {site.legal.gstin} <Tmpl />
-            </span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Post</span>
-            <span className="rows__v">
-              {site.offices[0]?.label}, {site.offices[0]?.lines.join(", ")} <Tmpl />
-            </span>
-          </div>
-        </div>
-
         <p className="small">
-          See also the{" "}
+          A complaint about any of this goes to our grievance officer, published with the
+          rest of our contact details on the{" "}
+          <Link className="link link--accent" href="/contact#grievance">
+            contact page
+          </Link>
+          . The{" "}
           <Link className="link link--accent" href="/privacy">
             privacy policy
-          </Link>
-          , which is the fuller notice, and the{" "}
-          <Link className="link link--accent" href="/terms">
-            terms of use
-          </Link>
-          .
+          </Link>{" "}
+          is the fuller notice.
         </p>
       </PageSection>
 
@@ -425,22 +393,16 @@ export default function CookiesPage() {
           </ul>
         </div>
 
-        <div className="rows">
-          <div className="rows__row">
-            <span className="rows__k">Effective date</span>
-            <span className="rows__v">{site.legal.policyUpdated}</span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Applies to</span>
-            <span className="rows__v">This website. Not to a dealer&rsquo;s own site.</span>
-          </div>
-          <div className="rows__row">
-            <span className="rows__k">Written against</span>
-            <span className="rows__v">
-              DPDP Act 2023 and the IT Act, 2000 with its SPDI Rules
-            </span>
-          </div>
-        </div>
+        <p className="small">
+          This policy covers this website only — not a dealer&rsquo;s own site, and not
+          WhatsApp or any social platform you reach us through, each of which sets its
+          own cookies under its own terms.
+        </p>
+
+        <LegalNote
+          page="cookies"
+          writtenAgainst="DPDP Act 2023; IT Act 2000 and its SPDI Rules"
+        />
       </PageSection>
     </>
   );
