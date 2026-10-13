@@ -1,12 +1,20 @@
 /**
  * Cookie policy.
  *
- * The honest version is short, because this site stores nothing on a
- * visitor's device: there is no `document.cookie` anywhere in the codebase, no
- * `localStorage`, no `sessionStorage`, and `src/components/analytics.tsx`
- * renders a tag only when `NEXT_PUBLIC_ANALYTICS_SRC` is set — which
- * `src/lib/env.ts` requires to be a cookieless one. That is also why the site
- * carries no consent banner: there is nothing to consent to.
+ * The honest version is short, because browsing this site stores nothing on
+ * your device: no `localStorage`, no `sessionStorage`, and
+ * `src/components/analytics.tsx` renders a tag only when
+ * `NEXT_PUBLIC_ANALYTICS_SRC` is set — which `src/lib/env.ts` requires to be
+ * a cookieless one. That is also why the site carries no consent banner:
+ * there is nothing to consent to.
+ *
+ * ONE first-party cookie exists, and this page is wrong the moment it stops
+ * naming it. `src/modules/accounts/session.ts` sets `kalt_session` when
+ * somebody registers or signs in — httpOnly, SameSite=Lax, 30 days, holding
+ * a random token and nothing else. It is strictly necessary (it IS the
+ * sign-in) and it is never set for a visitor who does not create an account.
+ * If the session module's name, lifetime or attributes change, FIRST_PARTY
+ * below changes with it.
  *
  * What the page must not do is claim that for the whole stack. The forms are
  * protected by Cloudflare Turnstile, and Cloudflare's own edge sets security
@@ -36,6 +44,24 @@ export const metadata: Metadata = {
   description:
     "What this website stores on your device, which is almost nothing: no analytics cookies, no advertising cookies, and no tracking across other sites.",
 };
+
+/**
+ * The one cookie this application sets itself.
+ *
+ * Mirrors `sessionCookie()` in src/modules/accounts/session.ts. Kept as data
+ * so the table and the code can be diffed against each other rather than
+ * read in two places and hoped about.
+ */
+const FIRST_PARTY = [
+  {
+    name: "kalt_session",
+    setBy: `${site.brand.name} (first party)`,
+    purpose:
+      "Keeps you signed in to a customer account. It holds one random token and nothing else — no name, no email, nothing readable. Set only when you register or sign in, and deleted when you sign out.",
+    duration: "30 days, or until you sign out",
+    category: "Strictly necessary",
+  },
+] as const;
 
 /**
  * Set by Cloudflare's edge rather than by this application.
@@ -87,13 +113,14 @@ export default function CookiesPage() {
       <PageHero
         eyebrow="Legal"
         title="Cookie policy"
-        lead={`${site.brand.name} sets no cookies of its own on this website. No analytics cookies, no advertising cookies, and nothing that follows you to another site.`}
+        lead={`Browsing ${site.brand.name} sets no cookies at all. Signing in to a customer account sets exactly one, and all it does is keep you signed in. No analytics cookies, no advertising cookies, and nothing that follows you to another site.`}
         anchors={[
           { href: "#what", label: "What a cookie is" },
           { href: "#ours", label: "What we set" },
           { href: "#third-party", label: "Third parties" },
           { href: "#control", label: "Your controls" },
           { href: "#law", label: "Your rights" },
+          { href: "#changes", label: "Updates" },
         ]}
       />
 
@@ -117,14 +144,48 @@ export default function CookiesPage() {
       <PageSection
         id="ours"
         eyebrow="What we set"
-        title="Nothing, and that is deliberate."
-        lead="This is a catalogue and enquiry site. It has no login, no basket and no personalisation, so there is no state to keep in your browser."
+        title="One cookie, and only if you ask for an account."
+        lead="This is a catalogue and enquiry site. It has no basket and no personalisation, so there is almost no state to keep in your browser — and what little there is, is listed here rather than summarised."
       >
+        <div className="table-wrap">
+          <table className="spec-table">
+            <caption>Cookies this website sets</caption>
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Set by</th>
+                <th scope="col">Purpose</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              {FIRST_PARTY.map((c) => (
+                <tr key={c.name}>
+                  <th scope="row">{c.name}</th>
+                  <td>{c.setBy}</td>
+                  <td>{c.purpose}</td>
+                  <td>{c.duration}</td>
+                  <td>{c.category}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <div className="prose">
           <ul>
             <li>
-              <strong>No first-party cookies.</strong> This website does not write a
-              cookie when you browse it, read a product page, or send an enquiry.
+              <strong>Nothing at all while you browse.</strong> Reading a product page,
+              comparing models, downloading a spec sheet or sending an enquiry writes no
+              cookie. An account is optional on this site, and if you never create one,
+              nothing of ours is ever stored on your device.
+            </li>
+            <li>
+              <strong>The session cookie is the sign-in.</strong> It carries a random
+              token, which we keep only as a one-way hash — so the cookie cannot be read
+              to learn anything about you, and our own database cannot be read to forge
+              it. Signing out deletes it at both ends. It is not used for analytics and
+              it cannot be used to track you anywhere else.
             </li>
             <li>
               <strong>No local storage.</strong> Nothing is kept in your browser&rsquo;s
@@ -144,8 +205,10 @@ export default function CookiesPage() {
             </li>
           </ul>
           <p>
-            That is why you have not been shown a cookie banner. A banner for a site that
-            sets no cookies is theatre, and it trains people to click &ldquo;accept&rdquo;
+            That is why you have not been shown a cookie banner. Consent is owed for
+            cookies that measure or profile you — not for the one that keeps you signed
+            in, which you ask for by signing in. A banner on a site with nothing else to
+            consent to is theatre, and it trains people to click &ldquo;accept&rdquo;
             without reading.
           </p>
           <p className="small">
@@ -244,11 +307,20 @@ export default function CookiesPage() {
         </div>
         <div className="prose">
           <p>
-            Because we set nothing of our own, blocking cookies will not break browsing,
-            product pages or downloads. The one thing it can affect is the security check
-            on the enquiry forms: if you block the Cloudflare cookies above, you may be
-            asked to pass that check more often, or a submission may be refused. If that
-            happens, call or email us instead — the numbers are on the{" "}
+            Blocking cookies will not break browsing, product pages or downloads — none
+            of that depends on one. Two things are affected. Signing in to an account
+            cannot work without the session cookie, because that cookie <em>is</em> the
+            sign-in; a browser that refuses it will appear to sign you in and then show
+            you signed out. And if you block the Cloudflare cookies above, you may be
+            asked to pass the form security check more often, or a submission may be
+            refused.
+          </p>
+          <p>
+            Neither is a reason to accept anything you would rather not. Everything on
+            this site that matters — the catalogue, every spec sheet, the warranty terms,
+            the service helpline — works with cookies switched off entirely, and if a
+            form will not go through you can call or email us instead. The numbers are on
+            the{" "}
             <Link className="link link--accent" href="/contact">
               contact page
             </Link>
@@ -273,20 +345,22 @@ export default function CookiesPage() {
             <a className="link link--accent" href={`mailto:${site.contact.privacyEmail}`}>
               {site.contact.privacyEmail}
             </a>{" "}
-            <Tmpl /> and we will reply {site.contact.responseTime}.
+            and we will reply {site.contact.responseTime}.
           </p>
         </div>
 
         <div className="rows">
           <div className="rows__row">
             <span className="rows__k">Grievance officer</span>
-            <span className="rows__v">Name and designation <Tmpl label="fill in" /></span>
+            <span className="rows__v">
+              {site.legal.grievanceOfficer.name},{" "}
+              {site.legal.grievanceOfficer.designation} <Tmpl label="fill in" />
+            </span>
           </div>
           <div className="rows__row">
             <span className="rows__k">Data requests</span>
             <span className="rows__v">
-              <a href={`mailto:${site.contact.privacyEmail}`}>{site.contact.privacyEmail}</a>{" "}
-              <Tmpl />
+              <a href={`mailto:${site.contact.privacyEmail}`}>{site.contact.privacyEmail}</a>
             </span>
           </div>
           <div className="rows__row">
@@ -310,17 +384,63 @@ export default function CookiesPage() {
         </div>
 
         <p className="small">
-          If we change what this site stores, we will change this page and date it. Last
-          reviewed: <Tmpl label="add the date you publish this" />. See also the{" "}
+          See also the{" "}
           <Link className="link link--accent" href="/privacy">
             privacy policy
-          </Link>{" "}
-          and the{" "}
+          </Link>
+          , which is the fuller notice, and the{" "}
           <Link className="link link--accent" href="/terms">
             terms of use
           </Link>
           .
         </p>
+      </PageSection>
+
+      <PageSection
+        id="changes"
+        eyebrow="Updates"
+        title="When this page changes."
+        lead="A policy with no date on it cannot be relied on: you cannot tell whether it describes what was true when you used the site."
+      >
+        <div className="prose">
+          <ul>
+            <li>
+              <strong>Adding a cookie means editing this page first.</strong> The tables
+              above are generated from a list that sits beside the code that sets the
+              cookies, so a new one that is not described here is a bug, not an
+              oversight we hope you overlook.
+            </li>
+            <li>
+              <strong>Anything that measures or profiles you needs your consent.</strong>{" "}
+              If we ever adopt analytics that sets cookies, or embed a third-party player
+              or chat widget that brings its own, we will ask before it loads — with a
+              banner whose &ldquo;reject&rdquo; actually stops the script, not one that
+              records a refusal and loads it anyway.
+            </li>
+            <li>
+              <strong>We will not quietly re-date it.</strong> A substantive change moves
+              the date below and, where it affects people with accounts, is emailed to
+              them.
+            </li>
+          </ul>
+        </div>
+
+        <div className="rows">
+          <div className="rows__row">
+            <span className="rows__k">Effective date</span>
+            <span className="rows__v">{site.legal.policyUpdated}</span>
+          </div>
+          <div className="rows__row">
+            <span className="rows__k">Applies to</span>
+            <span className="rows__v">This website. Not to a dealer&rsquo;s own site.</span>
+          </div>
+          <div className="rows__row">
+            <span className="rows__k">Written against</span>
+            <span className="rows__v">
+              DPDP Act 2023 and the IT Act, 2000 with its SPDI Rules
+            </span>
+          </div>
+        </div>
       </PageSection>
     </>
   );

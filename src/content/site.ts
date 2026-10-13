@@ -41,6 +41,44 @@ export const site = {
     cin: "U00000XX0000PTC000000",
     /** TEMPLATE — year the business started trading. */
     since: "20XX",
+
+    /**
+     * TEMPLATE — the courts named in the jurisdiction clause on /terms.
+     *
+     * A governing-law clause that reads "the courts at [city]" is worse than
+     * none: it tells a buyer's legal team the page was never finished. Name
+     * the place the registered office is actually in.
+     */
+    jurisdiction: "Pune, Maharashtra",
+
+    /**
+     * The effective date printed on /privacy, /terms and /cookies.
+     *
+     * All three reference sites date their policies, and an undated policy
+     * cannot be relied on by anybody — a visitor cannot tell whether it
+     * covers what was done with their data last year. Bump this whenever the
+     * substance of any of the three changes.
+     */
+    policyUpdated: "13 October 2026",
+
+    /**
+     * TEMPLATE — a named person, not a department.
+     *
+     * Two separate Indian regimes require this and neither is satisfied by a
+     * shared inbox: the DPDP Act 2023 wants a grievance route for data
+     * principals, and the Consumer Protection (E-Commerce) Rules 2020 want a
+     * named grievance officer with a published contact and a stated
+     * resolution window.
+     */
+    grievanceOfficer: {
+      name: "Name of the officer",
+      designation: "Grievance Officer",
+      email: "managekalt@gmail.com",
+      phone: "+91 00000 00000",
+      /** The windows the Consumer Protection rules expect you to state. */
+      acknowledgeWithin: "48 hours",
+      resolveWithin: "one month",
+    },
   },
 
   /* ------------------------------------------------------------- channels */
@@ -51,14 +89,21 @@ export const site = {
     servicePhone: "+91 00000 00000",
     /** TEMPLATE — digits only, no +, no spaces. Used for wa.me links. */
     whatsapp: "910000000000",
-    /** TEMPLATE */
-    salesEmail: "sales@example.com",
-    /** Customer support. Real — published on /support, /terms and /cookies. */
+    /*
+      One real inbox, four names.
+
+      managekalt@gmail.com is a working address, so these carry no TEMPLATE
+      badge — anyone who writes to any of them is reached. They stay four
+      separate fields rather than one so that splitting them later (sales@,
+      service@, careers@, privacy@ on the company domain) is four edits here
+      and no edits anywhere else.
+    */
+    salesEmail: "managekalt@gmail.com",
+    /** Customer support. Published on /support, /terms and /cookies. */
     serviceEmail: "managekalt@gmail.com",
-    /** TEMPLATE */
-    careersEmail: "careers@example.com",
-    /** TEMPLATE — the address a DPDP data request goes to. */
-    privacyEmail: "privacy@example.com",
+    careersEmail: "managekalt@gmail.com",
+    /** The address a DPDP data request goes to. */
+    privacyEmail: "managekalt@gmail.com",
     hours: "Mon–Sat, 9:00 am – 7:00 pm IST",
     /** Stated beside every form. Keep it a promise you can keep. */
     responseTime: "within one working day",
@@ -81,19 +126,46 @@ export const site = {
     },
   ],
 
+  /**
+   * TEMPLATE — "#" means "no URL yet".
+   *
+   * Four marks, in this order. Facebook, Instagram and LinkedIn are the three
+   * a buyer actually checks before enquiring — all three reference sites
+   * carry them and Fhiaba carries only them — and the YouTube mark stays
+   * because a product demo is the obvious next thing this catalogue will want
+   * to link to.
+   *
+   * While a value is "#" the mark renders as a real, focusable control that
+   * deliberately goes nowhere (src/components/social.tsx). Paste a URL in and
+   * the same mark becomes a link to it, opening in a new tab.
+   */
   social: {
-    /**
-     * TEMPLATE — "#" renders the icon without a link target.
-     *
-     * Four marks in the footer, in this order. Facebook, Instagram and
-     * LinkedIn are the three a buyer actually checks before enquiring; the
-     * YouTube mark stays because a product demo is the obvious next thing
-     * this catalogue will want to link to.
-     */
     facebook: "#",
     instagram: "#",
     linkedin: "#",
     youtube: "#",
+  },
+
+  /**
+   * TEMPLATE — the commercial terms /terms states.
+   *
+   * These are the clauses a buyer's purchase desk reads before raising a PO,
+   * and the ones U-Line and Marvel both carry as a separate shipping-and-
+   * returns page. Every one is a number somebody in the business has to
+   * stand behind, so they live here rather than buried in prose.
+   */
+  orders: {
+    quoteValidity: "30 days from the date of issue",
+    gst: "Exclusive of GST unless the quotation says otherwise",
+    advance: "50% with the order, balance before dispatch",
+    leadTime: "3–5 working days ex-stock; 3–4 weeks built-to-order",
+    freight: "Quoted as a separate line; included only where the quotation says so",
+    /** Transit damage stops being claimable once a clean receipt is signed. */
+    transitDamageWindow: "48 hours of delivery",
+    cancellation: "Within 7 days of order confirmation, provided fabrication has not started",
+    cancellationFee: "Standard models: no charge. Built-to-order and cold rooms: at cost incurred",
+    returns: "Unused standard models within 7 days of delivery, in original packing",
+    noReturns: "Built-to-order cabinets, cold rooms and commissioned installations",
   },
 
   /* --------------------------------------------------------------- proof */
@@ -172,6 +244,28 @@ export const site = {
 } as const;
 
 export type Site = typeof site;
+
+/**
+ * An open product safety notice.
+ *
+ * U-Line keeps a permanent recall URL in its footer whether or not anything
+ * is open, and that is the right shape: someone running due diligence on a
+ * supplier looks for it, and "none open, here is how we would tell you"
+ * answers the question. Finding no page at all does not.
+ */
+export interface SafetyNotice {
+  /** Your own reference, so a caller and an engineer quote the same thing. */
+  readonly ref: string;
+  readonly issued: string;
+  /** Model codes and the serial range affected. */
+  readonly models: string;
+  readonly summary: string;
+  /** What the owner should do, in one sentence, starting with a verb. */
+  readonly action: string;
+}
+
+/** None open. Add a row and /support#safety publishes it. */
+export const safetyNotices: readonly SafetyNotice[] = [];
 
 /** `wa.me` deep link with an optional pre-filled first message. */
 export function whatsappLink(message?: string): string {

@@ -18,6 +18,7 @@ import Link from "next/link";
 import { PageHero, PageSection, Tmpl } from "@/components/page-shell";
 import { EnquiryForm } from "@/components/enquiry-form";
 import { ArrowRight, Chat, Phone, Pin, Wrench } from "@/components/icons";
+import { SocialList, SocialRow } from "@/components/social";
 import { site, telLink, whatsappLink } from "@/content/site";
 import { env } from "@/lib/env";
 
@@ -26,14 +27,52 @@ export const revalidate = false;
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Request a quote, reach the sales or service desk by phone or WhatsApp, find our offices, or apply to become a dealer.",
+    "Request a quote, reach the sales or service desk by phone, WhatsApp or email, find our offices and our grievance officer, or apply to become a dealer.",
 };
 
 const ANCHORS = [
   { href: "#enquiry", label: "Request a quote" },
   { href: "#channels", label: "Phone & WhatsApp" },
+  { href: "#write", label: "Who to write to" },
   { href: "#offices", label: "Offices" },
   { href: "#dealership", label: "Become a dealer" },
+  { href: "#grievance", label: "Grievances" },
+] as const;
+
+/**
+ * One desk per row, so an email lands on the right one.
+ *
+ * All four addresses are the same inbox today (see `site.contact`), and that
+ * is fine — the point of publishing them separately is that a visitor knows
+ * which subject line to use, and that splitting them later changes nothing on
+ * this page.
+ */
+const DESKS = [
+  {
+    desk: "Sales and quotations",
+    email: site.contact.salesEmail,
+    for: "New enquiries, pricing, site visits, tenders",
+  },
+  {
+    desk: "Service and spares",
+    email: site.contact.serviceEmail,
+    for: "Breakdowns, AMC, parts, warranty claims",
+  },
+  {
+    desk: "Dealers and distribution",
+    email: site.contact.salesEmail,
+    for: "Territory enquiries, dealer pricing, brand assets",
+  },
+  {
+    desk: "Careers",
+    email: site.contact.careersEmail,
+    for: "Applications, with the role in the subject line",
+  },
+  {
+    desk: "Privacy and data requests",
+    email: site.contact.privacyEmail,
+    for: "Access, correction or erasure of your data",
+  },
 ] as const;
 
 export default function ContactPage() {
@@ -108,7 +147,7 @@ export default function ContactPage() {
               <div className="rows__row">
                 <span className="rows__k">Email</span>
                 <span className="rows__v">
-                  <a href={`mailto:${site.contact.salesEmail}`}>{site.contact.salesEmail}</a> <Tmpl />
+                  <a href={`mailto:${site.contact.salesEmail}`}>{site.contact.salesEmail}</a>
                 </span>
               </div>
               <div className="rows__row">
@@ -158,6 +197,77 @@ export default function ContactPage() {
               </p>
               <p className="small">Photos of the site or the rating plate welcome</p>
             </div>
+          </div>
+        </div>
+      </PageSection>
+
+      {/* ------------------------------------------------- email and social */}
+      <PageSection
+        id="write"
+        eyebrow="Email"
+        title="Who to write to."
+        lead="Five desks, so your message starts in the right place. Every one of them is read, and every one of them answers."
+      >
+        <div className="table-wrap">
+          <table className="spec-table">
+            <caption>Email addresses</caption>
+            <thead>
+              <tr>
+                <th scope="col">Desk</th>
+                <th scope="col">Address</th>
+                <th scope="col">What to send it</th>
+              </tr>
+            </thead>
+            <tbody>
+              {DESKS.map((d) => (
+                <tr key={d.desk}>
+                  <th scope="row">{d.desk}</th>
+                  <td>
+                    <a className="link link--accent" href={`mailto:${d.email}`}>
+                      {d.email}
+                    </a>
+                  </td>
+                  <td>{d.for}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="split">
+          <div className="prose">
+            <h3>What to put in it</h3>
+            <ul>
+              <li>
+                <strong>For a quote:</strong> the model or the job, the quantity, the
+                city, and when you need it. That is enough for a price.
+              </li>
+              <li>
+                <strong>For a fault:</strong> the model code and serial number from the
+                rating plate inside the door, and what the cabinet is doing. A photograph
+                of the plate saves a phone call.
+              </li>
+              <li>
+                <strong>Never send</strong> a card number, a CVV, an OTP or a password. We
+                will not ask for any of them, by email or on the phone, and anybody who
+                does is not us.
+              </li>
+            </ul>
+            <p className="small">
+              We reply {site.contact.responseTime}, {site.contact.hours.toLowerCase()}.
+              Outside those hours, email and the form are both queued for the next
+              working morning.
+            </p>
+          </div>
+
+          <div className="aside">
+            <p className="eyebrow">Follow us</p>
+            <p className="small">
+              Installations, new models and service notices. The marks below go live as
+              soon as the profiles do.
+            </p>
+            <SocialRow size={16} />
+            <SocialList />
           </div>
         </div>
       </PageSection>
@@ -256,6 +366,94 @@ export default function ContactPage() {
             <p className="small">
               Looking for a dealer rather than a dealership? The service city list is
               on <Link className="link link--accent" href="/support#network">service &amp; support</Link>.
+            </p>
+          </div>
+        </div>
+      </PageSection>
+
+      {/* ------------------------------------------------------ grievances */}
+      <PageSection
+        id="grievance"
+        eyebrow="Complaints"
+        title="If something has gone wrong."
+        lead="A named officer, a stated window, and the escalation route published next to it. The Consumer Protection (E-Commerce) Rules 2020 require the first two of any Indian seller; the third is here because a complaints process you cannot escalate is not one."
+      >
+        <div className="split">
+          <div className="rows">
+            <div className="rows__row">
+              <span className="rows__k">Grievance officer</span>
+              <span className="rows__v">
+                {site.legal.grievanceOfficer.name},{" "}
+                {site.legal.grievanceOfficer.designation} <Tmpl label="fill in" />
+              </span>
+            </div>
+            <div className="rows__row">
+              <span className="rows__k">Email</span>
+              <span className="rows__v">
+                <a href={`mailto:${site.legal.grievanceOfficer.email}`}>
+                  {site.legal.grievanceOfficer.email}
+                </a>
+              </span>
+            </div>
+            <div className="rows__row">
+              <span className="rows__k">Phone</span>
+              <span className="rows__v">
+                <a href={telLink(site.legal.grievanceOfficer.phone)}>
+                  {site.legal.grievanceOfficer.phone}
+                </a>{" "}
+                <Tmpl /> · {site.contact.hours}
+              </span>
+            </div>
+            <div className="rows__row">
+              <span className="rows__k">Acknowledged</span>
+              <span className="rows__v">
+                Within {site.legal.grievanceOfficer.acknowledgeWithin}, with a reference
+                you can quote
+              </span>
+            </div>
+            <div className="rows__row">
+              <span className="rows__k">Resolved</span>
+              <span className="rows__v">
+                Within {site.legal.grievanceOfficer.resolveWithin} of receipt
+              </span>
+            </div>
+            <div className="rows__row">
+              <span className="rows__k">Post</span>
+              <span className="rows__v">
+                {site.offices[0]?.label}, {site.offices[0]?.lines.join(", ")} <Tmpl />
+              </span>
+            </div>
+          </div>
+
+          <div className="aside">
+            <p className="eyebrow">Who you are dealing with</p>
+            <div className="rows">
+              <div className="rows__row">
+                <span className="rows__k">Registered name</span>
+                <span className="rows__v">{site.legal.entity} <Tmpl /></span>
+              </div>
+              <div className="rows__row">
+                <span className="rows__k">CIN</span>
+                <span className="rows__v">{site.legal.cin} <Tmpl /></span>
+              </div>
+              <div className="rows__row">
+                <span className="rows__k">GSTIN</span>
+                <span className="rows__v">{site.legal.gstin} <Tmpl /></span>
+              </div>
+              <div className="rows__row">
+                <span className="rows__k">Jurisdiction</span>
+                <span className="rows__v">
+                  Courts at {site.legal.jurisdiction} <Tmpl label="confirm" />
+                </span>
+              </div>
+            </div>
+            <p className="small">
+              Beyond us: the National Consumer Helpline on <strong>1915</strong>, the
+              consumer commission with jurisdiction over you, or — for anything about
+              your personal data — the Data Protection Board of India. See the{" "}
+              <Link className="link link--accent" href="/privacy#rights">privacy policy</Link>{" "}
+              and the{" "}
+              <Link className="link link--accent" href="/terms#law">terms of use</Link>.
             </p>
           </div>
         </div>

@@ -26,7 +26,8 @@ import {
   Shield,
   Wrench,
 } from "@/components/icons";
-import { site, telLink, whatsappLink } from "@/content/site";
+import { SocialRow } from "@/components/social";
+import { safetyNotices, site, telLink, whatsappLink } from "@/content/site";
 import { env } from "@/lib/env";
 
 export const revalidate = false;
@@ -34,7 +35,7 @@ export const revalidate = false;
 export const metadata: Metadata = {
   title: "Service & support",
   description:
-    "Service helpline, AMC and preventive maintenance plans, genuine spares, warranty terms, installation and site survey, and the city list our engineers cover.",
+    "Service helpline, AMC and preventive maintenance plans, genuine spares, warranty terms and registration, installation and site survey, open safety notices, and the city list our engineers cover.",
 };
 
 const ANCHORS = [
@@ -42,8 +43,10 @@ const ANCHORS = [
   { href: "#request", label: "Log a request" },
   { href: "#amc", label: "AMC" },
   { href: "#warranty", label: "Warranty" },
+  { href: "#register", label: "Register a product" },
   { href: "#install", label: "Installation" },
   { href: "#network", label: "Service network" },
+  { href: "#safety", label: "Safety notices" },
   { href: "#faq", label: "FAQ" },
 ] as const;
 
@@ -339,6 +342,93 @@ export default function SupportPage() {
         </div>
       </PageSection>
 
+      {/* ------------------------------------------------------- register */}
+      <PageSection
+        id="register"
+        eyebrow="Register your product"
+        title="Two minutes now, or an hour of invoice archaeology later."
+        lead="Marvel, U-Line and Fhiaba all put product registration on the page a customer lands on, and the reason is the same everywhere: the serial number is the only thing that connects a cabinet in your kitchen to a warranty in our records."
+      >
+        <div className="split">
+          <div className="prose">
+            <h3>What it gets you</h3>
+            <ul>
+              <li>
+                A claim that starts with &ldquo;serial number&rdquo; rather than with
+                hunting for a two-year-old invoice.
+              </li>
+              <li>
+                The right spare the first time. The serial tells us which controller,
+                gasket and fan that cabinet actually left with — mid-production changes
+                are the usual reason a part &ldquo;does not fit&rdquo;.
+              </li>
+              <li>
+                A line of contact if a{" "}
+                <Link className="link link--accent" href="#safety">safety notice</Link>{" "}
+                ever affects your model. This is the main reason to bother.
+              </li>
+              <li>
+                Service history in one place, so the next engineer is not the first
+                engineer.
+              </li>
+            </ul>
+            <p className="small">
+              Registering does not extend your warranty and is not a condition of it —
+              your invoice establishes the cover either way. Anyone who tells you
+              otherwise is selling something.
+            </p>
+          </div>
+
+          <div className="aside">
+            <p className="eyebrow">How to register</p>
+            <div className="rows">
+              <div className="rows__row">
+                <span className="rows__k">Easiest</span>
+                <span className="rows__v">
+                  <Link className="link link--accent" href="#request">The form above</Link>{" "}
+                  — put &ldquo;Warranty registration&rdquo; in the description box{" "}
+                  <Tmpl label="dedicated form to follow" />
+                </span>
+              </div>
+              <div className="rows__row">
+                <span className="rows__k">Or email</span>
+                <span className="rows__v">
+                  <a href={`mailto:${site.contact.serviceEmail}`}>
+                    {site.contact.serviceEmail}
+                  </a>
+                </span>
+              </div>
+              <div className="rows__row">
+                <span className="rows__k">Or WhatsApp</span>
+                <span className="rows__v">
+                  <a href={whatsappLink("Warranty registration — model and serial:")}>
+                    A photo of the rating plate
+                  </a>
+                </span>
+              </div>
+              <div className="rows__row">
+                <span className="rows__k">Have ready</span>
+                <span className="rows__v">
+                  Model code, serial number, invoice number and date, and the site address
+                </span>
+              </div>
+              <div className="rows__row">
+                <span className="rows__k">Where the plate is</span>
+                <span className="rows__v">
+                  Inside the door, on the side wall or behind the plinth grille
+                </span>
+              </div>
+            </div>
+            <p className="small">
+              An{" "}
+              <Link className="link link--accent" href="/register">account</Link>{" "}
+              keeps your registrations and service requests together — optional, and
+              everything here works without one.
+            </p>
+          </div>
+        </div>
+      </PageSection>
+
       {/* -------------------------------------------- install / site survey */}
       <PageSection
         id="install"
@@ -438,6 +528,108 @@ export default function SupportPage() {
           list? We still cover you through a partner engineer —{" "}
           <Link className="link link--accent" href="/contact#enquiry">ask us</Link>.
         </p>
+      </PageSection>
+
+      {/* ------------------------------------------------------- safety */}
+      <PageSection
+        id="safety"
+        eyebrow="Safety notices"
+        title={safetyNotices.length === 0 ? "Nothing open today." : "Open safety notices."}
+        lead="U-Line keeps a recall page in its footer whether or not anything is open, and that is the right instinct: this is the page somebody checks while deciding whether to trust a supplier, and “none, and here is how you would hear” is an answer. Finding no page at all is not."
+      >
+        {safetyNotices.length === 0 ? (
+          <div className="prose">
+            <p>
+              There are no open safety notices or recalls affecting any{" "}
+              {site.brand.name} product. <Tmpl label="keep this current" />
+            </p>
+            <h3>How you would hear about one</h3>
+            <ul>
+              <li>
+                <strong>Here first,</strong> with the model codes and serial range, what
+                the problem is, and what to do about it.
+              </li>
+              <li>
+                <strong>Directly,</strong> if your cabinet is{" "}
+                <Link className="link link--accent" href="#register">registered</Link> —
+                by phone and email, not by hoping you read a website.
+              </li>
+              <li>
+                <strong>Through your dealer and our service partners,</strong> who are
+                notified at the same time.
+              </li>
+            </ul>
+            <h3>If you think something is unsafe now</h3>
+            <p>
+              Do not wait for a notice. Switch the cabinet off at the socket if you can
+              smell burning, see scorching at the plug or the terminal block, or feel a
+              tingle from the casing — then call the helpline on{" "}
+              <a className="link link--accent" href={telLink(site.contact.servicePhone)}>
+                {site.contact.servicePhone}
+              </a>{" "}
+              <Tmpl /> and say it is a safety call, so it is treated as one. A refrigerant
+              smell in an enclosed room is a reason to ventilate, keep ignition sources
+              away and call from outside the room: several of these cabinets run on
+              hydrocarbon refrigerant, which is efficient and flammable.
+            </p>
+          </div>
+        ) : (
+          <div className="table-wrap">
+            <table className="spec-table">
+              <caption>Open safety notices</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Reference</th>
+                  <th scope="col">Issued</th>
+                  <th scope="col">Models affected</th>
+                  <th scope="col">What it is</th>
+                  <th scope="col">What to do</th>
+                </tr>
+              </thead>
+              <tbody>
+                {safetyNotices.map((n) => (
+                  <tr key={n.ref}>
+                    <th scope="row">{n.ref}</th>
+                    <td>{n.issued}</td>
+                    <td>{n.models}</td>
+                    <td>{n.summary}</td>
+                    <td>{n.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <div className="callout">
+          <div className="callout__grid">
+            <div>
+              <p className="callout__k">Safety calls</p>
+              <p className="callout__v">
+                <a href={telLink(site.contact.servicePhone)}>{site.contact.servicePhone}</a>{" "}
+                <Tmpl />
+              </p>
+              <p className="small">Say it is a safety call — it jumps the queue</p>
+            </div>
+            <div>
+              <p className="callout__k">In writing</p>
+              <p className="callout__v">
+                <a href={`mailto:${site.contact.serviceEmail}`}>{site.contact.serviceEmail}</a>
+              </p>
+              <p className="small">With the model, serial and photographs</p>
+            </div>
+            <div>
+              <p className="callout__k">Service notices</p>
+              {/* A div, not a <p className="callout__v">: SocialRow renders a
+                  div, and a div inside a p is invalid HTML that the browser
+                  silently reparents — which shows up as a hydration error. */}
+              <div className="callout__v">
+                <SocialRow />
+              </div>
+              <p className="small">Also posted to our channels as they go live</p>
+            </div>
+          </div>
+        </div>
       </PageSection>
 
       {/* ------------------------------------------------------------ FAQ */}

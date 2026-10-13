@@ -399,11 +399,17 @@ textarea.field { resize: vertical; min-height: 92px; }
 .foot-col a:hover { color: var(--ink); }
 .foot-brand { display: grid; gap: var(--s-4); align-content: start; }
 .foot-brand p { font-size: var(--fs-xs); color: var(--ink-3); }
+/* A mark is an <a> once there is a URL and a <button> until then, and the two
+   must be indistinguishable — see src/components/social.tsx. The button needs
+   the resets (background, font, padding) an anchor does not. */
 .social { display: flex; gap: var(--s-2); }
-.social a { display: grid; place-items: center; width: 30px; height: 30px;
+.social a,
+.social button { display: grid; place-items: center; width: 30px; height: 30px; padding: 0;
+            background: none; cursor: pointer;
             border: 1px solid var(--line); border-radius: var(--r-sm); color: var(--ink-3);
             transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
-.social a:hover { color: var(--accent); border-color: var(--accent); }
+.social a:hover,
+.social button:hover { color: var(--accent); border-color: var(--accent); }
 .foot-cta { display: grid; gap: var(--s-3); align-content: start; padding: var(--s-6); }
 .quote { display: grid; gap: var(--s-4); align-content: start; padding: var(--s-6); }
 .quote__mark { color: var(--accent); }
@@ -420,7 +426,10 @@ textarea.field { resize: vertical; min-height: 92px; }
 .colophon { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4);
             justify-content: space-between; padding: var(--s-6) 0 var(--s-10);
             font-size: var(--fs-xs); color: var(--ink-3); }
-.colophon nav { display: flex; gap: var(--s-5); }
+/* Wraps. Six legal links do not fit on a 390px phone in one row, and an
+   un-wrapped nav here overflows the page rather than its own box — which is a
+   horizontal scrollbar on every route, since this footer is on every route. */
+.colophon nav { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); }
 
 /* ==========================================================================
    Responsive — 1024 tablet · 760 phone · 420 small phone
